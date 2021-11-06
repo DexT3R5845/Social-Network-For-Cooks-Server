@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-@CrossOrigin(origins = "https://bakensweetsapp.herokuapp.com", maxAge = 3600)
+@CrossOrigin(origins = "https://bakensweets.herokuapp.com", maxAge = 3600)
 @RestController
 @Slf4j
 public class UserController {
