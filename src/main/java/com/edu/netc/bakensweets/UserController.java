@@ -9,7 +9,6 @@ import java.util.List;
 
 @CrossOrigin(origins = "https://bakensweets.herokuapp.com", maxAge = 3600)
 @RestController
-@Slf4j
 public class UserController {
 
     private final UserService userService;
@@ -21,7 +20,6 @@ public class UserController {
 
     @GetMapping
     public List findAllUsers() {
-        log.debug("HUI");
         return userService.findAll();
     }
 }
