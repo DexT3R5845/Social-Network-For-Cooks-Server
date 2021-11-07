@@ -10,7 +10,6 @@ import java.util.List;
 @CrossOrigin(origins = "https://bakensweets.herokuapp.com", maxAge = 3600)
 @RestController
 public class UserController {
-
     private final UserService userService;
 
     @Autowired
