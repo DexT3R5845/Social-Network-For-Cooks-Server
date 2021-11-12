@@ -1,14 +1,9 @@
 package com.edu.netc.bakensweets.controller;
 
-import com.edu.netc.bakensweets.model.account.Account;
-import com.edu.netc.bakensweets.model.credentials.Credentials;
+import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.service.AccountService;
-import com.edu.netc.bakensweets.model.account.dto.AccountSignUpDto;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class AccountController {
@@ -18,19 +13,21 @@ public class AccountController {
         this.accountService = accountService;
     }
 
-    @PostMapping(value = "/sign-in")
-    public ResponseEntity<Account> signIn(@RequestBody Credentials credentials) {
+    @GetMapping("/signin")
+    public String signIn(@RequestParam String email,
+                                 @RequestParam String password) {
 
-        //TODO authentication
-
-        Account account = accountService.getAccountByCred(credentials);
-        return new ResponseEntity<>(account, HttpStatus.OK);
+       return accountService.signin(email,password);
     }
 
-    @PostMapping(value = "/sign-up")
-    public ResponseEntity<Account> signUp(@RequestBody AccountSignUpDto accountDto) {
-        Account account = accountService.register(accountDto);
-        return new ResponseEntity<>(account, HttpStatus.OK);
-    }
+    @GetMapping(value = "/signup")
+    public Account signUp(@RequestParam String email) {
 
+        return null;
+    }
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ADMIN')")
+    @GetMapping("/test")
+    public String test(){
+        return "hello";
+    }
 }

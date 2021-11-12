@@ -1,22 +1,46 @@
 package com.edu.netc.bakensweets.service;
 
-import com.edu.netc.bakensweets.model.account.Account;
-import com.edu.netc.bakensweets.model.account.dto.AccountSignUpDto;
-import com.edu.netc.bakensweets.model.credentials.Credentials;
+import com.edu.netc.bakensweets.model.Account;
+import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
+import com.edu.netc.bakensweets.security.JwtTokenProvider;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AccountServiceImpl implements AccountService {
+private final AccountRepository accountRepository;
+private final JwtTokenProvider jwtTokenProvider;
+private final AuthenticationManager authenticationManager;
+private final PasswordEncoder passwordEncoder;
 
+public AccountServiceImpl(AccountRepository accountRepository, JwtTokenProvider jwtTokenProvider, AuthenticationManager authenticationManager,
+                          PasswordEncoder passwordEncoder){
+    this.accountRepository = accountRepository;
+    this.jwtTokenProvider = jwtTokenProvider;
+    this.authenticationManager = authenticationManager;
+    this.passwordEncoder = passwordEncoder;
+}
     @Override
-    public Account getAccountByCred (Credentials credentialsDto) {
-        //TODO auth logic & validate, ...
-        return null;
+    public String signin(String username, String password) {
+        try {
+            Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+            return jwtTokenProvider.createToken(username, accountRepository.findByEmail(username).getAccountRole());
+        } catch (AuthenticationException e) {
+            throw new com.edu.netc.bakensweets.exception.CustomException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
     }
 
     @Override
-    public Account register (AccountSignUpDto account) {
-        //TODO validate, ...
+    public String signUp() {
         return null;
+    }
+
+    public Account getByEmail(String email) {
+        return accountRepository.findByEmail(email);
     }
 }
