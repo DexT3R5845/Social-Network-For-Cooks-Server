@@ -4,5 +4,5 @@ public interface BaseCrudRepository<T,ID> {
     void create(T item);
     void update(T item);
     void deleteById(ID id);
-    T getById(ID id);
+    T findById(ID id);
 }

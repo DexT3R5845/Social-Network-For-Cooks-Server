@@ -14,8 +14,6 @@ import java.util.UUID;
 public class Account {
     @Id
     private long id;
-    private String email;
-    private String password;
     private String firstName;
     private String lastName;
     private Date birthDate;
