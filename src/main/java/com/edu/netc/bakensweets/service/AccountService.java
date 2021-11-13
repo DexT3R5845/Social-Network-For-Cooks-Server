@@ -1,12 +1,10 @@
 package com.edu.netc.bakensweets.service;
 
-import com.edu.netc.bakensweets.model.account.Account;
-import com.edu.netc.bakensweets.model.account.dto.AccountSignUpDto;
-import com.edu.netc.bakensweets.model.credentials.Credentials;
+import com.edu.netc.bakensweets.dto.AccountDTO;
+import com.edu.netc.bakensweets.model.Account;
 
 public interface AccountService {
-
-    Account getAccountByCred(Credentials credentialsDto);
-
-    Account register(AccountSignUpDto account);
+    String signIn(String email, String password);
+    String signUp(AccountDTO accountDTO);
+    Account getByEmail(String email);
 }
