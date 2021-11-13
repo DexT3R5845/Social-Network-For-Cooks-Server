@@ -17,7 +17,7 @@ public class Account {
     private String firstName;
     private String lastName;
     private Date birthDate;
-    private String gender;
+    private Gender gender;
     private String imgUrl;
     private AccountRole accountRole;
 }

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class AccountRepositoryImpl extends BaseJdbsRepository implements AccountRepository {
 
+    @Value("${sql.account.create}")
+    private String sqlQueryCreate;
     @Value("${sql.account.findById}")
     private String sqlQueryGetById;
     @Value("${sql.account.findByEmail}")
@@ -21,8 +23,8 @@ public class AccountRepositoryImpl extends BaseJdbsRepository implements Account
 
     @Override
     public void create(Account account) {
-        //jdbcTemplate.update(sqlQueryCreate, account.getId(), account.getFirstName(), account.getLastName(),
-                //account.getBirthDate(), account.getGender(), account.getImgUrl(), account.getAccountRole());
+        jdbcTemplate.update(sqlQueryCreate, account.getId(), account.getFirstName(), account.getLastName(),
+                account.getBirthDate(), account.getGender().name(), account.getAccountRole().getAuthority());
     }
 
     @Override

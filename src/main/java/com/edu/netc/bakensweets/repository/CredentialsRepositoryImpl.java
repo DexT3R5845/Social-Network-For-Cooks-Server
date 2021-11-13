@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class CredentialsRepositoryImpl extends BaseJdbsRepository implements CredentialsRepository {
 
+    @Value("${sql.credentials.create}")
+    private String sqlQueryCreate;
     @Value("${sql.credentials.findByEmail}")
     private String sqlQueryFindByEmail;
     @Value("${sql.credentials.findById}")
@@ -21,7 +23,7 @@ public class CredentialsRepositoryImpl extends BaseJdbsRepository implements Cre
 
     @Override
     public void create(Credentials credentials) {
-
+        jdbcTemplate.update(sqlQueryCreate, credentials.getId(), credentials.getEmail(), credentials.getPassword());
     }
 
     @Override

@@ -1,10 +1,12 @@
 package com.edu.netc.bakensweets.controller;
 
+import com.edu.netc.bakensweets.dto.AccountDTO;
 import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.service.AccountService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+@RequestMapping("/api")
 @RestController
 public class AccountController {
     private AccountService accountService;
@@ -13,17 +15,16 @@ public class AccountController {
         this.accountService = accountService;
     }
 
-    @GetMapping("/signin")
+    @PostMapping("/signin")
     public String signIn(@RequestParam String email,
-                                 @RequestParam String password) {
-
-       return accountService.signin(email,password);
+                         @RequestParam String password) {
+       return accountService.signIn(email,password);
     }
 
-    @GetMapping(value = "/signup")
-    public Account signUp(@RequestParam String email) {
+    @PostMapping(value = "/signup")
+    public String signUp(@RequestBody AccountDTO accountDTO) {
 
-        return null;
+        return accountService.signUp(accountDTO);
     }
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ADMIN')")
     @GetMapping("/test")
