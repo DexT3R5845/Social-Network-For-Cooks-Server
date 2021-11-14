@@ -6,8 +6,8 @@ import com.edu.netc.bakensweets.service.AccountService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/api")
 @RestController
+@RequestMapping("/api")
 public class AccountController {
     private AccountService accountService;
 

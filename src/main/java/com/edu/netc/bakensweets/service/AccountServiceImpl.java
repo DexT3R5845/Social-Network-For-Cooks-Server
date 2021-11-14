@@ -54,16 +54,19 @@ public AccountServiceImpl(AccountRepository accountRepository, CredentialsReposi
 
     @Override
     public String signUp(AccountDTO accountDTO) {
-    CreateNewAccount(accountDTO, AccountRole.ROLE_USER);
+    createNewAccount(accountDTO, AccountRole.ROLE_USER);
     return "Reg Success";
     }
 
-    private void CreateNewAccount(AccountDTO accountDTO, AccountRole accountRole){
+    private void createNewAccount(AccountDTO accountDTO, AccountRole accountRole){
         long uniqueId = UniqueGenerator.generateUniqueId();
+
         Credentials credentials = credentialsMapper.accountDTOtoCredentials(accountDTO);
         Account account = accountMapper.accountDTOtoAccounts(accountDTO);
+
         credentials.setId(uniqueId);
         account.setId(uniqueId);
+
         account.setAccountRole(accountRole);
         credentials.setPassword(passwordEncoder.encode(credentials.getPassword()));
 
