@@ -1,6 +1,7 @@
 package com.edu.netc.bakensweets.repository;
 
 import com.edu.netc.bakensweets.model.Account;
+import com.edu.netc.bakensweets.model.AccountRole;
 import com.edu.netc.bakensweets.repository.interfaces.ModeratorRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -15,23 +16,33 @@ public class ModeratorRepositoryImpl extends BaseJdbsRepository implements Moder
         super(jdbcTemplate);
     }
 
-    @Value("sql.moderator.countFindAll")
-    private String countFindAll;
+    @Value("${sql.moderator.countFindAll}")
+    private String sqlCountFindAll;
 
-    @Value("sql.moderator.findAll")
-    private String findAll;
+    @Value("${sql.moderator.findAll}")
+    private String sqlFindAllWithLimit;
 
+    @Value("${sql.account.updateAccData}")
+    private String sqlUpdateAccData;
 
+    @Value("${page.showAll.limit}")
+    private int pageLimit;
 
-    @Override
+    @Override   //TODO CHANGE ROLE TO MODERATOR, IT`S DEMO VARIANT
     public int getAllModersCount (String search) {
-        Integer count = jdbcTemplate.queryForObject(countFindAll, Integer.class, search);
+        Integer count = jdbcTemplate.queryForObject(
+                sqlCountFindAll, Integer.class, AccountRole.ROLE_USER.getAuthority(), search
+        );
         return count == null ? 0 : count;
     }
 
-    @Override
+    @Override   //TODO CHANGE ROLE TO MODERATOR, IT`S DEMO VARIANT
     public List<Account> getAllModers (String search, int rowOffset) {
-        return jdbcTemplate.query(findAll, new BeanPropertyRowMapper<>(Account.class), search, rowOffset);
+        return jdbcTemplate.query(
+                sqlFindAllWithLimit,
+                new BeanPropertyRowMapper<>(Account.class),
+                AccountRole.ROLE_USER.getAuthority(), search, pageLimit, rowOffset
+        );
     }
 
     @Override
@@ -40,8 +51,9 @@ public class ModeratorRepositoryImpl extends BaseJdbsRepository implements Moder
     }
 
     @Override
-    public void update (Account item) {
-
+    public void update (Account account) {
+        jdbcTemplate.update(sqlUpdateAccData, account.getFirstName(), account.getLastName(),
+                account.getBirthDate(), account.getGender().name(), account.getImgUrl(), account.getId());
     }
 
     @Override
@@ -50,7 +62,7 @@ public class ModeratorRepositoryImpl extends BaseJdbsRepository implements Moder
     }
 
     @Override
-    public Account findById (Long aLong) {
+    public Account findById (Long id) {
         return null;
     }
 }

@@ -1,6 +1,7 @@
 package com.edu.netc.bakensweets.service;
 
 import com.edu.netc.bakensweets.dto.AccountDTO;
+import com.edu.netc.bakensweets.dto.AccountDemoDTO;
 import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
 import com.edu.netc.bakensweets.mapperConfig.CredentialsMapper;
 import com.edu.netc.bakensweets.model.Account;
@@ -10,6 +11,7 @@ import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.repository.interfaces.ModeratorRepository;
 import com.edu.netc.bakensweets.utils.UniqueGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class ModeratorServiceImpl implements ModeratorService {
     private final AccountRepository accountRepository;
@@ -27,8 +30,8 @@ public class ModeratorServiceImpl implements ModeratorService {
     private final CredentialsMapper credentialsMapper;
     private final AccountMapper accountMapper;
 
-    @Value("${page.showAll.size}")
-    private int pageSize;
+    @Value("${page.showAll.limit}")
+    private int pageLimit;
 
     public ModeratorServiceImpl (AccountRepository accountRepository, CredentialsRepository credentialsRepository, ModeratorRepository moderatorRepository,
                                  PasswordEncoder passwordEncoder, CredentialsMapper credentialsMapper, AccountMapper accountMapper) {
@@ -62,12 +65,32 @@ public class ModeratorServiceImpl implements ModeratorService {
     @Override
     public Map<String, Object> getAllModerators(String search, int currentPage) {
         Map<String, Object> response = new HashMap<>();
+
         int accCount = moderatorRepository.getAllModersCount(search);
-        int pageCount = accCount % pageSize == 0 ? accCount / pageSize : accCount / pageSize + 1;
-        List<Account> moderators = moderatorRepository.getAllModers(search, (currentPage - 1) * pageSize);
+        int pageCount = accCount % pageLimit == 0 ? accCount / pageLimit : accCount / pageLimit + 1;
+        List<Account> moderators = moderatorRepository.getAllModers(search, (currentPage - 1) * pageLimit);
+
         response.put("moderators", moderators);
         response.put("currentPage", currentPage);
         response.put("pageCount", pageCount);
+
         return response;
+    }
+
+    @Override
+    public AccountDemoDTO findById (long id) {
+        Account moderator = accountRepository.findById(id);
+        Credentials credentials = credentialsRepository.findById(id);
+        AccountDemoDTO account = AccountDemoDTO.accountToDTO(moderator);
+        account.setEmail(credentials.getEmail());
+        return account;
+    }
+
+    @Override
+    public AccountDemoDTO updateModerator(long id, AccountDemoDTO accountDto) {
+        Account account = accountMapper.accountDemoDTOtoAccounts(accountDto);
+        account.setId(id);
+        moderatorRepository.update(account);
+        return accountDto;
     }
 }

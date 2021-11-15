@@ -31,10 +31,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
     // Entry points
-    http.authorizeRequests()//
+    http.authorizeRequests()//  TODO DELETE MODER PERMISSION TO SET ACCESS BY TOKEN FOR ADMIN(DEMO VARIANT FOR POSTMAN)
         .antMatchers("/api/signin").permitAll()//
         .antMatchers("/api/signup").permitAll()//
-        .antMatchers("/api/moderator/all").permitAll()//
+        .antMatchers("/api/moderator/*").permitAll()//
 
         .anyRequest().authenticated();
 

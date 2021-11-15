@@ -1,14 +1,15 @@
 package com.edu.netc.bakensweets.controller;
 
 import com.edu.netc.bakensweets.dto.AccountDTO;
+import com.edu.netc.bakensweets.dto.AccountDemoDTO;
 import com.edu.netc.bakensweets.service.ModeratorService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-
+@Slf4j
 @RestController
 @RequestMapping("/api/moderator")
 public class ModeratorController {
@@ -28,10 +29,21 @@ public class ModeratorController {
 
     //@PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/all")
-    public String getAllModerators(
-            @RequestParam(value = "search", defaultValue = "", required = false) String search,
-            @RequestParam(value = "pageNum", defaultValue = "1", required = false) int currentPage) {
-        Map map = moderatorService.getAllModerators(search, currentPage);
-        return map == null ? "good" : "bad";
+    public Map<String, Object> getAllModerators(
+            @RequestParam(value = "pageNum", defaultValue = "1", required = false) int currentPage,
+            @RequestParam(value = "search", defaultValue = "", required = false) String search) {
+        return moderatorService.getAllModerators(search, currentPage);
+    }
+
+    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/{id}")
+    public AccountDemoDTO getModerById(@PathVariable long id) {
+        return moderatorService.findById(id);
+    }
+
+    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PutMapping("/{id}")
+    public AccountDemoDTO updateModerator(@PathVariable long id, @RequestBody AccountDemoDTO accountDTO) {
+        return moderatorService.updateModerator(id, accountDTO);
     }
 }

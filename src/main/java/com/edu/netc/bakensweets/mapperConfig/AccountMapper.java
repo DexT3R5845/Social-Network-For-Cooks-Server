@@ -1,6 +1,7 @@
 package com.edu.netc.bakensweets.mapperConfig;
 
 import com.edu.netc.bakensweets.dto.AccountDTO;
+import com.edu.netc.bakensweets.dto.AccountDemoDTO;
 import com.edu.netc.bakensweets.model.Account;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,4 +18,5 @@ public interface AccountMapper {
             @Mapping(target = "gender", source = "dto.gender")
     })
     Account accountDTOtoAccounts(AccountDTO dto);
+    Account accountDemoDTOtoAccounts(AccountDemoDTO dto);
 }
