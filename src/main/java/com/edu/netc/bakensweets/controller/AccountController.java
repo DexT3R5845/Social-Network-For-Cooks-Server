@@ -1,7 +1,6 @@
 package com.edu.netc.bakensweets.controller;
 
 import com.edu.netc.bakensweets.dto.AccountDTO;
-import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.service.AccountService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 @RestController
 public class AccountController {
-    private AccountService accountService;
+    private final AccountService accountService;
 
     public AccountController (AccountService accountService) {
         this.accountService = accountService;

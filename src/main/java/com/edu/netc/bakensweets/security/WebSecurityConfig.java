@@ -32,9 +32,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
     // Entry points
-    http.authorizeRequests()//
-        .antMatchers("/api/signin").permitAll()//
-        .antMatchers("/api/signup").permitAll()//
+    http.authorizeRequests()
+            .antMatchers("/api/signin").permitAll()
+            .antMatchers("/api/signup").permitAll()
 
         .anyRequest().authenticated();
 
