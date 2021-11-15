@@ -1,6 +1,5 @@
 package com.edu.netc.bakensweets.security;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,11 +30,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
     // Entry points
-    http.authorizeRequests()//  TODO DELETE MODER PERMISSION TO SET ACCESS BY TOKEN FOR ADMIN(DEMO VARIANT FOR POSTMAN)
+    http.authorizeRequests()//
         .antMatchers("/api/signin").permitAll()//
         .antMatchers("/api/signup").permitAll()//
-        .antMatchers("/api/moderator/*").permitAll()//
-
         .anyRequest().authenticated();
 
     http.exceptionHandling().accessDeniedPage("/login");

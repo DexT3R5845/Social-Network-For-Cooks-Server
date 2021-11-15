@@ -10,16 +10,12 @@ import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.security.JwtTokenProvider;
 import com.edu.netc.bakensweets.utils.UniqueGenerator;
-import org.mapstruct.Mapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 public class AccountServiceImpl implements AccountService {
