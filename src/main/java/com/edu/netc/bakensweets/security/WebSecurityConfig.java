@@ -38,7 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         .anyRequest().authenticated();
 
-    http.exceptionHandling().accessDeniedPage("/login");
+    //http.exceptionHandling().accessDeniedPage("/login");
 
     http.apply(new JwtTokenFilterConfigurer(jwtTokenProvider));
   }
@@ -47,7 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   public void configure(WebSecurity web) throws Exception {
     web.ignoring().antMatchers("/v3/api-docs/**")
             .antMatchers("/swagger-resources/**")
-            .antMatchers("/swagger-ui.html")//
+            .antMatchers("/swagger-ui.html", "/swagger-ui/**")//
             .antMatchers("/configuration/**")
             .antMatchers("/webjars/**")
             .antMatchers("/public");

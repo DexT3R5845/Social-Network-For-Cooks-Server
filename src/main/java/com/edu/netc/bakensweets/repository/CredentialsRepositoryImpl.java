@@ -16,6 +16,8 @@ public class CredentialsRepositoryImpl extends BaseJdbsRepository implements Cre
     private String sqlQueryFindByEmail;
     @Value("${sql.credentials.findById}")
     private String sqlQueryFindById;
+    @Value("${sql.credentials.insertJwtToken}")
+    private String sqlQueryInsertJwtToken;
 
     public CredentialsRepositoryImpl(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
@@ -41,5 +43,10 @@ public class CredentialsRepositoryImpl extends BaseJdbsRepository implements Cre
     @Override
     public Credentials findByEmail(String email) {
         return jdbcTemplate.queryForObject(sqlQueryFindByEmail, new BeanPropertyRowMapper<>(Credentials.class), email);
+    }
+
+    @Override
+    public void insertJwtToken(String token, String email) {
+        jdbcTemplate.update(sqlQueryInsertJwtToken, token, email);
     }
 }

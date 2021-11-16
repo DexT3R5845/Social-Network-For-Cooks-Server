@@ -6,6 +6,7 @@ import com.edu.netc.bakensweets.mapperConfig.CredentialsMapper;
 import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.model.AccountRole;
 import com.edu.netc.bakensweets.model.Credentials;
+import com.edu.netc.bakensweets.repository.AccountRepositoryImpl;
 import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.security.JwtTokenProvider;
@@ -46,7 +47,9 @@ public AccountServiceImpl(AccountRepository accountRepository, CredentialsReposi
     public String signIn(String username, String password) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-            return jwtTokenProvider.createToken(username, accountRepository.findByEmail(username).getAccountRole());
+            String jwtToken = jwtTokenProvider.createToken(username, accountRepository.findByEmail(username).getAccountRole());
+            credentialsRepository.insertJwtToken(jwtToken, username);
+            return jwtToken;
         } catch (AuthenticationException e) {
             throw new com.edu.netc.bakensweets.exception.CustomException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
         }
@@ -54,11 +57,11 @@ public AccountServiceImpl(AccountRepository accountRepository, CredentialsReposi
 
     @Override
     public String signUp(AccountDTO accountDTO) {
-    CreateNewAccount(accountDTO, AccountRole.ROLE_USER);
+    createNewAccount(accountDTO, AccountRole.ROLE_USER);
     return "Reg Success";
     }
 
-    private void CreateNewAccount(AccountDTO accountDTO, AccountRole accountRole){
+    private void createNewAccount(AccountDTO accountDTO, AccountRole accountRole){
         long uniqueId = UniqueGenerator.generateUniqueId();
         Credentials credentials = credentialsMapper.accountDTOtoCredentials(accountDTO);
         Account account = accountMapper.accountDTOtoAccounts(accountDTO);
@@ -74,4 +77,6 @@ public AccountServiceImpl(AccountRepository accountRepository, CredentialsReposi
     public Account getByEmail(String email) {
         return accountRepository.findByEmail(email);
     }
+
+
 }
