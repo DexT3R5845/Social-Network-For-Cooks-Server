@@ -24,7 +24,7 @@ public class AccountController {
     @PostMapping(value = "/signup")
     public String signUp(@RequestBody AccountDTO accountDTO) {
 
-        return accountService.signUp(accountDTO);
+        return accountService.createAccount(accountDTO);
     }
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ADMIN')")
     @GetMapping("/test")

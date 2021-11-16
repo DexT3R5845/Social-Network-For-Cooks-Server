@@ -21,11 +21,11 @@ public class AccountRepositoryImpl extends BaseJdbsRepository implements Account
     @Value("${sql.account.findByEmail}")
     private String sqlQueryFindByEmail;
 
-    @Value("${sql.moderator.countFindAll}")
+    @Value("${sql.account.countAllBySearch}")
     private String sqlCountFindAll;
 
-    @Value("${sql.moderator.findAll}")
-    private String sqlFindAllWithLimit;
+    @Value("${sql.account.findAllBySearch}")
+    private String sqlFindAllBySearch;
 
     @Value("${sql.account.updateAccData}")
     private String sqlUpdateAccData;
@@ -62,19 +62,19 @@ public class AccountRepositoryImpl extends BaseJdbsRepository implements Account
     }
 
     @Override   
-    public int getAllSearchedCount (String search) {
+    public int getAllSearchedCount (String search, AccountRole role) {
         Integer count = jdbcTemplate.queryForObject(
-                sqlCountFindAll, Integer.class, AccountRole.ROLE_USER.getAuthority(), search, search
+                sqlCountFindAll, Integer.class, role.getAuthority(), search, search
         );
         return count == null ? 0 : count;
     }
 
     @Override
-    public Collection<Account> getAllSearchedWithLimit (String search, int rowOffset, int limit) {
+    public Collection<Account> getAllSearchedWithLimit (String search, int limit, int offset, AccountRole role) {
         return jdbcTemplate.query(
-                sqlFindAllWithLimit,
+                sqlFindAllBySearch,
                 new BeanPropertyRowMapper<>(Account.class),
-                AccountRole.ROLE_USER.getAuthority(), search, search, limit, rowOffset
+                role.getAuthority(), search, search, limit, offset
         );
     }
 }
