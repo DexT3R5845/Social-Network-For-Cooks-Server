@@ -20,6 +20,8 @@ public class AccountRepositoryImpl extends BaseJdbsRepository implements Account
     private String sqlQueryGetById;
     @Value("${sql.account.findByEmail}")
     private String sqlQueryFindByEmail;
+    @Value("${sql.account.update}")
+    private String sqlQueryUpdate;
 
     @Value("${sql.account.countAllBySearch}")
     private String sqlCountFindAll;
@@ -45,10 +47,16 @@ public class AccountRepositoryImpl extends BaseJdbsRepository implements Account
         jdbcTemplate.update(sqlUpdateAccData, account.getFirstName(), account.getLastName(),
                 account.getBirthDate(), account.getImgUrl(), account.getGender().name(), account.getId());
     }
+  
+    @Override
+    public void update(Account account, String email) {
+        jdbcTemplate.update(sqlQueryUpdate, account.getFirstName(), account.getLastName(),
+                account.getBirthDate(), account.getGender().name(), email);
+    }
 
     @Override
     public void deleteById(Long id) {
-
+        //todo
     }
 
     @Override
