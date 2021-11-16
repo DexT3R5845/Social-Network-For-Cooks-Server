@@ -1,7 +1,6 @@
 package com.edu.netc.bakensweets.mapperConfig;
 
 import com.edu.netc.bakensweets.dto.AccountDTO;
-import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.model.Credentials;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
