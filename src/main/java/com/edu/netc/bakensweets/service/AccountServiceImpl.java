@@ -47,9 +47,7 @@ public AccountServiceImpl(AccountRepository accountRepository, CredentialsReposi
     public String signIn(String username, String password) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-            String jwtToken = jwtTokenProvider.createToken(username, accountRepository.findByEmail(username).getAccountRole());
-            credentialsRepository.insertJwtToken(jwtToken, username);
-            return jwtToken;
+            return jwtTokenProvider.createToken(username, accountRepository.findByEmail(username).getAccountRole());
         } catch (AuthenticationException e) {
             throw new com.edu.netc.bakensweets.exception.CustomException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
         }

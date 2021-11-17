@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-  private JwtTokenProvider jwtTokenProvider;
+  private final JwtTokenProvider jwtTokenProvider;
 
   public JwtTokenFilter(JwtTokenProvider jwtTokenProvider) {
     this.jwtTokenProvider = jwtTokenProvider;
@@ -23,7 +23,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
     String token = jwtTokenProvider.resolveToken(httpServletRequest);
     try {
-      if (token != null && jwtTokenProvider.validateToken(token, jwtTokenProvider.getUsername(token))) {
+      if (token != null && jwtTokenProvider.validateToken(token)) {
         Authentication auth = jwtTokenProvider.getAuthentication(token);
         SecurityContextHolder.getContext().setAuthentication(auth);
       }

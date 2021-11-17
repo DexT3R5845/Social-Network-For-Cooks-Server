@@ -2,13 +2,11 @@ package com.edu.netc.bakensweets.security;
 
 import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.model.AccountRole;
-import com.edu.netc.bakensweets.model.Credentials;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,8 +28,8 @@ public class JwtTokenProvider {
   private String secretKey;
   @Value("${security.jwt.token.expire}")
   private long validityInMilliseconds;
-  private UserDetailsService userDetailsService;
-  private CredentialsRepository credentialsRepository;
+  private final UserDetailsService userDetailsService;
+  private final CredentialsRepository credentialsRepository;
 
   public JwtTokenProvider(UserDetailsService userDetailsService, CredentialsRepository credentialsRepository){
     this.credentialsRepository = credentialsRepository;
@@ -77,12 +75,8 @@ public class JwtTokenProvider {
     return null;
   }
 
-  public boolean validateToken(String token, String username) {
+  public boolean validateToken(String token) {
     try {
-      Credentials credentials = credentialsRepository.findByEmail(username);
-      if(!credentials.getAccess_token().equals(token)) {
-        throw new CustomException("JWT invalid", HttpStatus.INTERNAL_SERVER_ERROR);
-      }
       Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
       return true;
     } catch (JwtException | IllegalArgumentException e) {

@@ -44,9 +44,4 @@ public class CredentialsRepositoryImpl extends BaseJdbsRepository implements Cre
     public Credentials findByEmail(String email) {
         return jdbcTemplate.queryForObject(sqlQueryFindByEmail, new BeanPropertyRowMapper<>(Credentials.class), email);
     }
-
-    @Override
-    public void insertJwtToken(String token, String email) {
-        jdbcTemplate.update(sqlQueryInsertJwtToken, token, email);
-    }
 }

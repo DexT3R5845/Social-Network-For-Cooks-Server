@@ -2,18 +2,15 @@ package com.edu.netc.bakensweets.controller;
 
 import com.edu.netc.bakensweets.dto.AccountDTO;
 import com.edu.netc.bakensweets.service.AccountService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.Authorization;
-import org.springframework.http.HttpStatus;
+import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import javax.servlet.http.HttpServletResponse;
+import java.security.Principal;
 
-@Api(tags = "accounts")
 @RequestMapping("/api")
 @RestController
 public class AccountController {
@@ -24,21 +21,30 @@ public class AccountController {
     }
 
     @PostMapping("/signin")
-    public String signIn(@RequestParam String email,
-                         @RequestParam String password) {
-       return accountService.signIn(email,password);
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Something went wrong"), //
+            @ApiResponse(code = 422, message = "Invalid username/password supplied")})
+    public String signIn(@ApiParam("Email") @RequestParam String email,
+                         @ApiParam("Password") @RequestParam String password, HttpServletResponse httpServletResponse) {
+
+       return accountService.signIn(email, password);
     }
 
     @PostMapping(value = "/signup")
-    public ResponseEntity<String> signUp(@Validated @RequestBody AccountDTO accountDTO) {
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Something went wrong"),
+            @ApiResponse(code = 403, message = "Access denied")})
+    public ResponseEntity<String> signUp(@ApiParam("Signup Account")@RequestBody AccountDTO accountDTO) {
 
         return ResponseEntity.ok(accountService.signUp(accountDTO));
     }
 
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-    @ApiOperation(value = "${AccountController.test}", authorizations = { @Authorization(value="Authorization") })
     @GetMapping("/test")
-    public String test(){
-        return "hello";
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Something went wrong"),
+            @ApiResponse(code = 403, message = "Access denied")})
+    public String test(Principal principal){
+        return principal.getName();
     }
 }

@@ -8,5 +8,4 @@ public class Credentials {
     private long id;
     private String email;
     private String password;
-    private String access_token;
     }
