@@ -1,11 +1,14 @@
-package com.edu.netc.bakensweets.security;
+package com.edu.netc.bakensweets.configuration;
 
+import com.edu.netc.bakensweets.security.JwtTokenFilterConfigurer;
+import com.edu.netc.bakensweets.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -27,21 +30,30 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
 
     http.csrf().disable();
+    http.cors().disable();
 
     http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
     // Entry points
-    http.authorizeRequests()//
-        .antMatchers("/api/signin").permitAll()//
-        .antMatchers("/api/signup").permitAll()//
+    http.authorizeRequests()
+            .antMatchers("/api/signin").permitAll()
+            .antMatchers("/api/signup").permitAll()
 
         .anyRequest().authenticated();
 
-    http.exceptionHandling().accessDeniedPage("/login");
+    //http.exceptionHandling().accessDeniedPage("/login");
 
     http.apply(new JwtTokenFilterConfigurer(jwtTokenProvider));
+  }
 
-    // http.httpBasic();
+  @Override
+  public void configure(WebSecurity web) throws Exception {
+    web.ignoring().antMatchers("/v2/api-docs")
+            .antMatchers("/swagger-resources/**")
+            .antMatchers("/swagger-ui.html")
+            .antMatchers("/configuration/**")
+            .antMatchers("/webjars/**")
+            .antMatchers("/public");
   }
 
   @Bean

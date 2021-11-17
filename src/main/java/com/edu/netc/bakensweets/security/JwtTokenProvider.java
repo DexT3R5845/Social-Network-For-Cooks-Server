@@ -1,37 +1,40 @@
 package com.edu.netc.bakensweets.security;
 
-import java.util.Base64;
-import java.util.Date;
-
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
-
+import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.model.AccountRole;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import com.edu.netc.bakensweets.exception.CustomException;
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
+import java.time.Instant;
+import java.util.Base64;
+import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
 
   @Value("${security.jwt.token.secret-key}")
   private String secretKey;
+  @Value("${security.jwt.token.expire}")
+  private long validityInMilliseconds;
+  private final UserDetailsService userDetailsService;
+  private final CredentialsRepository credentialsRepository;
 
-  //@Value("${security.jwt.token.expire-length:3600000}")
-  private long validityInMilliseconds = 3600000;
-
-  @Autowired
-  private CustomUserDetails myUserDetails;
+  public JwtTokenProvider(UserDetailsService userDetailsService, CredentialsRepository credentialsRepository){
+    this.credentialsRepository = credentialsRepository;
+    this.userDetailsService = userDetailsService;
+  }
 
   @PostConstruct
   protected void init() {
@@ -43,18 +46,20 @@ public class JwtTokenProvider {
     Claims claims = Jwts.claims().setSubject(username);
     claims.put("auth", accountRole.getAuthority());
 
+    Instant expiryDate = Instant.now().plusMillis(validityInMilliseconds);
+
     Date now = new Date();
     Date validity = new Date(now.getTime() + validityInMilliseconds);
     return Jwts.builder()
         .setClaims(claims)
         .setIssuedAt(now)
         .setExpiration(validity)
-        .signWith(SignatureAlgorithm.HS512, secretKey)
+        .signWith(SignatureAlgorithm.HS256, secretKey)
         .compact();
   }
 
   public Authentication getAuthentication(String token) {
-    UserDetails userDetails = myUserDetails.loadUserByUsername(getUsername(token));
+    UserDetails userDetails = userDetailsService.loadUserByUsername(getUsername(token));
     return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
   }
 

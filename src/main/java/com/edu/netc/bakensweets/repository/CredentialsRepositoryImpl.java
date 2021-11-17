@@ -16,6 +16,8 @@ public class CredentialsRepositoryImpl extends BaseJdbsRepository implements Cre
     private String sqlQueryFindByEmail;
     @Value("${sql.credentials.findById}")
     private String sqlQueryFindById;
+    @Value("${sql.credentials.insertJwtToken}")
+    private String sqlQueryInsertJwtToken;
 
     public CredentialsRepositoryImpl(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
