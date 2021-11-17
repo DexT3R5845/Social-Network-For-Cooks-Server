@@ -1,6 +1,7 @@
 package com.edu.netc.bakensweets.controller;
 
 import com.edu.netc.bakensweets.dto.AccountDTO;
+import com.edu.netc.bakensweets.model.payload.AuthResponse;
 import com.edu.netc.bakensweets.service.AccountService;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
@@ -24,10 +25,10 @@ public class AccountController {
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Something went wrong"), //
             @ApiResponse(code = 422, message = "Invalid username/password supplied")})
-    public String signIn(@ApiParam("Email") @RequestParam String email,
-                         @ApiParam("Password") @RequestParam String password, HttpServletResponse httpServletResponse) {
+    public AuthResponse signIn(@ApiParam("Email") @RequestParam String email,
+                               @ApiParam("Password") @RequestParam String password, HttpServletResponse httpServletResponse) {
 
-       return accountService.signIn(email, password);
+       return new AuthResponse(accountService.signIn(email, password));
     }
 
     @PostMapping(value = "/signup")
