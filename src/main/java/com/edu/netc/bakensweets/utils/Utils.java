@@ -1,8 +1,10 @@
 package com.edu.netc.bakensweets.utils;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.UUID;
 
-public class UniqueGenerator {
+public class Utils {
 
     public static Long generateUniqueId() {
         long val = -1;

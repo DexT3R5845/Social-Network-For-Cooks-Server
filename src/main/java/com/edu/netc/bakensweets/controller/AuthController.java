@@ -1,7 +1,10 @@
 package com.edu.netc.bakensweets.controller;
 
 import com.edu.netc.bakensweets.dto.AccountDTO;
+import com.edu.netc.bakensweets.exception.DataExpiredException;
+import com.edu.netc.bakensweets.model.payload.AuthRequestResetUpdatePassword;
 import com.edu.netc.bakensweets.model.payload.AuthResponse;
+import com.edu.netc.bakensweets.model.payload.ValidateResetLink;
 import com.edu.netc.bakensweets.service.AccountService;
 import com.edu.netc.bakensweets.service.PasswordResetTokenService;
 import io.swagger.annotations.ApiParam;
@@ -48,7 +51,14 @@ public class AuthController {
     }
 
     @GetMapping(value = "/password/reset")
-    public void reset(@RequestParam String token){
-        //passResetTokenService.createToken(email);
+    public ValidateResetLink reset(@RequestParam String token){
+        return passResetTokenService.validateResetToken(token);
     }
+
+    @PutMapping("/password/reset")
+    public ValidateResetLink resetPasswordUpdate(@RequestBody AuthRequestResetUpdatePassword modelResetUpdatePassword){
+        if(modelResetUpdatePassword.getPassword() != modelResetUpdatePassword.getConfirm_password()) throw new DataExpiredException("Reset password link expired");
+        return passResetTokenService.validateResetToken(modelResetUpdatePassword.getToken());
+    }
+
 }

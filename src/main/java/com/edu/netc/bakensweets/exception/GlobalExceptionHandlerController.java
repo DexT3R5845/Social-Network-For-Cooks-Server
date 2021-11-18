@@ -10,6 +10,7 @@ import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -35,13 +36,20 @@ public class GlobalExceptionHandlerController {
   }
 
   @ExceptionHandler(AccessDeniedException.class)
-  public void handleAccessDeniedException(HttpServletResponse res) throws IOException {
-    res.sendError(HttpStatus.FORBIDDEN.value(), "Access denied");
+  public ResponseEntity<Error> handleException(AccessDeniedException e) {
+    Error error = new Error(HttpStatus.FORBIDDEN, "Access Denied");
+    return new ResponseEntity<>(error, error.getHttpStatus());
   }
 
   @ExceptionHandler(Exception.class)
   public void handleException(HttpServletResponse res) throws IOException {
     res.sendError(HttpStatus.BAD_REQUEST.value(), "Something went wrong");
+  }
+
+  @ExceptionHandler(DataExpiredException.class)
+  public ResponseEntity<Error> handleException(DataExpiredException e) {
+    Error error = new Error(HttpStatus.GONE, e.getLocalizedMessage());
+    return new ResponseEntity<>(error, error.getHttpStatus());
   }
 
 }

@@ -13,8 +13,12 @@ public class PasswordResetTokenRepositoryImpl extends BaseJdbsRepository impleme
     private String sqlQueryCreate;
     @Value("${sql.passwordResetToken.findByAccountId}")
     private String sqlQueryFindByAccountId;
-    @Value("${sql.disableAllActiveSessionResetLink}")
+    @Value("${sql.passwordResetToken.disableAllActiveSessionResetLink}")
     private String sqlQueryDisableAllTokens;
+    @Value("${sql.passwordResetToken.findByToken}")
+    private String sqlQueryFindByToken;
+    @Value("${sql.passwordResetToken.findById}")
+    private String sqlQueryFindById;
     public PasswordResetTokenRepositoryImpl(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
     }
@@ -38,8 +42,8 @@ public class PasswordResetTokenRepositoryImpl extends BaseJdbsRepository impleme
     }
 
     @Override
-    public PasswordResetToken findById(Long aLong) {
-        return null;
+    public PasswordResetToken findById(Long id) {
+        return jdbcTemplate.queryForObject(sqlQueryFindById, new BeanPropertyRowMapper<>(PasswordResetToken.class), id);
     }
 
     @Override
@@ -50,5 +54,10 @@ public class PasswordResetTokenRepositoryImpl extends BaseJdbsRepository impleme
     @Override
     public void disableAllTokensByAccountId(Long id) {
         jdbcTemplate.update(sqlQueryDisableAllTokens, id);
+    }
+
+    @Override
+    public PasswordResetToken findByToken(String token) {
+        return jdbcTemplate.queryForObject(sqlQueryFindByToken, new BeanPropertyRowMapper<>(PasswordResetToken.class), token);
     }
 }

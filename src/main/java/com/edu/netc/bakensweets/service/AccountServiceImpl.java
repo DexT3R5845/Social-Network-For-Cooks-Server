@@ -6,21 +6,16 @@ import com.edu.netc.bakensweets.mapperConfig.CredentialsMapper;
 import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.model.AccountRole;
 import com.edu.netc.bakensweets.model.Credentials;
-import com.edu.netc.bakensweets.repository.AccountRepositoryImpl;
 import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.security.JwtTokenProvider;
-import com.edu.netc.bakensweets.utils.UniqueGenerator;
-import org.mapstruct.Mapper;
+import com.edu.netc.bakensweets.utils.Utils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -60,7 +55,7 @@ public AccountServiceImpl(AccountRepository accountRepository, CredentialsReposi
     }
 
     private void createNewAccount(AccountDTO accountDTO, AccountRole accountRole){
-        long uniqueId = UniqueGenerator.generateUniqueId();
+        long uniqueId = Utils.generateUniqueId();
         Credentials credentials = credentialsMapper.accountDTOtoCredentials(accountDTO);
         Account account = accountMapper.accountDTOtoAccounts(accountDTO);
         credentials.setId(uniqueId);
