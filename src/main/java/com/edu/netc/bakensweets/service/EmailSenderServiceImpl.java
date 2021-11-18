@@ -26,6 +26,6 @@ public EmailSenderServiceImpl(JavaMailSender emailSender){
 
     @Override
     public void sendResetLinkPassword(String to, String token) {
-        sendSimpleMessage(to, "Reset Link Password", String.format("Reset Link Password: %s/%s", curentlyDomainClient, token));
+        sendSimpleMessage(to, "Reset Link Password", String.format("Reset Link Password: %s%s", curentlyDomainClient, token));
     }
 }
