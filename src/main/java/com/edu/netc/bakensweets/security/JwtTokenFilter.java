@@ -1,7 +1,7 @@
 package com.edu.netc.bakensweets.security;
 
 import com.edu.netc.bakensweets.exception.CustomException;
-import com.edu.netc.bakensweets.exception.DataExpiredException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -32,7 +32,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
       }
     } catch (CustomException ex) {
       SecurityContextHolder.clearContext();
-      throw new DataExpiredException("Token JWT expired");
+      throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Token JWT expired or invalid");
     }
 
     filterChain.doFilter(httpServletRequest, httpServletResponse);

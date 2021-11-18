@@ -19,6 +19,9 @@ public class PasswordResetTokenRepositoryImpl extends BaseJdbsRepository impleme
     private String sqlQueryFindByToken;
     @Value("${sql.passwordResetToken.findById}")
     private String sqlQueryFindById;
+    @Value("${sql.passwordResetToken.update}")
+    private String sqlQueryUpdate;
+
     public PasswordResetTokenRepositoryImpl(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
     }
@@ -32,8 +35,9 @@ public class PasswordResetTokenRepositoryImpl extends BaseJdbsRepository impleme
     }
 
     @Override
-    public void update(PasswordResetToken item) {
-
+    public void update(PasswordResetToken passResetToken) {
+            jdbcTemplate.update(sqlQueryUpdate, passResetToken.getResetToken(), passResetToken.getExpiryDate(), passResetToken.getAccountId(),
+                    passResetToken.isActive(), passResetToken.getId());
     }
 
     @Override

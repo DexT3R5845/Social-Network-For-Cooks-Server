@@ -1,7 +1,7 @@
 package com.edu.netc.bakensweets.controller;
 
 import com.edu.netc.bakensweets.dto.AccountDTO;
-import com.edu.netc.bakensweets.exception.DataExpiredException;
+import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.model.payload.AuthRequestResetUpdatePassword;
 import com.edu.netc.bakensweets.model.payload.AuthResponse;
 import com.edu.netc.bakensweets.model.payload.ValidateResetLink;
@@ -10,6 +10,7 @@ import com.edu.netc.bakensweets.service.PasswordResetTokenService;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class AuthController {
     @PostMapping("/signin")
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Something went wrong"), //
-            @ApiResponse(code = 422, message = "Invalid username/password supplied")})
+            @ApiResponse(code = 401, message = "Invalid username/password supplied")})
     public AuthResponse signIn(@ApiParam("Email") @RequestParam String email,
                                @ApiParam("Password") @RequestParam String password, HttpServletResponse httpServletResponse) {
 
@@ -56,10 +57,15 @@ public class AuthController {
         return passResetTokenService.validateResetToken(token);
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Passwords do not match")
+    })
     @PutMapping("/password/reset")
-    public ValidateResetLink resetPasswordUpdate(@RequestBody AuthRequestResetUpdatePassword modelResetUpdatePassword){
-        if(modelResetUpdatePassword.getPassword() != modelResetUpdatePassword.getConfirm_password()) throw new DataExpiredException("Reset password link expired");
-        return passResetTokenService.validateResetToken(modelResetUpdatePassword.getToken());
+    public ResponseEntity<String> resetPasswordUpdate(@RequestBody AuthRequestResetUpdatePassword modelResetUpdatePassword){
+        if(!modelResetUpdatePassword.getPassword().equals(modelResetUpdatePassword.getConfirm_password()))
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Passwords do not match");
+        passResetTokenService.changePassword(modelResetUpdatePassword);
+        return ResponseEntity.ok("Password successful update");
     }
 
     @PreAuthorize("ROLE_USER")

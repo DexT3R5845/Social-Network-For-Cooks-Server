@@ -3,6 +3,7 @@ package com.edu.netc.bakensweets.service;
 import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.model.Credentials;
 import com.edu.netc.bakensweets.model.PasswordResetToken;
+import com.edu.netc.bakensweets.model.payload.AuthRequestResetUpdatePassword;
 import com.edu.netc.bakensweets.model.payload.ValidateResetLink;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.repository.interfaces.PasswordResetTokenRepository;
@@ -10,26 +11,26 @@ import com.edu.netc.bakensweets.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 
 @Service
 public class PasswordResetTokenServiceImpl implements PasswordResetTokenService{
     private final PasswordResetTokenRepository passResetTokenRepository;
     private final CredentialsRepository credentialsRepository;
     private final EmailSenderService emailSenderService;
+    private final PasswordEncoder passwordEncoder;
     @Value("60")
     private Long expiration;
 
     public PasswordResetTokenServiceImpl(PasswordResetTokenRepository passResetTokenRepository, CredentialsRepository credentialsRepository,
-                                         EmailSenderService emailSenderService) {
+                                         EmailSenderService emailSenderService, PasswordEncoder passwordEncoder) {
         this.passResetTokenRepository = passResetTokenRepository;
         this.credentialsRepository = credentialsRepository;
         this.emailSenderService = emailSenderService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -41,7 +42,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService{
             emailSenderService.sendResetLinkPassword(email, passwordResetToken.getResetToken());
             passResetTokenRepository.create(passwordResetToken);
         } catch (EmptyResultDataAccessException ex){
-            throw new CustomException(String.format("Account %s not found.", email), HttpStatus.NOT_FOUND);
+            throw new CustomException(HttpStatus.NOT_FOUND, String.format("Account %s not found.", email));
         }
     }
 
@@ -53,10 +54,26 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService{
         try {
             PasswordResetToken passwordResetToken = passResetTokenRepository.findByToken(token);
             boolean expiry = passwordResetToken.isActive() && passwordResetToken.getExpiryDate().isAfter(LocalDateTime.now());
+            if(!expiry)
+                throw new CustomException(HttpStatus.GONE, "The link to change the password is invalid");
             return new ValidateResetLink(expiry);
         } catch (EmptyResultDataAccessException ex){
-            throw new CustomException(String.format("Token %s not found", token), HttpStatus.NOT_FOUND);
+            throw new CustomException(HttpStatus.NOT_FOUND, String.format("The link to change the password is invalid", token));
         }
+    }
+
+    public void changePassword(AuthRequestResetUpdatePassword authRequestResetUpdatePassword){
+        String token = authRequestResetUpdatePassword.getToken();
+        String newPassword = authRequestResetUpdatePassword.getPassword();
+        validateResetToken(token);
+        PasswordResetToken passResetToken = passResetTokenRepository.findByToken(token);
+        Credentials credentials = credentialsRepository.findById(passResetToken.getAccountId());
+        if(passwordEncoder.matches(newPassword, credentials.getPassword()))
+            throw new CustomException(HttpStatus.BAD_REQUEST, "The new password is similar to the old one");
+        credentials.setPassword(passwordEncoder.encode(newPassword));
+        credentialsRepository.update(credentials);
+        passResetToken.setActive(false);
+        passResetTokenRepository.update(passResetToken);
     }
 
     @Override

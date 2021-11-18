@@ -1,6 +1,7 @@
 package com.edu.netc.bakensweets.service;
 
 import com.edu.netc.bakensweets.dto.AccountDTO;
+import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
 import com.edu.netc.bakensweets.mapperConfig.CredentialsMapper;
 import com.edu.netc.bakensweets.model.Account;
@@ -44,7 +45,7 @@ public AccountServiceImpl(AccountRepository accountRepository, CredentialsReposi
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
             return jwtTokenProvider.createToken(username, accountRepository.findByEmail(username).getAccountRole());
         } catch (AuthenticationException e) {
-            throw new com.edu.netc.bakensweets.exception.CustomException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new CustomException(HttpStatus.UNAUTHORIZED, "Invalid username/password supplied");
         }
     }
 
