@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Date;
 
@@ -45,8 +46,6 @@ public class JwtTokenProvider {
 
     Claims claims = Jwts.claims().setSubject(username);
     claims.put("auth", accountRole.getAuthority());
-
-    Instant expiryDate = Instant.now().plusMillis(validityInMilliseconds);
 
     Date now = new Date();
     Date validity = new Date(now.getTime() + validityInMilliseconds);
@@ -80,7 +79,7 @@ public class JwtTokenProvider {
       Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
       return true;
     } catch (JwtException | IllegalArgumentException e) {
-      throw new CustomException("Expired or invalid JWT token", HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Expired or invalid JWT token");
     }
   }
 

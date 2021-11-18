@@ -42,8 +42,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 
     // Entry points
     http.authorizeRequests()
-            .antMatchers("/api/signin").permitAll()
-            .antMatchers("/api/signup").permitAll()
+            .antMatchers("/api/auth/**").permitAll()
 
         .anyRequest().authenticated();
 
@@ -76,7 +75,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
   @Override
   public void addCorsMappings(CorsRegistry registry) {
     registry.addMapping("/**")
-            .allowedOrigins("http://localhost:4200")
+            .allowedOrigins("*")
             .allowedMethods("*");
   }
 
