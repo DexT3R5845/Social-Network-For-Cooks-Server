@@ -72,6 +72,25 @@ public AccountServiceImpl(AccountRepository accountRepository, CredentialsReposi
         accountRepository.create(account);
     }
 
+    @Override
+    public String updateProfile(AccountDTO accountDTO, String token) {
+        Account account = accountMapper.accountDTOtoAccounts(accountDTO);
+        String username = jwtTokenProvider.getUsername(token);
+        accountRepository.update(account, username);
+        return "Profile successfully changed";
+    }
+
+    @Override
+    public String changePassword(String oldPassword, String newPassword, String token) {
+        Credentials credentials = new Credentials();
+        String username = jwtTokenProvider.getUsername(token);
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, oldPassword));
+        credentials.setPassword(passwordEncoder.encode(newPassword));
+        credentialsRepository.update(credentials, username);
+        return "Password successfully changed";
+    }
+
+    @Override
     public Account getByEmail(String email) {
         return accountRepository.findByEmail(email);
     }

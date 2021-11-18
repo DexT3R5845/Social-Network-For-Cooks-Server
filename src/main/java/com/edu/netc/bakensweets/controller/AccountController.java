@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 
@@ -38,6 +39,22 @@ public class AccountController {
     public ResponseEntity<String> signUp(@ApiParam("Signup Account")@RequestBody AccountDTO accountDTO) {
 
         return ResponseEntity.ok(accountService.signUp(accountDTO));
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER') or hasRole('ROLE_MODERATOR')")
+    @PutMapping(value = "/user")
+    public String updateProfile(@RequestBody AccountDTO accountDTO, HttpServletRequest request) {
+        String token = tokenProvider.resolveToken(request);
+        return accountService.updateProfile(accountDTO, token);
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER') or hasRole('ROLE_MODERATOR')")
+    @PutMapping(value = "/user/changePassword")
+    public String changePassword(@RequestParam String oldPassword,
+                                 @RequestParam String newPassword,
+                                 HttpServletRequest request) {
+        String token = tokenProvider.resolveToken(request);
+        return accountService.changePassword(oldPassword, newPassword, token);
     }
 
     @GetMapping("/test")

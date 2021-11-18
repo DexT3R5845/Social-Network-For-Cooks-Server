@@ -18,6 +18,8 @@ public class CredentialsRepositoryImpl extends BaseJdbsRepository implements Cre
     private String sqlQueryFindById;
     @Value("${sql.credentials.insertJwtToken}")
     private String sqlQueryInsertJwtToken;
+    @Value("${sql.credentials.update}")
+    private String sqlQueryUpdate;
 
     public CredentialsRepositoryImpl(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
@@ -29,8 +31,8 @@ public class CredentialsRepositoryImpl extends BaseJdbsRepository implements Cre
     }
 
     @Override
-    public void update(Credentials credentials) {
-        return;
+    public void update(Credentials credentials, String email) {
+        jdbcTemplate.update(sqlQueryUpdate, credentials.getPassword(), email);
     }
     @Override
     public void deleteById(Long id) {
