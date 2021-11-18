@@ -1,13 +1,10 @@
 package com.edu.netc.bakensweets.model;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.Id;
 
-import java.util.Collection;
 import java.util.Date;
-import java.util.UUID;
 
 @Data
 @RequiredArgsConstructor

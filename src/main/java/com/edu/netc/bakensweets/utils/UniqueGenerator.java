@@ -11,4 +11,8 @@ public class UniqueGenerator {
         } while (val < 0);
         return val;
     }
+
+    public static String stringGenerateUniqueId() {
+        return UUID.randomUUID().toString();
+    }
 }
