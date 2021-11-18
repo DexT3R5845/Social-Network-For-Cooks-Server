@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -59,6 +60,12 @@ public class AuthController {
     public ValidateResetLink resetPasswordUpdate(@RequestBody AuthRequestResetUpdatePassword modelResetUpdatePassword){
         if(modelResetUpdatePassword.getPassword() != modelResetUpdatePassword.getConfirm_password()) throw new DataExpiredException("Reset password link expired");
         return passResetTokenService.validateResetToken(modelResetUpdatePassword.getToken());
+    }
+
+    @PreAuthorize("ROLE_USER")
+    @GetMapping("/test")
+    public String test(){
+        return null;
     }
 
 }

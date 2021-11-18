@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import io.jsonwebtoken.JwtException;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
@@ -19,35 +20,26 @@ import org.springframework.web.context.request.WebRequest;
 @RestControllerAdvice
 public class GlobalExceptionHandlerController {
 
-  @Bean
-  public ErrorAttributes errorAttributes() {
-    // Hide exception field in the return object
-    return new DefaultErrorAttributes() {
-      @Override
-      public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
-        return super.getErrorAttributes(webRequest, ErrorAttributeOptions.defaults().excluding(ErrorAttributeOptions.Include.EXCEPTION));
-      }
-    };
-  }
-
-  @ExceptionHandler(CustomException.class)
-  public void handleCustomException(HttpServletResponse res, CustomException ex) throws IOException {
-    res.sendError(ex.getHttpStatus().value(), ex.getMessage());
-  }
-
   @ExceptionHandler(AccessDeniedException.class)
   public ResponseEntity<Error> handleException(AccessDeniedException e) {
     Error error = new Error(HttpStatus.FORBIDDEN, "Access Denied");
     return new ResponseEntity<>(error, error.getHttpStatus());
   }
 
-  @ExceptionHandler(Exception.class)
-  public void handleException(HttpServletResponse res) throws IOException {
-    res.sendError(HttpStatus.BAD_REQUEST.value(), "Something went wrong");
-  }
-
   @ExceptionHandler(DataExpiredException.class)
   public ResponseEntity<Error> handleException(DataExpiredException e) {
+    Error error = new Error(HttpStatus.GONE, e.getLocalizedMessage());
+    return new ResponseEntity<>(error, error.getHttpStatus());
+  }
+
+  @ExceptionHandler(JwtException.class)
+  public ResponseEntity<Error> handleException(JwtException e) {
+    Error error = new Error(HttpStatus.GONE, e.getLocalizedMessage());
+    return new ResponseEntity<>(error, error.getHttpStatus());
+  }
+
+  @ExceptionHandler(CustomException.class)
+  public ResponseEntity<Error> handleException(CustomException e) {
     Error error = new Error(HttpStatus.GONE, e.getLocalizedMessage());
     return new ResponseEntity<>(error, error.getHttpStatus());
   }
