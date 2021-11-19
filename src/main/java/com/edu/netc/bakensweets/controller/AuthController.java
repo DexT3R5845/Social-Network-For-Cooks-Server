@@ -20,7 +20,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
+@Validated
 @RequestMapping("/api/auth")
 @RestController
 public class AuthController {
@@ -51,12 +55,12 @@ public class AuthController {
     }
 
     @PostMapping(value = "/password/resetlink")
-    public void resetLink(@RequestParam String email) {
+    public void resetLink(@RequestParam @Email(message = "Email format is invalid")@NotNull(message = "Email is mandatory") @NotBlank(message = "Email is mandatory") String email) {
         passResetTokenService.createToken(email);
     }
 
     @GetMapping(value = "/password/reset")
-    public ValidateResetLink reset(@RequestParam String token) {
+    public ValidateResetLink reset(@RequestParam @NotNull(message = "Token link is mandatory") @NotBlank(message = "Token link is mandatory") String token) {
         return passResetTokenService.validateResetToken(token);
     }
 
@@ -64,9 +68,7 @@ public class AuthController {
             @ApiResponse(code = 400, message = "Passwords do not match")
     })
     @PutMapping("/password/reset")
-    public ResponseEntity<String> resetPasswordUpdate(@RequestBody AuthRequestResetUpdatePassword modelResetUpdatePassword) {
-        if (!modelResetUpdatePassword.getPassword().equals(modelResetUpdatePassword.getConfirm_password()))
-            throw new CustomException(HttpStatus.BAD_REQUEST, "Passwords do not match");
+    public ResponseEntity<String> resetPasswordUpdate(@Valid @RequestBody AuthRequestResetUpdatePassword modelResetUpdatePassword) {
         passResetTokenService.changePassword(modelResetUpdatePassword);
         return ResponseEntity.ok("Password successful update");
     }

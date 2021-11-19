@@ -9,9 +9,16 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Path;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -45,6 +52,23 @@ public class GlobalExceptionHandlerController {
     );
     return new ApiResponse(errors, "VALIDATION_FAILED");
   }
+
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ApiResponse handleValidationExceptions(ConstraintViolationException ex) {
+
+    Map<String, String> errors = new HashMap<>();
+    if (!ex.getConstraintViolations().isEmpty()) {
+      for (ConstraintViolation constraintViolation : ex.getConstraintViolations()) {
+        String fieldName = null;
+        for (Path.Node node : constraintViolation.getPropertyPath()) {
+          fieldName = node.getName();
+        }
+        errors.put(fieldName, constraintViolation.getMessage());
+      }
+    }
+      return new ApiResponse(errors, "VALIDATION_FAILED");
+    }
 
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler(BadRequestParamException.class)
