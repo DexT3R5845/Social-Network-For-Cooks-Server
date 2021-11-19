@@ -1,6 +1,7 @@
 package com.edu.netc.bakensweets.controller;
 
 import com.edu.netc.bakensweets.dto.AccountDTO;
+import com.edu.netc.bakensweets.exception.BadRequestParamException;
 import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.model.payload.AuthRequestResetUpdatePassword;
 import com.edu.netc.bakensweets.model.payload.AuthResponse;
@@ -18,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 @RequestMapping("/api/auth")
 @RestController
@@ -44,8 +46,8 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Something went wrong"),
             @ApiResponse(code = 403, message = "Access denied")})
-    public ResponseEntity<String> signUp(@RequestBody AccountDTO accountDTO) {
-            return ResponseEntity.ok(accountService.signUp(accountDTO));
+    public ResponseEntity<String> signUp(@Valid @RequestBody AccountDTO accountDTO) {
+        return ResponseEntity.ok(accountService.signUp(accountDTO));
     }
 
     @PostMapping(value = "/password/resetlink")

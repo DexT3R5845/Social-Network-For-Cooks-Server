@@ -1,6 +1,7 @@
 package com.edu.netc.bakensweets.service;
 
 import com.edu.netc.bakensweets.dto.AccountDTO;
+import com.edu.netc.bakensweets.exception.BadRequestParamException;
 import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
 import com.edu.netc.bakensweets.mapperConfig.CredentialsMapper;
@@ -11,6 +12,7 @@ import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.security.JwtTokenProvider;
 import com.edu.netc.bakensweets.utils.Utils;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -51,8 +53,12 @@ public AccountServiceImpl(AccountRepository accountRepository, CredentialsReposi
 
     @Override
     public String signUp(AccountDTO accountDTO) {
-    createNewAccount(accountDTO, AccountRole.ROLE_USER);
-    return "Reg Success";
+        try {
+            createNewAccount(accountDTO, AccountRole.ROLE_USER);
+            return "Reg Success";
+        } catch (DuplicateKeyException ex) {
+            throw new BadRequestParamException("email", "Email already exists", "EMAIL_EXIST");
+        }
     }
 
     private void createNewAccount(AccountDTO accountDTO, AccountRole accountRole){
