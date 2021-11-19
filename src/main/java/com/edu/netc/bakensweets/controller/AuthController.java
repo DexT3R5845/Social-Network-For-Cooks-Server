@@ -1,8 +1,6 @@
 package com.edu.netc.bakensweets.controller;
 
 import com.edu.netc.bakensweets.dto.AccountDTO;
-import com.edu.netc.bakensweets.exception.BadRequestParamException;
-import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.model.payload.AuthRequestResetUpdatePassword;
 import com.edu.netc.bakensweets.model.payload.AuthResponse;
 import com.edu.netc.bakensweets.model.payload.ValidateResetLink;
@@ -11,10 +9,7 @@ import com.edu.netc.bakensweets.service.PasswordResetTokenService;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,8 +35,8 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Something went wrong"), //
             @ApiResponse(code = 401, message = "Invalid username/password supplied")})
-    public AuthResponse signIn(@ApiParam("Email") @RequestParam String email,
-                               @ApiParam("Password") @RequestParam String password, HttpServletResponse httpServletResponse) {
+    public AuthResponse signIn(@Email(message = "Email format is invalid") @NotNull(message = "Email is mandatory") @RequestParam String email,
+                               @NotNull(message = "Password is mandatory") @NotBlank(message = "Password is mandatory") @RequestParam String password) {
 
         return new AuthResponse(accountService.signIn(email, password));
     }
@@ -54,29 +49,28 @@ public class AuthController {
         return ResponseEntity.ok(accountService.signUp(accountDTO));
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Something went wrong")})
     @PostMapping(value = "/password/resetlink")
     public void resetLink(@RequestParam @Email(message = "Email format is invalid")@NotNull(message = "Email is mandatory") @NotBlank(message = "Email is mandatory") String email) {
         passResetTokenService.createToken(email);
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Something went wrong"),
+            @ApiResponse(code = 410, message = "The link was used"),
+            @ApiResponse(code = 404, message = "Token link not found")})
     @GetMapping(value = "/password/reset")
     public ValidateResetLink reset(@RequestParam @NotNull(message = "Token link is mandatory") @NotBlank(message = "Token link is mandatory") String token) {
         return passResetTokenService.validateResetToken(token);
     }
 
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Passwords do not match")
+            @ApiResponse(code = 400, message = "Something went wrong")
     })
     @PutMapping("/password/reset")
     public ResponseEntity<String> resetPasswordUpdate(@Valid @RequestBody AuthRequestResetUpdatePassword modelResetUpdatePassword) {
         passResetTokenService.changePassword(modelResetUpdatePassword);
         return ResponseEntity.ok("Password successful update");
     }
-
-    @PreAuthorize("ROLE_USER")
-    @GetMapping("/test")
-    public String test() {
-        return null;
-    }
-
 }
