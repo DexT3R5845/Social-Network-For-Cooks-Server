@@ -55,9 +55,10 @@ public AccountServiceImpl(AccountRepository accountRepository, CredentialsReposi
             if(sessionUserWrongAttemt != null && sessionUserWrongAttemt.getCountWrongAttempts() >= 5) {
                 if(recaptcha_token == null || recaptcha_token.isEmpty())
                     throw new CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Need captcha");
-                if(!captchaService.isValidCaptcha(recaptcha_token))
-                wrongAttemptLoginService.UpdateSession(sessionUserWrongAttemt);
-                throw new CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Recaptcha token is invalid");
+                if(!captchaService.isValidCaptcha(recaptcha_token)) {
+                    wrongAttemptLoginService.UpdateSession(sessionUserWrongAttemt);
+                    throw new CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Recaptcha token is invalid");
+                }
             }
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
             return jwtTokenProvider.createToken(username, accountRepository.findByEmail(username).getAccountRole());
