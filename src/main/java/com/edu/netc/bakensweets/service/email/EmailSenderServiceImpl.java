@@ -1,4 +1,4 @@
-package com.edu.netc.bakensweets.service;
+package com.edu.netc.bakensweets.service.email;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -27,5 +27,10 @@ public EmailSenderServiceImpl(JavaMailSender emailSender){
     @Override
     public void sendResetLinkPassword(String to, String token) {
         sendSimpleMessage(to, "Reset Link Password", String.format("Reset Link Password: %s%s", curentlyDomainClient, token));
+    }
+
+    @Override
+    public void sendNewModerLinkPassword(String to, String token) {
+        sendSimpleMessage(to, "Password creation", String.format("Password creation link: %s%s", curentlyDomainClient, token));
     }
 }
