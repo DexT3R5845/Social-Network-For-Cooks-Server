@@ -44,7 +44,7 @@ public class AuthController {
             @ApiResponse(code = 400, message = "Something went wrong"),
             @ApiResponse(code = 403, message = "Access denied")})
     public ResponseEntity<String> signUp(@RequestBody AccountDTO accountDTO) {
-            return ResponseEntity.ok(accountService.createUser(accountDTO));
+            return ResponseEntity.ok(accountService.signUp(accountDTO));
     }
 
     @PostMapping(value = "/password/resetlink")

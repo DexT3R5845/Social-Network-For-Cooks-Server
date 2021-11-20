@@ -10,8 +10,7 @@ public interface AccountService {
     UpdateAccountDTO updateProfile(UpdateAccountDTO accountDTO, String email);
     String changePassword(String oldPassword, String newPassword, String email);
     String signIn(String email, String password);
-    String createUser (AccountDTO accountDTO);
-    String createModerator (AccountDTO accountDTO);
+    String signUp (AccountDTO accountDTO);
     Account getByEmail(String email);
     AccountsPerPageDTO getAllBySearchAccounts(String search, int currentPage, int limit);
     AccountPersonalInfoDTO findById (long id);

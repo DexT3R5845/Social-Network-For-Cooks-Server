@@ -59,17 +59,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public String createUser (AccountDTO accountDTO) {
-    createByRole(accountDTO, AccountRole.ROLE_USER);
+    public String signUp (AccountDTO accountDTO) {
+        createNewAccount(accountDTO, AccountRole.ROLE_USER);
     return "Reg Success";
     }
 
-    @Override
-    public String createModerator (AccountDTO accountDTO) {
-        throw new UnsupportedOperationException();
-    }
-
-    private void createByRole (AccountDTO accountDTO, AccountRole accountRole){
+    private void createNewAccount (AccountDTO accountDTO, AccountRole accountRole){
         long uniqueId = Utils.generateUniqueId();
 
         Credentials credentials = credentialsMapper.accountDTOtoCredentials(accountDTO);

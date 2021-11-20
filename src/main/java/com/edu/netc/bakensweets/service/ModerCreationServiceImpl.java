@@ -3,6 +3,7 @@ package com.edu.netc.bakensweets.service;
 import com.edu.netc.bakensweets.dto.account.NewModeratorDTO;
 import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
+import com.edu.netc.bakensweets.mapperConfig.ModeratorMapper;
 import com.edu.netc.bakensweets.model.*;
 import com.edu.netc.bakensweets.model.payload.AuthRequestResetUpdatePassword;
 import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
@@ -28,18 +29,21 @@ public class ModerCreationServiceImpl implements ModerCreationService {
     AccountRepository accountRepository;
     UnconfirmedModerRepository moderRepository;
     AccountMapper accountMapper;
+    ModeratorMapper moderatorMapper;
     EmailSenderService emailSenderService;
     PasswordEncoder passwordEncoder;
 
     public ModerCreationServiceImpl (CredentialsRepository credentialsRepository,
                                      UnconfirmedModerRepository moderRepository,
                                      AccountMapper accountMapper,
+                                     ModeratorMapper moderatorMapper,
                                      EmailSenderService emailSenderService,
                                      PasswordEncoder passwordEncoder,
                                      AccountRepository accountRepository) {
         this.credentialsRepository = credentialsRepository;
         this.moderRepository = moderRepository;
         this.accountMapper = accountMapper;
+        this.moderatorMapper = moderatorMapper;
         this.emailSenderService = emailSenderService;
         this.passwordEncoder = passwordEncoder;
         this.accountRepository = accountRepository;
@@ -77,7 +81,7 @@ public class ModerCreationServiceImpl implements ModerCreationService {
             Long id = Utils.generateUniqueId();
 
             credentialsRepository.create(new Credentials(id, moderator.getEmail(), password));
-            Account account = accountMapper.unconfirmedModerToAccount(moderator);
+            Account account = moderatorMapper.unconfirmedModerToAccount(moderator);
             account.setAccountRole(AccountRole.ROLE_MODERATOR);
             account.setId(id);
             accountRepository.create(account);
@@ -91,7 +95,7 @@ public class ModerCreationServiceImpl implements ModerCreationService {
 
 
     private UnconfirmedModerator getModerWithToken (NewModeratorDTO moderatorDTO) {
-        UnconfirmedModerator moderator = accountMapper.newModerDTOtoUnconfirmedModer((moderatorDTO));
+        UnconfirmedModerator moderator = moderatorMapper.newModerDTOtoUnconfirmedModer((moderatorDTO));
         moderator.setModerToken(Utils.stringGenerateUniqueId());
         moderator.setExpireDate(LocalDateTime.now().plusHours(expiration));
         return moderator;

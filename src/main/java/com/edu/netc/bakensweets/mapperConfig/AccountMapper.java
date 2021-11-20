@@ -43,23 +43,6 @@ public interface AccountMapper {
     AccountPersonalInfoDTO accountToAccountPersonalInfoDto(Account account);
 
     @Mappings({
-            @Mapping(target = "email", source = "moderatorDTO.email"),
-            @Mapping(target="firstName", source="moderatorDTO.firstName"),
-            @Mapping(target="lastName", source="moderatorDTO.lastName"),
-            @Mapping(target = "birthDate", source = "moderatorDTO.birthDate"),
-            @Mapping(target = "gender", source = "moderatorDTO.gender")
-    })
-    UnconfirmedModerator newModerDTOtoUnconfirmedModer(NewModeratorDTO moderatorDTO);
-
-    @Mappings({
-            @Mapping(target="firstName", source="moder.firstName"),
-            @Mapping(target="lastName", source="moder.lastName"),
-            @Mapping(target = "birthDate", source = "moder.birthDate"),
-            @Mapping(target = "gender", source = "moder.gender")
-    })
-    Account unconfirmedModerToAccount (UnconfirmedModerator moder);
-
-    @Mappings({
             @Mapping(target="firstName", source="updateDTO.firstName"),
             @Mapping(target="lastName", source="updateDTO.lastName"),
             @Mapping(target = "birthDate", source = "updateDTO.birthDate"),
