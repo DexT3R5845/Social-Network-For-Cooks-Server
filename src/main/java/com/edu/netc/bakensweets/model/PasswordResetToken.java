@@ -5,7 +5,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
 @Data
 @RequiredArgsConstructor
@@ -14,7 +13,7 @@ public class PasswordResetToken {
     @NonNull
     private String resetToken;
     @NonNull
-    private LocalDateTime expiryDate;
+    private LocalDateTime expireDate;
     @NonNull
     private long accountId;
     @NonNull
