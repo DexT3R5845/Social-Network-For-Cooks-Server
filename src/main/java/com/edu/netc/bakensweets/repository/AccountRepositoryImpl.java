@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+
 @Repository
 public class AccountRepositoryImpl extends BaseJdbsRepository implements AccountRepository {
 
@@ -16,6 +17,8 @@ public class AccountRepositoryImpl extends BaseJdbsRepository implements Account
     private String sqlQueryGetById;
     @Value("${sql.account.findByEmail}")
     private String sqlQueryFindByEmail;
+    @Value("${sql.account.update}")
+    private String sqlQueryUpdate;
 
     public AccountRepositoryImpl(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
@@ -29,13 +32,13 @@ public class AccountRepositoryImpl extends BaseJdbsRepository implements Account
 
     @Override
     public void update(Account account) {
-        //jdbcTemplate.update(sqlQueryCreate, account.getId(), account.getFirstName(), account.getLastName(),
-                //account.getBirthDate(), account.getGender(), account.getImgUrl(), account.getAccountRole());
+        jdbcTemplate.update(sqlQueryUpdate, account.getFirstName(), account.getLastName(),
+                account.getBirthDate(), account.getGender().name(), account.getId());
     }
 
     @Override
     public void deleteById(Long id) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override

@@ -32,16 +32,20 @@ public class CredentialsRepositoryImpl extends BaseJdbsRepository implements Cre
 
     @Override
     public void update(Credentials credentials) {
-        jdbcTemplate.update(sqlQueryUpdate, credentials.getEmail(), credentials.getPassword(), credentials.getId());
+        jdbcTemplate.update(sqlQueryUpdate, credentials.getPassword(), credentials.getEmail());
     }
+
     @Override
     public void deleteById(Long id) {
         //jdbcTemplate.update(sqlQueryDelete, id);
+        throw new UnsupportedOperationException();
     }
+
     @Override
     public Credentials findById(Long id) {
         return jdbcTemplate.queryForObject(sqlQueryFindById, new BeanPropertyRowMapper<>(Credentials.class), id);
     }
+
     @Override
     public Credentials findByEmail(String email) {
         return jdbcTemplate.queryForObject(sqlQueryFindByEmail, new BeanPropertyRowMapper<>(Credentials.class), email);

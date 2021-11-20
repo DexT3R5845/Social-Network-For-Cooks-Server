@@ -1,5 +1,6 @@
 package com.edu.netc.bakensweets.repository.interfaces;
 
+import com.edu.netc.bakensweets.dto.AccountDTO;
 import com.edu.netc.bakensweets.model.Account;
 
 public interface AccountRepository extends BaseCrudRepository<Account, Long>{
