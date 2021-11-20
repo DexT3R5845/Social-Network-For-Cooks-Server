@@ -1,5 +1,6 @@
 package com.edu.netc.bakensweets.repository;
 
+import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.model.UnconfirmedModerator;
 import com.edu.netc.bakensweets.repository.interfaces.UnconfirmedModerRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +16,9 @@ public class UnconfirmedModerRepositoryImpl extends BaseJdbsRepository implement
 
     @Value("${sql.unconfirmedModer.getByToken}")
     private String sqlGetByToken;
+
+    @Value("${sql.unconfirmedModer.sqlSumOfUsagesEmail}")
+    private String sqlSumOfUsagesEmail;
 
     public UnconfirmedModerRepositoryImpl (JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
@@ -32,6 +36,11 @@ public class UnconfirmedModerRepositoryImpl extends BaseJdbsRepository implement
     public UnconfirmedModerator getByToken (String token) {
         return jdbcTemplate.queryForObject(sqlGetByToken,  new BeanPropertyRowMapper<>(UnconfirmedModerator.class), token);
 
+    }
+
+    @Override
+    public Integer findUsagesOfEmail(String email) {
+        return jdbcTemplate.queryForObject(sqlSumOfUsagesEmail, Integer.class, email, email);
     }
 
     @Override

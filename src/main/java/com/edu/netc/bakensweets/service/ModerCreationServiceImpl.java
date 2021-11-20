@@ -51,7 +51,7 @@ public class ModerCreationServiceImpl implements ModerCreationService {
 
     @Override
     public void createToken(NewModeratorDTO moderatorDTO) {
-        if (checkUniqueEmail(moderatorDTO.getEmail())) {
+        if (emailIsUnique(moderatorDTO.getEmail())) {
             UnconfirmedModerator moderator = getModerWithToken(moderatorDTO);
             moderRepository.create(moderator);
             emailSenderService.sendNewModerLinkPassword(moderator.getEmail(), moderator.getModerToken());
@@ -101,11 +101,7 @@ public class ModerCreationServiceImpl implements ModerCreationService {
         return moderator;
     }
 
-    private boolean checkUniqueEmail(String email) {
-        try {
-            Credentials credentials = credentialsRepository.findByEmail(email);
-            if (credentials != null) return false;
-        } catch (DataAccessException ex) {}
-        return true;
+    private boolean emailIsUnique(String email) {
+        return moderRepository.findUsagesOfEmail(email) == 0;
     }
 }
