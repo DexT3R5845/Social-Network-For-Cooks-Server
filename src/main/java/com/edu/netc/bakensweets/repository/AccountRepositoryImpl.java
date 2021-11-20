@@ -29,6 +29,9 @@ public class AccountRepositoryImpl extends BaseJdbsRepository implements Account
     @Value("${sql.account.updateAccData}")
     private String sqlUpdateAccData;
 
+    @Value("${sql.account.updateModerStatus}")
+    private String sqlUpdateModerStatus;
+
     public AccountRepositoryImpl(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
     }
@@ -43,6 +46,11 @@ public class AccountRepositoryImpl extends BaseJdbsRepository implements Account
     public void update(Account account) {
         jdbcTemplate.update(sqlUpdateAccData, account.getFirstName(), account.getLastName(),
                 account.getBirthDate(), account.getImgUrl(), account.getGender().name(), account.getId());
+    }
+
+    @Override
+    public void updateStatus(long id, AccountRole role) {
+        jdbcTemplate.update(sqlUpdateModerStatus, role.getAuthority(), id);
     }
 
     @Override

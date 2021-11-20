@@ -14,4 +14,5 @@ public interface AccountService {
     AccountPersonalInfoDTO findById (long id);
     AccountsPerPageDTO getAllBySearchModerators(String search, int currentPage, int limit);
     void updatePersonalInfo(AccountPersonalInfoDTO accountDto);
+    void updateModerStatus(long id, boolean status);
 }

@@ -52,6 +52,7 @@ public class ModerCreationServiceImpl implements ModerCreationService {
             moderRepository.create(moderator);
             emailSenderService.sendNewModerLinkPassword(moderator.getEmail(), moderator.getModerToken());
         }
+        else throw new CustomException(HttpStatus.CONFLICT, String.format("email in not unique"));
     }
 
     @Override
@@ -61,7 +62,7 @@ public class ModerCreationServiceImpl implements ModerCreationService {
             return moderator.getExpireDate().isAfter(LocalDateTime.now()) ? HttpStatus.OK : HttpStatus.GONE;
 
         } catch (DataAccessException ex) {
-            throw new CustomException(HttpStatus.NOT_FOUND, String.format("The link to change the password is invalid", token));
+            throw new CustomException(HttpStatus.NOT_FOUND, String.format("row is not found in db", token));
         }
     }
 

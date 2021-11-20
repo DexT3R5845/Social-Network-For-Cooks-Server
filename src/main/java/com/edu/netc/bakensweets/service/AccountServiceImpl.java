@@ -14,6 +14,7 @@ import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.security.JwtTokenProvider;
 import com.edu.netc.bakensweets.service.interfaces.AccountService;
 import com.edu.netc.bakensweets.utils.Utils;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -92,10 +93,14 @@ public AccountServiceImpl(AccountRepository accountRepository, CredentialsReposi
 
     @Override
     public AccountsPerPageDTO getAllBySearchModerators(String search, int currentPage, int limit) {
-        return getAllByRole(search, currentPage, limit, AccountRole.ROLE_MODERATOR);
+        try {
+            return getAllByRole(search, currentPage, limit, AccountRole.ROLE_MODERATOR);
+        } catch (DataAccessException ex) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "db/repository error");
+        }
     }
 
-    public AccountsPerPageDTO getAllByRole(String search, int currentPage, int limit, AccountRole role) {
+    public AccountsPerPageDTO getAllByRole(String search, int currentPage, int limit, AccountRole role) throws DataAccessException {
         int accCount = accountRepository.getAllSearchedCount(search, role);
         int pageCount = accCount % limit == 0 ? accCount / limit : accCount / limit + 1;
         Collection<Account> accounts = accountRepository.getAllSearchedWithLimit(search, limit, (currentPage - 1) * limit, role);
@@ -108,6 +113,7 @@ public AccountServiceImpl(AccountRepository accountRepository, CredentialsReposi
         Credentials credentials = credentialsRepository.findById(id);
         AccountPersonalInfoDTO responseAcc = accountMapper.accountToAccountPersonalInfoDto(account);
         responseAcc.setEmail(credentials.getEmail());
+        responseAcc.setStatus(!account.getAccountRole().equals(AccountRole.ROLE_BAN));
         return responseAcc;
     }
 
@@ -115,5 +121,15 @@ public AccountServiceImpl(AccountRepository accountRepository, CredentialsReposi
     public void updatePersonalInfo(AccountPersonalInfoDTO accountDto) {
         Account account = accountMapper.accountPersonalInfoDTOtoAccounts(accountDto);
         accountRepository.update(account);
+    }
+
+    @Override
+    public void updateModerStatus(long id, boolean status) {
+        try {
+            if (status) accountRepository.updateStatus(id, AccountRole.ROLE_BAN);
+            else accountRepository.updateStatus(id, AccountRole.ROLE_MODERATOR);
+        } catch (DataAccessException ex) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "There is no account with such id");
+        }
     }
 }

@@ -13,4 +13,5 @@ public class AccountPersonalInfoDTO {
     private Date birthDate;
     private String gender;
     private String imgUrl;
+    private boolean status;
 }

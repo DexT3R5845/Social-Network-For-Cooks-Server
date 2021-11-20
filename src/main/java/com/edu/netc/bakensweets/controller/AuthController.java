@@ -32,9 +32,7 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    //@ApiResponses(value = {
-            //@ApiResponse(code = 400, message = "Something went wrong"), //
-            //@ApiResponse(code = 401, message = "Invalid username/password supplied")})
+
     public AuthResponse signIn(@ApiParam("Email") @RequestParam String email,
                                @ApiParam("Password") @RequestParam String password, HttpServletResponse httpServletResponse) {
 
@@ -73,12 +71,19 @@ public class AuthController {
 
 
     @GetMapping(value = "/password/creation")
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "passwords do not match"),
+            @ApiResponse(code = 410, message = "invalid token"),
+            @ApiResponse(code = 404, message = "row is not found in db")})
     public HttpStatus passwordCreation(@RequestParam String token) {
         return moderCreationService.validateModerToken(token);
     }
 
 
     @PutMapping("/password/creation")
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "passwords do not match"),
+            @ApiResponse(code = 410, message = "invalid token")})
     public ResponseEntity<String> passwordCreationUpdate(@RequestBody AuthRequestResetUpdatePassword modelResetUpdatePassword) {
         if (!modelResetUpdatePassword.getPassword().equals(modelResetUpdatePassword.getConfirm_password()))
             throw new CustomException(HttpStatus.BAD_REQUEST, "Passwords do not match");
