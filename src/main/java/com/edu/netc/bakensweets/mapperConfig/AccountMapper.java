@@ -1,5 +1,6 @@
 package com.edu.netc.bakensweets.mapperConfig;
 
+import com.edu.netc.bakensweets.dto.account.UpdateAccountDTO;
 import com.edu.netc.bakensweets.dto.account.AccountDTO;
 import com.edu.netc.bakensweets.dto.account.AccountPersonalInfoDTO;
 import com.edu.netc.bakensweets.dto.account.NewModeratorDTO;
@@ -57,4 +58,13 @@ public interface AccountMapper {
             @Mapping(target = "gender", source = "moder.gender")
     })
     Account unconfirmedModerToAccount (UnconfirmedModerator moder);
+
+    @Mappings({
+            @Mapping(target="firstName", source="updateDTO.firstName"),
+            @Mapping(target="lastName", source="updateDTO.lastName"),
+            @Mapping(target = "birthDate", source = "updateDTO.birthDate"),
+            @Mapping(target = "gender", source = "updateDTO.gender"),
+            @Mapping(target = "imgUrl", source = "updateDTO.imgUrl")
+    })
+    Account updateAccountDTOtoAccount(UpdateAccountDTO updateDTO);
 }

@@ -7,16 +7,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-
 import java.util.Collection;
+
 
 @Repository
 public class AccountRepositoryImpl extends BaseJdbsRepository implements AccountRepository {
 
     @Value("${sql.account.create}")
     private String sqlQueryCreate;
+
     @Value("${sql.account.findById}")
     private String sqlQueryGetById;
+
     @Value("${sql.account.findByEmail}")
     private String sqlQueryFindByEmail;
 
@@ -55,7 +57,7 @@ public class AccountRepositoryImpl extends BaseJdbsRepository implements Account
 
     @Override
     public void deleteById(Long id) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override

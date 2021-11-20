@@ -1,11 +1,14 @@
 package com.edu.netc.bakensweets.service.interfaces;
 
+import com.edu.netc.bakensweets.dto.account.UpdateAccountDTO;
 import com.edu.netc.bakensweets.dto.account.AccountDTO;
 import com.edu.netc.bakensweets.dto.account.AccountPersonalInfoDTO;
 import com.edu.netc.bakensweets.dto.account.AccountsPerPageDTO;
 import com.edu.netc.bakensweets.model.Account;
 
 public interface AccountService {
+    UpdateAccountDTO updateProfile(UpdateAccountDTO accountDTO, String email);
+    String changePassword(String oldPassword, String newPassword, String email);
     String signIn(String email, String password);
     String createUser (AccountDTO accountDTO);
     String createModerator (AccountDTO accountDTO);

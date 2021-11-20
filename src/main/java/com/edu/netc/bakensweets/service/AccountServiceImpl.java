@@ -3,6 +3,7 @@ package com.edu.netc.bakensweets.service;
 import com.edu.netc.bakensweets.dto.account.AccountDTO;
 import com.edu.netc.bakensweets.dto.account.AccountPersonalInfoDTO;
 import com.edu.netc.bakensweets.dto.account.AccountsPerPageDTO;
+import com.edu.netc.bakensweets.dto.account.UpdateAccountDTO;
 import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
 import com.edu.netc.bakensweets.mapperConfig.CredentialsMapper;
@@ -24,27 +25,29 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 
+
 @Service
 public class AccountServiceImpl implements AccountService {
-private final AccountRepository accountRepository;
-private final CredentialsRepository credentialsRepository;
-private final JwtTokenProvider jwtTokenProvider;
-private final AuthenticationManager authenticationManager;
-private final PasswordEncoder passwordEncoder;
-private final CredentialsMapper credentialsMapper;
-private final AccountMapper accountMapper;
+    private final AccountRepository accountRepository;
+    private final CredentialsRepository credentialsRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
+    private final CredentialsMapper credentialsMapper;
+    private final AccountMapper accountMapper;
 
-public AccountServiceImpl(AccountRepository accountRepository, CredentialsRepository credentialsRepository,JwtTokenProvider jwtTokenProvider,
-                          AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, CredentialsMapper credentialsMapper,
-                          AccountMapper accountMapper){
-    this.accountRepository = accountRepository;
-    this.credentialsRepository = credentialsRepository;
-    this.jwtTokenProvider = jwtTokenProvider;
-    this.authenticationManager = authenticationManager;
-    this.passwordEncoder = passwordEncoder;
-    this.credentialsMapper = credentialsMapper;
-    this.accountMapper = accountMapper;
-}
+    public AccountServiceImpl(AccountRepository accountRepository, CredentialsRepository credentialsRepository, JwtTokenProvider jwtTokenProvider,
+                              AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, CredentialsMapper credentialsMapper,
+                              AccountMapper accountMapper) {
+        this.accountRepository = accountRepository;
+        this.credentialsRepository = credentialsRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.authenticationManager = authenticationManager;
+        this.passwordEncoder = passwordEncoder;
+        this.credentialsMapper = credentialsMapper;
+        this.accountMapper = accountMapper;
+    }
+
     @Override
     public String signIn(String username, String password) {
         try {
@@ -63,8 +66,7 @@ public AccountServiceImpl(AccountRepository accountRepository, CredentialsReposi
 
     @Override
     public String createModerator (AccountDTO accountDTO) {
-
-        return "moder successfully created";
+        throw new UnsupportedOperationException();
     }
 
     private void createByRole (AccountDTO accountDTO, AccountRole accountRole){
@@ -82,6 +84,44 @@ public AccountServiceImpl(AccountRepository accountRepository, CredentialsReposi
         accountRepository.create(account);
     }
 
+    @Override
+    public UpdateAccountDTO updateProfile(UpdateAccountDTO accountDTO, String email) {
+        Credentials credentials = credentialsRepository.findByEmail(email);
+        Account accountUpdate = accountMapper.updateAccountDTOtoAccount(accountDTO);
+        accountUpdate.setId(credentials.getId());
+        accountRepository.update(accountUpdate);
+        return accountDTO;
+    }
+
+    @Override
+    public String changePassword(String oldPassword, String newPassword, String email) {
+        Credentials credentials = credentialsRepository.findByEmail(email);
+        String requiredPassword = credentials.getPassword();
+        if (!passwordEncoder.matches(oldPassword, requiredPassword)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Entered invalid old password");
+        }
+        credentials.setPassword(passwordEncoder.encode(newPassword));
+        credentialsRepository.update(credentials);
+        return "Password successfully changed";
+    }
+
+    @Override
+    public void updatePersonalInfo(AccountPersonalInfoDTO accountDto) {
+        Account account = accountMapper.accountPersonalInfoDTOtoAccounts(accountDto);
+        accountRepository.update(account);
+    }
+
+    @Override
+    public void updateModerStatus(long id, boolean status) {
+        try {
+            if (status) accountRepository.updateStatus(id, AccountRole.ROLE_BAN);
+            else accountRepository.updateStatus(id, AccountRole.ROLE_MODERATOR);
+        } catch (DataAccessException ex) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "There is no account with such id");
+        }
+    }
+
+    @Override
     public Account getByEmail(String email) {
         return accountRepository.findByEmail(email);
     }
@@ -115,21 +155,5 @@ public AccountServiceImpl(AccountRepository accountRepository, CredentialsReposi
         responseAcc.setEmail(credentials.getEmail());
         responseAcc.setStatus(!account.getAccountRole().equals(AccountRole.ROLE_BAN));
         return responseAcc;
-    }
-
-    @Override
-    public void updatePersonalInfo(AccountPersonalInfoDTO accountDto) {
-        Account account = accountMapper.accountPersonalInfoDTOtoAccounts(accountDto);
-        accountRepository.update(account);
-    }
-
-    @Override
-    public void updateModerStatus(long id, boolean status) {
-        try {
-            if (status) accountRepository.updateStatus(id, AccountRole.ROLE_BAN);
-            else accountRepository.updateStatus(id, AccountRole.ROLE_MODERATOR);
-        } catch (DataAccessException ex) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "There is no account with such id");
-        }
     }
 }

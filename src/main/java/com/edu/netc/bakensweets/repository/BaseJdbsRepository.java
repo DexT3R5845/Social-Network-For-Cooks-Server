@@ -1,6 +1,5 @@
 package com.edu.netc.bakensweets.repository;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class BaseJdbsRepository {
