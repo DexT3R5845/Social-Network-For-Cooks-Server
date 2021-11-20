@@ -52,10 +52,12 @@ public AccountServiceImpl(AccountRepository accountRepository, CredentialsReposi
     public String signIn(String username, String password, String recaptcha_token, String ip) {
         WrongAttemptLogin sessionUserWrongAttemt = wrongAttemptLoginService.findSessionByIpAndTime(ip, LocalDateTime.now());
         try {
-            if(sessionUserWrongAttemt != null && sessionUserWrongAttemt.getCountWrongAttempts() >= 5
-            && recaptcha_token != null && !recaptcha_token.isEmpty() && !captchaService.isValidCaptcha(recaptcha_token)) {
+            if(sessionUserWrongAttemt != null && sessionUserWrongAttemt.getCountWrongAttempts() >= 5) {
+                if(recaptcha_token == null || recaptcha_token.isEmpty())
+                    throw new CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Need captcha");
+                if(!captchaService.isValidCaptcha(recaptcha_token))
                 wrongAttemptLoginService.UpdateSession(sessionUserWrongAttemt);
-                throw new CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Need captcha response");
+                throw new CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Recaptcha token is invalid");
             }
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
             return jwtTokenProvider.createToken(username, accountRepository.findByEmail(username).getAccountRole());

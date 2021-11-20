@@ -37,7 +37,7 @@ public class AuthController {
             @ApiResponse(code = 422, message = "Need enter captcha")})
     public AuthResponse signIn(@Email(message = "Email format is invalid") @NotNull(message = "Email is mandatory") @RequestParam String email,
                                @NotNull(message = "Password is mandatory") @NotBlank(message = "Password is mandatory") @RequestParam String password,
-                               @RequestParam("g-recaptcha-response") String captcha, HttpServletRequest httpServletRequest) {
+                               @RequestParam(value = "g-recaptcha-response", required = false) String captcha, HttpServletRequest httpServletRequest) {
         return new AuthResponse(accountService.signIn(email, password, captcha, httpServletRequest.getRemoteAddr()));
     }
 
