@@ -30,7 +30,12 @@ public class AccountRepositoryImpl extends BaseJdbsRepository implements Account
     }
 
     @Override
-    public void update(Account account, String email) {
+    public void update(Account item) {
+        //todo
+    }
+
+    @Override
+    public void updatePassword(Account account, String email) {
         jdbcTemplate.update(sqlQueryUpdate, account.getFirstName(), account.getLastName(),
                 account.getBirthDate(), account.getGender().name(), email);
     }

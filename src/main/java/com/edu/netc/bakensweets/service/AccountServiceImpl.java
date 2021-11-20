@@ -78,20 +78,25 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountDTO updateProfile(AccountDTO accountDTO, String username) {
         Account account = accountMapper.accountDTOtoAccounts(accountDTO);
-        accountRepository.update(account, username);
+        try{
+            accountRepository.updatePassword(account, username);
+        }catch (SQL){//todo
+            //throw new CustomException();
+            //404
+        }
         return accountDTO;
     }
 
     @Override
     public String changePassword(String oldPassword, String newPassword, String username) {
-        Credentials credentials = new Credentials();
-        String requiredPassword = credentialsRepository.findByEmail(username).getPassword();
+        Credentials credentials = credentialsRepository.findByEmail(username);
+        String requiredPassword = credentials.getPassword();
         String receivedPassword = passwordEncoder.encode(newPassword);
         if (passwordEncoder.matches(requiredPassword, newPassword)) {
             throw new CustomException("Entered invalid old password", HttpStatus.BAD_REQUEST);
         }
         credentials.setPassword(receivedPassword);
-        credentialsRepository.update(credentials, username);
+        credentialsRepository.update(credentials);
         return "Password successfully changed";
     }
 
