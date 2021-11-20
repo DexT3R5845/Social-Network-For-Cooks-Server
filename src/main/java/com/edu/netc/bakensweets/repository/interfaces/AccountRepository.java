@@ -5,5 +5,4 @@ import com.edu.netc.bakensweets.model.Account;
 
 public interface AccountRepository extends BaseCrudRepository<Account, Long>{
     Account findByEmail(String email);
-    void updatePassword(Account account, String email);
 }
