@@ -11,8 +11,7 @@ import com.edu.netc.bakensweets.repository.AccountRepositoryImpl;
 import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.security.JwtTokenProvider;
-import com.edu.netc.bakensweets.utils.UniqueGenerator;
-import org.mapstruct.Mapper;
+import com.edu.netc.bakensweets.utils.Utils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -52,7 +51,7 @@ public class AccountServiceImpl implements AccountService {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
             return jwtTokenProvider.createToken(username, accountRepository.findByEmail(username).getAccountRole());
         } catch (AuthenticationException e) {
-            throw new CustomException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new CustomException(HttpStatus.UNAUTHORIZED, "Invalid username/password supplied");
         }
     }
 
@@ -62,8 +61,8 @@ public class AccountServiceImpl implements AccountService {
         return "Reg Success";
     }
 
-    private void createNewAccount(AccountDTO accountDTO, AccountRole accountRole) {
-        long uniqueId = UniqueGenerator.generateUniqueId();
+    private void createNewAccount(AccountDTO accountDTO, AccountRole accountRole){
+        long uniqueId = Utils.generateUniqueId();
         Credentials credentials = credentialsMapper.accountDTOtoCredentials(accountDTO);
         Account account = accountMapper.accountDTOtoAccounts(accountDTO);
         credentials.setId(uniqueId);

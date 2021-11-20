@@ -34,7 +34,6 @@ public class CredentialsRepositoryImpl extends BaseJdbsRepository implements Cre
     public void update(Credentials credentials) {
         jdbcTemplate.update(sqlQueryUpdate, credentials.getPassword());
     }
-
     @Override
     public void deleteById(Long id) {
         //jdbcTemplate.update(sqlQueryDelete, id);
