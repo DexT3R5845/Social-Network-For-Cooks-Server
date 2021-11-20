@@ -4,7 +4,7 @@ import com.edu.netc.bakensweets.dto.AccountDTO;
 import com.edu.netc.bakensweets.model.Account;
 
 public interface AccountService {
-    String signIn(String email, String password);
+    String signIn(String email, String password, String recaptcha_token, String ip);
     String signUp(AccountDTO accountDTO);
     Account getByEmail(String email);
 }

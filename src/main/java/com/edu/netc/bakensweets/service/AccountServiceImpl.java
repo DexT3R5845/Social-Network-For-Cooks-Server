@@ -8,6 +8,7 @@ import com.edu.netc.bakensweets.mapperConfig.CredentialsMapper;
 import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.model.AccountRole;
 import com.edu.netc.bakensweets.model.Credentials;
+import com.edu.netc.bakensweets.model.WrongAttemptLogin;
 import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.security.JwtTokenProvider;
@@ -20,6 +21,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class AccountServiceImpl implements AccountService {
 private final AccountRepository accountRepository;
@@ -29,10 +32,12 @@ private final AuthenticationManager authenticationManager;
 private final PasswordEncoder passwordEncoder;
 private final CredentialsMapper credentialsMapper;
 private final AccountMapper accountMapper;
+private final WrongAttemptLoginService wrongAttemptLoginService;
+private final CaptchaService captchaService;
 
 public AccountServiceImpl(AccountRepository accountRepository, CredentialsRepository credentialsRepository,JwtTokenProvider jwtTokenProvider,
                           AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, CredentialsMapper credentialsMapper,
-                          AccountMapper accountMapper){
+                          AccountMapper accountMapper, WrongAttemptLoginService wrongAttemptLoginService, CaptchaService captchaService){
     this.accountRepository = accountRepository;
     this.credentialsRepository = credentialsRepository;
     this.jwtTokenProvider = jwtTokenProvider;
@@ -40,13 +45,25 @@ public AccountServiceImpl(AccountRepository accountRepository, CredentialsReposi
     this.passwordEncoder = passwordEncoder;
     this.credentialsMapper = credentialsMapper;
     this.accountMapper = accountMapper;
+    this.wrongAttemptLoginService = wrongAttemptLoginService;
+    this.captchaService = captchaService;
 }
     @Override
-    public String signIn(String username, String password) {
+    public String signIn(String username, String password, String recaptcha_token, String ip) {
+        WrongAttemptLogin sessionUserWrongAttemt = wrongAttemptLoginService.findSessionByIpAndTime(ip, LocalDateTime.now());
         try {
+            if(sessionUserWrongAttemt != null && sessionUserWrongAttemt.getCountWrongAttempts() >= 5
+            && recaptcha_token != null && !recaptcha_token.isEmpty() && !captchaService.isValidCaptcha(recaptcha_token)) {
+                wrongAttemptLoginService.UpdateSession(sessionUserWrongAttemt);
+                throw new CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Need captcha response");
+            }
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
             return jwtTokenProvider.createToken(username, accountRepository.findByEmail(username).getAccountRole());
         } catch (AuthenticationException e) {
+            if(sessionUserWrongAttemt == null)
+                wrongAttemptLoginService.CreateSession(new WrongAttemptLogin(ip, LocalDateTime.now(), 1));
+            else
+                wrongAttemptLoginService.UpdateSession(sessionUserWrongAttemt);
             throw new CustomException(HttpStatus.UNAUTHORIZED, "Invalid username/password supplied");
         }
     }

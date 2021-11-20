@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -31,13 +32,13 @@ public class AuthController {
 
     @PostMapping("/signin")
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Something went wrong"), //
-            @ApiResponse(code = 401, message = "Invalid username/password supplied")})
+            @ApiResponse(code = 400, message = "Something went wrong"),
+            @ApiResponse(code = 401, message = "Invalid username/password supplied"),
+            @ApiResponse(code = 422, message = "Need enter captcha")})
     public AuthResponse signIn(@Email(message = "Email format is invalid") @NotNull(message = "Email is mandatory") @RequestParam String email,
                                @NotNull(message = "Password is mandatory") @NotBlank(message = "Password is mandatory") @RequestParam String password,
-                               @RequestParam("g-recaptcha-response") String captcha) {
-            return new AuthResponse(accountService.signIn(email, password));
-
+                               @RequestParam("g-recaptcha-response") String captcha, HttpServletRequest httpServletRequest) {
+        return new AuthResponse(accountService.signIn(email, password, captcha, httpServletRequest.getRemoteAddr()));
     }
 
     @PostMapping(value = "/signup")
@@ -51,7 +52,7 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Something went wrong")})
     @PostMapping(value = "/password/resetlink")
-    public void resetLink(@RequestParam @Email(message = "Email format is invalid")@NotNull(message = "Email is mandatory") @NotBlank(message = "Email is mandatory") String email) {
+    public void resetLink(@RequestParam @Email(message = "Email format is invalid") @NotNull(message = "Email is mandatory") @NotBlank(message = "Email is mandatory") String email) {
         passResetTokenService.createToken(email);
     }
 
