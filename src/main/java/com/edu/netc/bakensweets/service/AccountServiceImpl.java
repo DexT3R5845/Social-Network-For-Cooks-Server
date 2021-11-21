@@ -4,18 +4,23 @@ import com.edu.netc.bakensweets.dto.AccountDTO;
 import com.edu.netc.bakensweets.dto.AccountPersonalInfoDTO;
 import com.edu.netc.bakensweets.dto.AccountsPerPageDTO;
 import com.edu.netc.bakensweets.dto.UpdateAccountDTO;
+import com.edu.netc.bakensweets.exception.BadRequestParamException;
 import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
 import com.edu.netc.bakensweets.mapperConfig.CredentialsMapper;
 import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.model.AccountRole;
 import com.edu.netc.bakensweets.model.Credentials;
+import com.edu.netc.bakensweets.model.WrongAttemptLogin;
 import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.security.JwtTokenProvider;
 import com.edu.netc.bakensweets.service.interfaces.AccountService;
+import com.edu.netc.bakensweets.service.interfaces.CaptchaService;
+import com.edu.netc.bakensweets.service.interfaces.WrongAttemptLoginService;
 import com.edu.netc.bakensweets.utils.Utils;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,6 +31,8 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 
 
+import java.time.LocalDateTime;
+
 @Service
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
@@ -35,10 +42,12 @@ public class AccountServiceImpl implements AccountService {
     private final PasswordEncoder passwordEncoder;
     private final CredentialsMapper credentialsMapper;
     private final AccountMapper accountMapper;
+    private final WrongAttemptLoginService wrongAttemptLoginService;
+    private final CaptchaService captchaService;
 
     public AccountServiceImpl(AccountRepository accountRepository, CredentialsRepository credentialsRepository, JwtTokenProvider jwtTokenProvider,
                               AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, CredentialsMapper credentialsMapper,
-                              AccountMapper accountMapper) {
+                              AccountMapper accountMapper, WrongAttemptLoginService wrongAttemptLoginService, CaptchaService captchaService) {
         this.accountRepository = accountRepository;
         this.credentialsRepository = credentialsRepository;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -46,25 +55,44 @@ public class AccountServiceImpl implements AccountService {
         this.passwordEncoder = passwordEncoder;
         this.credentialsMapper = credentialsMapper;
         this.accountMapper = accountMapper;
+        this.wrongAttemptLoginService = wrongAttemptLoginService;
+        this.captchaService = captchaService;
     }
 
     @Override
-    public String signIn(String username, String password) {
+    public String signIn(String username, String password, String recaptcha_token, String ip) {
+        WrongAttemptLogin sessionUserWrongAttemt = wrongAttemptLoginService.findSessionByIpAndTime(ip, LocalDateTime.now());
         try {
+            if(sessionUserWrongAttemt != null && sessionUserWrongAttemt.getCountWrongAttempts() >= 5) {
+                if(recaptcha_token == null || recaptcha_token.isEmpty())
+                    throw new CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Need captcha");
+                if(!captchaService.isValidCaptcha(recaptcha_token)) {
+                    wrongAttemptLoginService.UpdateSession(sessionUserWrongAttemt);
+                    throw new CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Recaptcha token is invalid");
+                }
+            }
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
             return jwtTokenProvider.createToken(username, accountRepository.findByEmail(username).getAccountRole());
         } catch (AuthenticationException e) {
+            if(sessionUserWrongAttemt == null)
+                wrongAttemptLoginService.CreateSession(new WrongAttemptLogin(ip, LocalDateTime.now(), 1));
+            else
+                wrongAttemptLoginService.UpdateSession(sessionUserWrongAttemt);
             throw new CustomException(HttpStatus.UNAUTHORIZED, "Invalid username/password supplied");
         }
     }
 
     @Override
-    public String signUp (AccountDTO accountDTO) {
-        createNewAccount(accountDTO, AccountRole.ROLE_USER);
-    return "Reg Success";
+    public String signUp(AccountDTO accountDTO) {
+        try {
+            createNewAccount(accountDTO, AccountRole.ROLE_USER);
+            return "Reg Success";
+        } catch (DuplicateKeyException ex) {
+            throw new BadRequestParamException("email", "Email already exists", "EMAIL_EXIST");
+        }
     }
 
-    private void createNewAccount (AccountDTO accountDTO, AccountRole accountRole){
+    private void createNewAccount(AccountDTO accountDTO, AccountRole accountRole){
         long uniqueId = Utils.generateUniqueId();
 
         Credentials credentials = credentialsMapper.accountDTOtoCredentials(accountDTO);

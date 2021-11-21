@@ -1,10 +1,10 @@
 package com.edu.netc.bakensweets.service;
 
+import com.edu.netc.bakensweets.exception.BadRequestParamException;
 import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.model.Credentials;
 import com.edu.netc.bakensweets.model.PasswordResetToken;
 import com.edu.netc.bakensweets.model.payload.AuthRequestResetUpdatePassword;
-import com.edu.netc.bakensweets.model.payload.ValidateResetLink;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.repository.interfaces.PasswordResetTokenRepository;
 import com.edu.netc.bakensweets.service.interfaces.PasswordResetTokenService;
@@ -44,18 +44,18 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
             emailSenderService.sendResetLinkPassword(email, passwordResetToken.getResetToken());
             passResetTokenRepository.create(passwordResetToken);
         } catch (EmptyResultDataAccessException ex){
-            throw new CustomException(HttpStatus.NOT_FOUND, String.format("Account %s not found.", email));
+            throw new BadRequestParamException("email", String.format("Account %s not found.", email), "ACCOUNT_NOT_FOUND");
         }
     }
 
     @Override
-    public ValidateResetLink validateResetToken(String token){
+    public boolean validateResetToken(String token){
         try {
             PasswordResetToken passwordResetToken = passResetTokenRepository.findByToken(token);
             boolean expiry = passwordResetToken.isActive() && passwordResetToken.getExpiryDate().isAfter(LocalDateTime.now());
             if(!expiry)
                 throw new CustomException(HttpStatus.GONE, "The link to change the password is invalid");
-            return new ValidateResetLink(expiry);
+            return true;
         } catch (EmptyResultDataAccessException ex){
             throw new CustomException(HttpStatus.NOT_FOUND, String.format("The link to change the password is invalid", token));
         }
@@ -69,7 +69,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
         PasswordResetToken passResetToken = passResetTokenRepository.findByToken(token);
         Credentials credentials = credentialsRepository.findById(passResetToken.getAccountId());
         if(passwordEncoder.matches(newPassword, credentials.getPassword()))
-            throw new CustomException(HttpStatus.BAD_REQUEST, "The new password is similar to the old one");
+            throw new BadRequestParamException("password", "The new password is similar to the old one", "PASSWORD_SIMILAR");
         credentials.setPassword(passwordEncoder.encode(newPassword));
         credentialsRepository.update(credentials);
         passResetToken.setActive(false);
