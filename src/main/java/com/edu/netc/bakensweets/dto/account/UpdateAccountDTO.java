@@ -1,4 +1,4 @@
-package com.edu.netc.bakensweets.dto;
+package com.edu.netc.bakensweets.dto.account;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,4 +14,5 @@ public class UpdateAccountDTO {
     private String lastName;
     private Date birthDate;
     private String gender;
+    private String imgUrl;
 }

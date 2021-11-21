@@ -4,8 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BakenSweetsApplication {
+public class BakeNSweetsApplication {
     public static void main (String[] args) {
-        SpringApplication.run(BakenSweetsApplication.class, args);
+        SpringApplication.run(BakeNSweetsApplication.class, args);
     }
 }
