@@ -1,6 +1,7 @@
 package com.edu.netc.bakensweets.service;
 
 import com.edu.netc.bakensweets.model.payload.CaptchaResponse;
+import com.edu.netc.bakensweets.service.interfaces.CaptchaService;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

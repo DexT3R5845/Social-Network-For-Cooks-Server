@@ -1,19 +1,16 @@
 package com.edu.netc.bakensweets.controller;
 
 import com.edu.netc.bakensweets.dto.AccountDTO;
+import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.model.payload.AuthRequestResetUpdatePassword;
 import com.edu.netc.bakensweets.model.payload.AuthResponse;
-import com.edu.netc.bakensweets.model.payload.ValidateResetLink;
 import com.edu.netc.bakensweets.service.interfaces.AccountService;
 import com.edu.netc.bakensweets.service.interfaces.ModerCreationService;
 import com.edu.netc.bakensweets.service.interfaces.PasswordResetTokenService;
-import io.swagger.annotations.ApiParam;
-import com.edu.netc.bakensweets.service.AccountService;
-import com.edu.netc.bakensweets.service.PasswordResetTokenService;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -98,17 +95,10 @@ public class AuthController {
             @ApiResponse(code = 400, message = "passwords do not match"),
             @ApiResponse(code = 410, message = "invalid token")})
     public ResponseEntity<String> passwordCreationUpdate(@RequestBody AuthRequestResetUpdatePassword modelResetUpdatePassword) {
-        if (!modelResetUpdatePassword.getPassword().equals(modelResetUpdatePassword.getConfirm_password()))
+        if (!modelResetUpdatePassword.getPassword().equals(modelResetUpdatePassword.getConfirmPassword()))
             throw new CustomException(HttpStatus.BAD_REQUEST, "Passwords do not match");
         moderCreationService.createAccount(modelResetUpdatePassword);
         return ResponseEntity.ok("Moder account confirmed and created");
-    }
-
-
-    @PreAuthorize("ROLE_USER")
-    @GetMapping("/test")
-    public String test() {
-        return null;
     }
 
 }

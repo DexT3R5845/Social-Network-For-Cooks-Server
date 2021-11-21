@@ -1,4 +1,4 @@
-package com.edu.netc.bakensweets.service;
+package com.edu.netc.bakensweets.service.interfaces;
 
 import com.edu.netc.bakensweets.model.WrongAttemptLogin;
 

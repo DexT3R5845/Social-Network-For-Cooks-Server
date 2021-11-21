@@ -2,6 +2,7 @@ package com.edu.netc.bakensweets.service;
 
 import com.edu.netc.bakensweets.model.WrongAttemptLogin;
 import com.edu.netc.bakensweets.repository.interfaces.WrongAttempLoginRepository;
+import com.edu.netc.bakensweets.service.interfaces.WrongAttemptLoginService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;

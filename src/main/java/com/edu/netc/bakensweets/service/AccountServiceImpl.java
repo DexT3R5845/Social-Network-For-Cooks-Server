@@ -16,6 +16,8 @@ import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.security.JwtTokenProvider;
 import com.edu.netc.bakensweets.service.interfaces.AccountService;
+import com.edu.netc.bakensweets.service.interfaces.CaptchaService;
+import com.edu.netc.bakensweets.service.interfaces.WrongAttemptLoginService;
 import com.edu.netc.bakensweets.utils.Utils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;

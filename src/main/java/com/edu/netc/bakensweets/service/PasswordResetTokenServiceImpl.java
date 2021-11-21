@@ -55,7 +55,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
             boolean expiry = passwordResetToken.isActive() && passwordResetToken.getExpiryDate().isAfter(LocalDateTime.now());
             if(!expiry)
                 throw new CustomException(HttpStatus.GONE, "The link to change the password is invalid");
-            return expiry;
+            return true;
         } catch (EmptyResultDataAccessException ex){
             throw new CustomException(HttpStatus.NOT_FOUND, String.format("The link to change the password is invalid", token));
         }
