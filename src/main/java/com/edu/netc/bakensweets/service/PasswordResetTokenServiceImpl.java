@@ -7,6 +7,8 @@ import com.edu.netc.bakensweets.model.payload.AuthRequestResetUpdatePassword;
 import com.edu.netc.bakensweets.model.payload.ValidateResetLink;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.repository.interfaces.PasswordResetTokenRepository;
+import com.edu.netc.bakensweets.service.interfaces.PasswordResetTokenService;
+import com.edu.netc.bakensweets.service.email.EmailSenderService;
 import com.edu.netc.bakensweets.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -17,7 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 @Service
-public class PasswordResetTokenServiceImpl implements PasswordResetTokenService{
+public class PasswordResetTokenServiceImpl implements PasswordResetTokenService {
     private final PasswordResetTokenRepository passResetTokenRepository;
     private final CredentialsRepository credentialsRepository;
     private final EmailSenderService emailSenderService;
@@ -46,14 +48,11 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService{
         }
     }
 
-    public void disableAllTokensByAccountId(Long accountId){
-            passResetTokenRepository.disableAllTokensByAccountId(accountId);
-    }
-
+    @Override
     public ValidateResetLink validateResetToken(String token){
         try {
             PasswordResetToken passwordResetToken = passResetTokenRepository.findByToken(token);
-            boolean expiry = passwordResetToken.isActive() && passwordResetToken.getExpiryDate().isAfter(LocalDateTime.now());
+            boolean expiry = passwordResetToken.isActive() && passwordResetToken.getExpireDate().isAfter(LocalDateTime.now());
             if(!expiry)
                 throw new CustomException(HttpStatus.GONE, "The link to change the password is invalid");
             return new ValidateResetLink(expiry);
@@ -62,6 +61,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService{
         }
     }
 
+    @Override
     public void changePassword(AuthRequestResetUpdatePassword authRequestResetUpdatePassword){
         String token = authRequestResetUpdatePassword.getToken();
         String newPassword = authRequestResetUpdatePassword.getPassword();
@@ -82,5 +82,9 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService{
                 LocalDateTime.now().plusMinutes(expiration),
                 userId,
                 true);
+    }
+
+    public void disableAllTokensByAccountId(Long accountId){
+        passResetTokenRepository.disableAllTokensByAccountId(accountId);
     }
 }

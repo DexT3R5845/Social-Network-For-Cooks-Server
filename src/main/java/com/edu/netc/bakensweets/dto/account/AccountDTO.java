@@ -1,4 +1,4 @@
-package com.edu.netc.bakensweets.dto;
+package com.edu.netc.bakensweets.dto.account;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
