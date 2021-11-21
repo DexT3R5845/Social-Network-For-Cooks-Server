@@ -1,5 +1,6 @@
 package com.edu.netc.bakensweets.exception;
 
+import com.edu.netc.bakensweets.model.payload.FailedAuthorization;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,12 @@ public class GlobalExceptionHandlerController {
   @ExceptionHandler(CustomException.class)
   public ResponseEntity<Error> handleException(CustomException e) {
     Error error = new Error(e.getHttpStatus(), e.getMessage());
+    return new ResponseEntity<>(error, error.getHttpStatus());
+  }
+
+  @ExceptionHandler(FailedAuthorizationException.class)
+  public ResponseEntity<FailedAuthorization> handleException(FailedAuthorizationException e) {
+    FailedAuthorization error = new FailedAuthorization(e.getHttpStatus(), e.getMessage(), e.isNeed_captcha());
     return new ResponseEntity<>(error, error.getHttpStatus());
   }
 

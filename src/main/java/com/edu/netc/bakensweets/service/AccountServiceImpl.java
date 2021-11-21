@@ -6,6 +6,7 @@ import com.edu.netc.bakensweets.dto.AccountsPerPageDTO;
 import com.edu.netc.bakensweets.dto.UpdateAccountDTO;
 import com.edu.netc.bakensweets.exception.BadRequestParamException;
 import com.edu.netc.bakensweets.exception.CustomException;
+import com.edu.netc.bakensweets.exception.FailedAuthorizationException;
 import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
 import com.edu.netc.bakensweets.mapperConfig.CredentialsMapper;
 import com.edu.netc.bakensweets.model.Account;
@@ -61,14 +62,16 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public String signIn(String username, String password, String recaptcha_token, String ip) {
+        boolean need_captcha = false;
         WrongAttemptLogin sessionUserWrongAttemt = wrongAttemptLoginService.findSessionByIpAndTime(ip, LocalDateTime.now());
         try {
             if(sessionUserWrongAttemt != null && sessionUserWrongAttemt.getCountWrongAttempts() >= 5) {
+                need_captcha = true;
                 if(recaptcha_token == null || recaptcha_token.isEmpty())
-                    throw new CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Need captcha");
+                    throw new FailedAuthorizationException(HttpStatus.UNPROCESSABLE_ENTITY, "Need captcha", need_captcha);
                 if(!captchaService.isValidCaptcha(recaptcha_token)) {
                     wrongAttemptLoginService.UpdateSession(sessionUserWrongAttemt);
-                    throw new CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Recaptcha token is invalid");
+                    throw new FailedAuthorizationException(HttpStatus.UNPROCESSABLE_ENTITY, "Recaptcha token is invalid", need_captcha);
                 }
             }
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
@@ -78,7 +81,7 @@ public class AccountServiceImpl implements AccountService {
                 wrongAttemptLoginService.CreateSession(new WrongAttemptLogin(ip, LocalDateTime.now(), 1));
             else
                 wrongAttemptLoginService.UpdateSession(sessionUserWrongAttemt);
-            throw new CustomException(HttpStatus.UNAUTHORIZED, "Invalid username/password supplied");
+            throw new FailedAuthorizationException(HttpStatus.UNAUTHORIZED, "Invalid username/password supplied", need_captcha);
         }
     }
 
