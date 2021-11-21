@@ -1,11 +1,9 @@
 package com.edu.netc.bakensweets.mapperConfig;
 
-import com.edu.netc.bakensweets.dto.account.UpdateAccountDTO;
-import com.edu.netc.bakensweets.dto.account.AccountDTO;
-import com.edu.netc.bakensweets.dto.account.AccountPersonalInfoDTO;
-import com.edu.netc.bakensweets.dto.account.NewModeratorDTO;
+import com.edu.netc.bakensweets.dto.UpdateAccountDTO;
+import com.edu.netc.bakensweets.dto.AccountDTO;
+import com.edu.netc.bakensweets.dto.AccountPersonalInfoDTO;
 import com.edu.netc.bakensweets.model.Account;
-import com.edu.netc.bakensweets.model.UnconfirmedModerator;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;

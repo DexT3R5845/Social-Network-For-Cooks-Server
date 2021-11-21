@@ -1,6 +1,6 @@
 package com.edu.netc.bakensweets.controller;
 
-import com.edu.netc.bakensweets.dto.account.AccountDTO;
+import com.edu.netc.bakensweets.dto.AccountDTO;
 import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.model.payload.AuthRequestResetUpdatePassword;
 import com.edu.netc.bakensweets.model.payload.AuthResponse;

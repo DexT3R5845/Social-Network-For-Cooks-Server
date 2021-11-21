@@ -1,4 +1,4 @@
-package com.edu.netc.bakensweets.dto.account;
+package com.edu.netc.bakensweets.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,11 +9,10 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccountDTO {
-    private String email;
-    private String password;
+public class UpdateAccountDTO {
     private String firstName;
     private String lastName;
     private Date birthDate;
     private String gender;
+    private String imgUrl;
 }

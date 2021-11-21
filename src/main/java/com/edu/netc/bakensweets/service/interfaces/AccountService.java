@@ -1,9 +1,9 @@
 package com.edu.netc.bakensweets.service.interfaces;
 
-import com.edu.netc.bakensweets.dto.account.UpdateAccountDTO;
-import com.edu.netc.bakensweets.dto.account.AccountDTO;
-import com.edu.netc.bakensweets.dto.account.AccountPersonalInfoDTO;
-import com.edu.netc.bakensweets.dto.account.AccountsPerPageDTO;
+import com.edu.netc.bakensweets.dto.UpdateAccountDTO;
+import com.edu.netc.bakensweets.dto.AccountDTO;
+import com.edu.netc.bakensweets.dto.AccountPersonalInfoDTO;
+import com.edu.netc.bakensweets.dto.AccountsPerPageDTO;
 import com.edu.netc.bakensweets.model.Account;
 
 public interface AccountService {

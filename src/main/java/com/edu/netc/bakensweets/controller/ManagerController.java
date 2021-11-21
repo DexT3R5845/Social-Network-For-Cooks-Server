@@ -1,8 +1,8 @@
 package com.edu.netc.bakensweets.controller;
 
-import com.edu.netc.bakensweets.dto.account.AccountPersonalInfoDTO;
-import com.edu.netc.bakensweets.dto.account.AccountsPerPageDTO;
-import com.edu.netc.bakensweets.dto.account.NewModeratorDTO;
+import com.edu.netc.bakensweets.dto.AccountPersonalInfoDTO;
+import com.edu.netc.bakensweets.dto.AccountsPerPageDTO;
+import com.edu.netc.bakensweets.dto.NewModeratorDTO;
 import com.edu.netc.bakensweets.service.interfaces.AccountService;
 import com.edu.netc.bakensweets.service.interfaces.ModerCreationService;
 import io.swagger.annotations.ApiResponse;

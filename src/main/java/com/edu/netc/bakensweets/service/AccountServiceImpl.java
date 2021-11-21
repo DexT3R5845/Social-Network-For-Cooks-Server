@@ -1,9 +1,9 @@
 package com.edu.netc.bakensweets.service;
 
-import com.edu.netc.bakensweets.dto.account.AccountDTO;
-import com.edu.netc.bakensweets.dto.account.AccountPersonalInfoDTO;
-import com.edu.netc.bakensweets.dto.account.AccountsPerPageDTO;
-import com.edu.netc.bakensweets.dto.account.UpdateAccountDTO;
+import com.edu.netc.bakensweets.dto.AccountDTO;
+import com.edu.netc.bakensweets.dto.AccountPersonalInfoDTO;
+import com.edu.netc.bakensweets.dto.AccountsPerPageDTO;
+import com.edu.netc.bakensweets.dto.UpdateAccountDTO;
 import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
 import com.edu.netc.bakensweets.mapperConfig.CredentialsMapper;

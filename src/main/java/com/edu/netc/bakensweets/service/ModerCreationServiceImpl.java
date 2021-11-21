@@ -1,6 +1,6 @@
 package com.edu.netc.bakensweets.service;
 
-import com.edu.netc.bakensweets.dto.account.NewModeratorDTO;
+import com.edu.netc.bakensweets.dto.NewModeratorDTO;
 import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
 import com.edu.netc.bakensweets.mapperConfig.ModeratorMapper;
@@ -9,7 +9,7 @@ import com.edu.netc.bakensweets.model.payload.AuthRequestResetUpdatePassword;
 import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.repository.interfaces.UnconfirmedModerRepository;
-import com.edu.netc.bakensweets.service.email.EmailSenderService;
+import com.edu.netc.bakensweets.service.interfaces.EmailSenderService;
 import com.edu.netc.bakensweets.service.interfaces.ModerCreationService;
 import com.edu.netc.bakensweets.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;

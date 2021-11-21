@@ -8,7 +8,7 @@ import com.edu.netc.bakensweets.model.payload.ValidateResetLink;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.repository.interfaces.PasswordResetTokenRepository;
 import com.edu.netc.bakensweets.service.interfaces.PasswordResetTokenService;
-import com.edu.netc.bakensweets.service.email.EmailSenderService;
+import com.edu.netc.bakensweets.service.interfaces.EmailSenderService;
 import com.edu.netc.bakensweets.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -52,7 +52,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
     public ValidateResetLink validateResetToken(String token){
         try {
             PasswordResetToken passwordResetToken = passResetTokenRepository.findByToken(token);
-            boolean expiry = passwordResetToken.isActive() && passwordResetToken.getExpireDate().isAfter(LocalDateTime.now());
+            boolean expiry = passwordResetToken.isActive() && passwordResetToken.getExpiryDate().isAfter(LocalDateTime.now());
             if(!expiry)
                 throw new CustomException(HttpStatus.GONE, "The link to change the password is invalid");
             return new ValidateResetLink(expiry);

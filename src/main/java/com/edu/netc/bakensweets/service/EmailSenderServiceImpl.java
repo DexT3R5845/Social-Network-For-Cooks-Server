@@ -1,5 +1,6 @@
-package com.edu.netc.bakensweets.service.email;
+package com.edu.netc.bakensweets.service;
 
+import com.edu.netc.bakensweets.service.interfaces.EmailSenderService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;

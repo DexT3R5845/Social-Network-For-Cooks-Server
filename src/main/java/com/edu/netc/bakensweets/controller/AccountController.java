@@ -1,6 +1,6 @@
 package com.edu.netc.bakensweets.controller;
 
-import com.edu.netc.bakensweets.dto.account.UpdateAccountDTO;
+import com.edu.netc.bakensweets.dto.UpdateAccountDTO;
 import com.edu.netc.bakensweets.service.interfaces.AccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

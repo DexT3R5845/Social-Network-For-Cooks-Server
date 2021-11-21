@@ -13,7 +13,7 @@ public class PasswordResetToken {
     @NonNull
     private String resetToken;
     @NonNull
-    private LocalDateTime expireDate;
+    private LocalDateTime expiryDate;
     @NonNull
     private long accountId;
     @NonNull
