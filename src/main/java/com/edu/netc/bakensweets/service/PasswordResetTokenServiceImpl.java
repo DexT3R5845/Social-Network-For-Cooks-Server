@@ -5,7 +5,6 @@ import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.model.Credentials;
 import com.edu.netc.bakensweets.model.PasswordResetToken;
 import com.edu.netc.bakensweets.model.payload.AuthRequestResetUpdatePassword;
-import com.edu.netc.bakensweets.model.payload.ValidateResetLink;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.repository.interfaces.PasswordResetTokenRepository;
 import com.edu.netc.bakensweets.utils.Utils;
@@ -51,13 +50,13 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService{
             passResetTokenRepository.disableAllTokensByAccountId(accountId);
     }
 
-    public ValidateResetLink validateResetToken(String token){
+    public boolean validateResetToken(String token){
         try {
             PasswordResetToken passwordResetToken = passResetTokenRepository.findByToken(token);
             boolean expiry = passwordResetToken.isActive() && passwordResetToken.getExpiryDate().isAfter(LocalDateTime.now());
             if(!expiry)
                 throw new CustomException(HttpStatus.GONE, "The link to change the password is invalid");
-            return new ValidateResetLink(expiry);
+            return expiry;
         } catch (EmptyResultDataAccessException ex){
             throw new CustomException(HttpStatus.NOT_FOUND, String.format("The link to change the password is invalid", token));
         }

@@ -3,7 +3,6 @@ package com.edu.netc.bakensweets.controller;
 import com.edu.netc.bakensweets.dto.AccountDTO;
 import com.edu.netc.bakensweets.model.payload.AuthRequestResetUpdatePassword;
 import com.edu.netc.bakensweets.model.payload.AuthResponse;
-import com.edu.netc.bakensweets.model.payload.ValidateResetLink;
 import com.edu.netc.bakensweets.service.AccountService;
 import com.edu.netc.bakensweets.service.PasswordResetTokenService;
 import io.swagger.annotations.ApiResponse;
@@ -61,7 +60,7 @@ public class AuthController {
             @ApiResponse(code = 410, message = "The link was used"),
             @ApiResponse(code = 404, message = "Token link not found")})
     @GetMapping(value = "/password/reset")
-    public ValidateResetLink reset(@RequestParam @NotNull(message = "Token link is mandatory") @NotBlank(message = "Token link is mandatory") String token) {
+    public boolean reset(@RequestParam @NotNull(message = "Token link is mandatory") @NotBlank(message = "Token link is mandatory") String token) {
         return passResetTokenService.validateResetToken(token);
     }
 
