@@ -1,4 +1,4 @@
-package com.edu.netc.bakensweets.service.interfaces;
+package com.edu.netc.bakensweets.service;
 
 import com.edu.netc.bakensweets.model.PasswordResetToken;
 import com.edu.netc.bakensweets.model.payload.AuthRequestResetUpdatePassword;
