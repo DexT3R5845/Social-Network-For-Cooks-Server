@@ -175,7 +175,7 @@ public class AccountServiceImpl implements AccountService {
         Credentials credentials = credentialsRepository.findById(id);
 
         if (account == null || credentials == null)
-            throw new CustomException(HttpStatus.NOT_FOUND, String.format("no accounts found with such id"));
+            throw new CustomException(HttpStatus.NOT_FOUND, "no accounts found with such id");
 
         AccountPersonalInfoDTO responseAcc = accountMapper.accountToAccountPersonalInfoDto(account);
         responseAcc.setEmail(credentials.getEmail());

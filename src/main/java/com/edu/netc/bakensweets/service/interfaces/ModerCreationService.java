@@ -5,7 +5,7 @@ import com.edu.netc.bakensweets.model.payload.AuthRequestResetUpdatePassword;
 import org.springframework.http.HttpStatus;
 
 public interface ModerCreationService {
-    void createToken(NewModeratorDTO moderatorDTO);
+    String createToken(NewModeratorDTO moderatorDTO);
     HttpStatus validateModerToken(String token);
     HttpStatus createAccount(AuthRequestResetUpdatePassword authRequestResetUpdatePassword);
 }

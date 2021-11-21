@@ -6,9 +6,14 @@ import com.edu.netc.bakensweets.dto.NewModeratorDTO;
 import com.edu.netc.bakensweets.service.interfaces.AccountService;
 import com.edu.netc.bakensweets.service.interfaces.ModerCreationService;
 import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @Slf4j
 @RestController
@@ -25,9 +30,13 @@ public class ManagerController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/new")
-    @ApiResponse(code = 409, message = "email is not unique")
-    public void addModerator(@RequestBody NewModeratorDTO moderatorDTO) {
-        moderCreationService.createToken(moderatorDTO);
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "the link has been sent to your email"),
+        @ApiResponse(code = 400, message = "Something went wrong"),
+        @ApiResponse(code = 401, message = "Invalid email supplied"),
+        @ApiResponse(code = 409, message = "email is not unique")})
+    public ResponseEntity<String> addModerator(@Valid @RequestBody NewModeratorDTO moderatorDTO) {
+        return ResponseEntity.ok(moderCreationService.createToken(moderatorDTO));
     }
 
 

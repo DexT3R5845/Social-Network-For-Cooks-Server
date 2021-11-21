@@ -49,12 +49,13 @@ public class ModerCreationServiceImpl implements ModerCreationService {
     }
 
     @Override
-    public void createToken(NewModeratorDTO moderatorDTO) {
+    public String createToken(NewModeratorDTO moderatorDTO) {
         if (emailIsUnique(moderatorDTO.getEmail()) && hasNoActualExpiryDate(moderatorDTO.getEmail())) {
             UnconfirmedModerator moderator = getModerWithToken(moderatorDTO);
             moderRepository.create(moderator);
             emailSenderService.sendNewModerLinkPassword(moderator.getEmail(), moderator.getModerToken());
         }
+        return "the link has been sent to your email";
     }
 
     @Override
@@ -63,7 +64,7 @@ public class ModerCreationServiceImpl implements ModerCreationService {
         if (moderator != null) {
             return moderator.getExpiryDate().isAfter(LocalDateTime.now()) ? HttpStatus.OK : HttpStatus.GONE;
         }
-        throw new CustomException(HttpStatus.NOT_FOUND, String.format("row is not found in db", token));
+        throw new CustomException(HttpStatus.NOT_FOUND, "row is not found in db");
     }
 
     @Override
@@ -72,7 +73,7 @@ public class ModerCreationServiceImpl implements ModerCreationService {
             return HttpStatus.GONE;
         }
         UnconfirmedModerator moderator = moderRepository.getByToken(authRequestResetUpdatePassword.getToken());
-        if (moderator == null) throw new CustomException(HttpStatus.NOT_FOUND, String.format("Moderator is not found"));
+        if (moderator == null) throw new CustomException(HttpStatus.NOT_FOUND, "Moderator is not found");
 
         String password = passwordEncoder.encode(authRequestResetUpdatePassword.getPassword());
         Long id = Utils.generateUniqueId();
@@ -96,13 +97,13 @@ public class ModerCreationServiceImpl implements ModerCreationService {
 
     private boolean emailIsUnique(String email) {
         if (credentialsRepository.getCountEmailUsages(email) == 0) return true;
-        else throw new CustomException(HttpStatus.CONFLICT, String.format("email in not unique"));
+        else throw new CustomException(HttpStatus.CONFLICT, "email in not unique");
     }
 
     private boolean hasNoActualExpiryDate (String email) {
         LocalDateTime expiryDate = moderRepository.findLatestExpiryDate(email);
         if ( expiryDate != null && expiryDate.isAfter(LocalDateTime.now())) {
-            throw new CustomException(HttpStatus.CONFLICT, String.format("this email has actual link that is valid until " + expiryDate));
+            throw new CustomException(HttpStatus.FORBIDDEN, "this email has actual link that is valid until " + expiryDate);
         }
         return true;
     }
