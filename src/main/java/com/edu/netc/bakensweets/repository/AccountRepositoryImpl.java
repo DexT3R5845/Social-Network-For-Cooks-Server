@@ -1,21 +1,38 @@
 package com.edu.netc.bakensweets.repository;
 
 import com.edu.netc.bakensweets.model.Account;
+import com.edu.netc.bakensweets.model.AccountRole;
 import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import java.util.Collection;
+
 
 @Repository
 public class AccountRepositoryImpl extends BaseJdbsRepository implements AccountRepository {
 
     @Value("${sql.account.create}")
     private String sqlQueryCreate;
+
     @Value("${sql.account.findById}")
     private String sqlQueryGetById;
+
     @Value("${sql.account.findByEmail}")
     private String sqlQueryFindByEmail;
+
+    @Value("${sql.account.countAllBySearch}")
+    private String sqlCountFindAll;
+
+    @Value("${sql.account.findAllBySearch}")
+    private String sqlFindAllBySearch;
+
+    @Value("${sql.account.updateAccData}")
+    private String sqlUpdateAccData;
+
+    @Value("${sql.account.updateModerStatus}")
+    private String sqlUpdateModerStatus;
 
     public AccountRepositoryImpl(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
@@ -29,13 +46,18 @@ public class AccountRepositoryImpl extends BaseJdbsRepository implements Account
 
     @Override
     public void update(Account account) {
-        //jdbcTemplate.update(sqlQueryCreate, account.getId(), account.getFirstName(), account.getLastName(),
-                //account.getBirthDate(), account.getGender(), account.getImgUrl(), account.getAccountRole());
+        jdbcTemplate.update(sqlUpdateAccData, account.getFirstName(), account.getLastName(),
+                account.getBirthDate(), account.getImgUrl(), account.getGender().name(), account.getId());
+    }
+
+    @Override
+    public void updateStatus(long id, AccountRole role) {
+        jdbcTemplate.update(sqlUpdateModerStatus, role.getAuthority(), id);
     }
 
     @Override
     public void deleteById(Long id) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -46,5 +68,22 @@ public class AccountRepositoryImpl extends BaseJdbsRepository implements Account
     @Override
     public Account findByEmail(String email) {
         return jdbcTemplate.queryForObject(sqlQueryFindByEmail, new BeanPropertyRowMapper<>(Account.class), email);
+    }
+
+    @Override
+    public int getAllSearchedCount (String search, AccountRole role) {
+        Integer count = jdbcTemplate.queryForObject(
+                sqlCountFindAll, Integer.class, role.getAuthority(), search, search
+        );
+        return count == null ? 0 : count;
+    }
+
+    @Override
+    public Collection<Account> getAllSearchedWithLimit (String search, int limit, int offset, AccountRole role) {
+        return jdbcTemplate.query(
+                sqlFindAllBySearch,
+                new BeanPropertyRowMapper<>(Account.class),
+                role.getAuthority(), search, search, limit, offset
+        );
     }
 }
