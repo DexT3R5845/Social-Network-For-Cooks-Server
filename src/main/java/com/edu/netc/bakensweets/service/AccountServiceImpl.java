@@ -156,11 +156,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountsPerPageDTO getAllBySearchModerators(String search, int currentPage, int limit) {
-        try {
-            return getAllByRole(search, currentPage, limit, AccountRole.ROLE_MODERATOR);
-        } catch (DataAccessException ex) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "db/repository error");
-        }
+        return getAllByRole(search, currentPage, limit, AccountRole.ROLE_MODERATOR);
     }
 
     public AccountsPerPageDTO getAllByRole(String search, int currentPage, int limit, AccountRole role) throws DataAccessException {
@@ -174,6 +170,10 @@ public class AccountServiceImpl implements AccountService {
     public AccountPersonalInfoDTO findById (long id) {
         Account account = accountRepository.findById(id);
         Credentials credentials = credentialsRepository.findById(id);
+
+        if (account == null || credentials == null)
+            throw new CustomException(HttpStatus.NOT_FOUND, String.format("no accounts found with such id"));
+
         AccountPersonalInfoDTO responseAcc = accountMapper.accountToAccountPersonalInfoDto(account);
         responseAcc.setEmail(credentials.getEmail());
         responseAcc.setStatus(!account.getAccountRole().equals(AccountRole.ROLE_BAN));

@@ -13,7 +13,6 @@ import com.edu.netc.bakensweets.service.interfaces.EmailSenderService;
 import com.edu.netc.bakensweets.service.interfaces.ModerCreationService;
 import com.edu.netc.bakensweets.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -51,57 +50,60 @@ public class ModerCreationServiceImpl implements ModerCreationService {
 
     @Override
     public void createToken(NewModeratorDTO moderatorDTO) {
-        if (emailIsUnique(moderatorDTO.getEmail())) {
+        if (emailIsUnique(moderatorDTO.getEmail()) && hasNoActualExpiryDate(moderatorDTO.getEmail())) {
             UnconfirmedModerator moderator = getModerWithToken(moderatorDTO);
             moderRepository.create(moderator);
             emailSenderService.sendNewModerLinkPassword(moderator.getEmail(), moderator.getModerToken());
         }
-        else throw new CustomException(HttpStatus.CONFLICT, String.format("email in not unique"));
     }
 
     @Override
     public HttpStatus validateModerToken(String token){
-        try {
-            UnconfirmedModerator moderator = moderRepository.getByToken(token);
-            return moderator.getExpireDate().isAfter(LocalDateTime.now()) ? HttpStatus.OK : HttpStatus.GONE;
-
-        } catch (DataAccessException ex) {
-            throw new CustomException(HttpStatus.NOT_FOUND, String.format("row is not found in db", token));
+        UnconfirmedModerator moderator = moderRepository.getByToken(token);
+        if (moderator != null) {
+            return moderator.getExpiryDate().isAfter(LocalDateTime.now()) ? HttpStatus.OK : HttpStatus.GONE;
         }
+        throw new CustomException(HttpStatus.NOT_FOUND, String.format("row is not found in db", token));
     }
 
     @Override
     public HttpStatus createAccount(AuthRequestResetUpdatePassword authRequestResetUpdatePassword) {
-        try {
-            if (!validateModerToken(authRequestResetUpdatePassword.getToken()).is2xxSuccessful()) {
-                return HttpStatus.GONE;
-            }
-            UnconfirmedModerator moderator = moderRepository.getByToken(authRequestResetUpdatePassword.getToken());
-            String password = passwordEncoder.encode(authRequestResetUpdatePassword.getPassword());
-            Long id = Utils.generateUniqueId();
-
-            credentialsRepository.create(new Credentials(id, moderator.getEmail(), password));
-            Account account = moderatorMapper.unconfirmedModerToAccount(moderator);
-            account.setAccountRole(AccountRole.ROLE_MODERATOR);
-            account.setId(id);
-            accountRepository.create(account);
-
-            return HttpStatus.OK;
-
-        } catch (DataAccessException ex) {
-            throw new CustomException(HttpStatus.NOT_FOUND, String.format("Got some troubles"));
+        if (!validateModerToken(authRequestResetUpdatePassword.getToken()).is2xxSuccessful()) {
+            return HttpStatus.GONE;
         }
+        UnconfirmedModerator moderator = moderRepository.getByToken(authRequestResetUpdatePassword.getToken());
+        if (moderator == null) throw new CustomException(HttpStatus.NOT_FOUND, String.format("Moderator is not found"));
+
+        String password = passwordEncoder.encode(authRequestResetUpdatePassword.getPassword());
+        Long id = Utils.generateUniqueId();
+
+        credentialsRepository.create(new Credentials(id, moderator.getEmail(), password));
+        Account account = moderatorMapper.unconfirmedModerToAccount(moderator);
+        account.setAccountRole(AccountRole.ROLE_MODERATOR);
+        account.setId(id);
+        accountRepository.create(account);
+
+        return HttpStatus.OK;
     }
 
 
     private UnconfirmedModerator getModerWithToken (NewModeratorDTO moderatorDTO) {
         UnconfirmedModerator moderator = moderatorMapper.newModerDTOtoUnconfirmedModer((moderatorDTO));
         moderator.setModerToken(Utils.stringGenerateUniqueId());
-        moderator.setExpireDate(LocalDateTime.now().plusHours(expiration));
+        moderator.setExpiryDate(LocalDateTime.now().plusHours(expiration));
         return moderator;
     }
 
     private boolean emailIsUnique(String email) {
-        return moderRepository.findUsagesOfEmail(email) == 0;
+        if (credentialsRepository.getCountEmailUsages(email) == 0) return true;
+        else throw new CustomException(HttpStatus.CONFLICT, String.format("email in not unique"));
+    }
+
+    private boolean hasNoActualExpiryDate (String email) {
+        LocalDateTime expiryDate = moderRepository.findLatestExpiryDate(email);
+        if ( expiryDate != null && expiryDate.isAfter(LocalDateTime.now())) {
+            throw new CustomException(HttpStatus.CONFLICT, String.format("this email has actual link that is valid until " + expiryDate));
+        }
+        return true;
     }
 }

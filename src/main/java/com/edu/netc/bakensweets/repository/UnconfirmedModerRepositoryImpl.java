@@ -1,12 +1,13 @@
 package com.edu.netc.bakensweets.repository;
 
-import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.model.UnconfirmedModerator;
 import com.edu.netc.bakensweets.repository.interfaces.UnconfirmedModerRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
 
 @Repository
 public class UnconfirmedModerRepositoryImpl extends BaseJdbsRepository implements UnconfirmedModerRepository {
@@ -17,8 +18,8 @@ public class UnconfirmedModerRepositoryImpl extends BaseJdbsRepository implement
     @Value("${sql.unconfirmedModer.getByToken}")
     private String sqlGetByToken;
 
-    @Value("${sql.unconfirmedModer.sqlSumOfUsagesEmail}")
-    private String sqlSumOfUsagesEmail;
+    @Value("${sql.unconfirmedModer.getLatestExpiryDate}")
+    private String getLatestExpiryDate;
 
     public UnconfirmedModerRepositoryImpl (JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
@@ -27,7 +28,7 @@ public class UnconfirmedModerRepositoryImpl extends BaseJdbsRepository implement
     @Override
     public void create (UnconfirmedModerator moderator) {
         jdbcTemplate.update(
-                sqlCreateQuery, moderator.getModerToken(), moderator.getExpireDate(), moderator.getEmail(),
+                sqlCreateQuery, moderator.getModerToken(), moderator.getExpiryDate(), moderator.getEmail(),
                 moderator.getFirstName(), moderator.getLastName(), moderator.getBirthDate(), moderator.getGender().name()
         );
     }
@@ -36,11 +37,6 @@ public class UnconfirmedModerRepositoryImpl extends BaseJdbsRepository implement
     public UnconfirmedModerator getByToken (String token) {
         return jdbcTemplate.queryForObject(sqlGetByToken,  new BeanPropertyRowMapper<>(UnconfirmedModerator.class), token);
 
-    }
-
-    @Override
-    public Integer findUsagesOfEmail(String email) {
-        return jdbcTemplate.queryForObject(sqlSumOfUsagesEmail, Integer.class, email, email);
     }
 
     @Override
@@ -56,5 +52,11 @@ public class UnconfirmedModerRepositoryImpl extends BaseJdbsRepository implement
     @Override
     public UnconfirmedModerator findById (Integer id) {
         return null;
+    }
+
+
+    @Override
+    public LocalDateTime findLatestExpiryDate(String email) {
+        return jdbcTemplate.queryForObject(getLatestExpiryDate, LocalDateTime.class, email);
     }
 }
