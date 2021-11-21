@@ -8,7 +8,7 @@ import java.util.Date;
 @Data
 public class UnconfirmedModerator {
     private String moderToken;
-    private LocalDateTime expireDate;
+    private LocalDateTime expiryDate;
     private String email;
     private String firstName;
     private String lastName;
