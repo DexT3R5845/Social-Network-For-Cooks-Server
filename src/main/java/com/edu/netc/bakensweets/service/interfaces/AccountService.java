@@ -11,7 +11,7 @@ public interface AccountService {
     String changePassword(String oldPassword, String newPassword, String email);
     String signIn(String username, String password, String recaptcha_token, String ip);
     String signUp (AccountDTO accountDTO);
-    Account getByEmail(String email);
+    UpdateAccountDTO getUserInfoByEmail(String email);
     AccountsPerPageDTO getAllBySearchAccounts(String search, int currentPage, int limit);
     AccountPersonalInfoDTO findById (long id);
     AccountsPerPageDTO getAllBySearchModerators(String search, int currentPage, int limit);

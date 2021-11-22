@@ -18,7 +18,7 @@ public interface AccountMapper {
             @Mapping(target = "birthDate", source = "dto.birthDate"),
             @Mapping(target = "gender", source = "dto.gender")
     })
-    Account accountDTOtoAccounts(AccountDTO dto);
+    Account accountDTOtoAccount(AccountDTO dto);
 
     @Mappings({
             @Mapping(target = "id", source = "infoDto.id"),
@@ -48,4 +48,12 @@ public interface AccountMapper {
             @Mapping(target = "imgUrl", source = "updateDTO.imgUrl")
     })
     Account updateAccountDTOtoAccount(UpdateAccountDTO updateDTO);
+    @Mappings({
+            @Mapping(target="firstName", source="entity.firstName"),
+            @Mapping(target="lastName", source="entity.lastName"),
+            @Mapping(target = "birthDate", source = "entity.birthDate"),
+            @Mapping(target = "gender", source = "entity.gender"),
+            @Mapping(target = "imgUrl", source = "entity.imgUrl")
+    })
+    UpdateAccountDTO accountToUpdateAccountDTO(Account entity);
 }
