@@ -41,17 +41,17 @@ public class UnconfirmedModerRepositoryImpl extends BaseJdbsRepository implement
 
     @Override
     public void update (UnconfirmedModerator moderator) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void deleteById (Integer integer) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public UnconfirmedModerator findById (Integer id) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
 
