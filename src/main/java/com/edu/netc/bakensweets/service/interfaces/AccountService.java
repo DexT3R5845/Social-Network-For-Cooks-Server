@@ -12,9 +12,9 @@ public interface AccountService {
     String signIn(String username, String password, String recaptcha_token, String ip);
     String signUp (AccountDTO accountDTO);
     Account getByEmail(String email);
-    AccountsPerPageDTO getAllBySearchAccounts(String search, int currentPage, int limit);
+    AccountsPerPageDTO getAllBySearchAccounts(String search, int currentPage, int limit, boolean order);
     AccountPersonalInfoDTO findById (long id);
-    AccountsPerPageDTO getAllBySearchModerators(String search, int currentPage, int limit);
+    AccountsPerPageDTO getAllBySearchModerators(String search, int currentPage, int limit, boolean order);
     void updatePersonalInfo(AccountPersonalInfoDTO accountDto);
     void updateModerStatus(long id, boolean status);
 }

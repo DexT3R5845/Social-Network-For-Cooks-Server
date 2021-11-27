@@ -8,6 +8,6 @@ import java.util.Collection;
 public interface AccountRepository extends BaseCrudRepository<Account, Long>{
     Account findByEmail(String email);
     int getAllSearchedCount(String search, AccountRole role);
-    Collection<Account> getAllSearchedWithLimit(String search, int limit, int offset, AccountRole role);
+    Collection<Account> getAllSearchedWithLimit(String search, int limit, int offset, AccountRole role, boolean order);
     void updateStatus(long id, AccountRole role);
 }

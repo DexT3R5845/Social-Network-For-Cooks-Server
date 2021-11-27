@@ -40,14 +40,15 @@ public class ManagerController {
     }
 
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    //@PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/all")
     @ApiResponse(code = 400, message = "db/repository error")
     public AccountsPerPageDTO getAllBySearch(
             @RequestParam(value = "size") int size,
             @RequestParam(value = "pageNum", defaultValue = "1", required = false) int currentPage,
-            @RequestParam(value = "search", defaultValue = "", required = false) String search) {
-        return accountService.getAllBySearchModerators(search, currentPage, size);
+            @RequestParam(value = "search", defaultValue = "", required = false) String search,
+            @RequestParam(value = "order", defaultValue = "true", required = false) boolean order) {
+        return accountService.getAllBySearchModerators(search, currentPage, size, order);
     }
 
      /**

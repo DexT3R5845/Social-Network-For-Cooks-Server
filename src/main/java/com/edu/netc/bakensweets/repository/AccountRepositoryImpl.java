@@ -25,8 +25,11 @@ public class AccountRepositoryImpl extends BaseJdbsRepository implements Account
     @Value("${sql.account.countAllBySearch}")
     private String sqlCountFindAll;
 
-    @Value("${sql.account.findAllBySearch}")
-    private String sqlFindAllBySearch;
+    @Value("${sql.account.findAllBySearchDesc}")
+    private String sqlFindAllBySearchDesc;
+
+    @Value("${sql.account.findAllBySearchAsc}")
+    private String sqlFindAllBySearchAsc;
 
     @Value("${sql.account.updateAccData}")
     private String sqlUpdateAccData;
@@ -79,9 +82,11 @@ public class AccountRepositoryImpl extends BaseJdbsRepository implements Account
     }
 
     @Override
-    public Collection<Account> getAllSearchedWithLimit (String search, int limit, int offset, AccountRole role) {
+    public Collection<Account> getAllSearchedWithLimit (String search, int limit, int offset, AccountRole role, boolean order) {
+        String query = (order ?  sqlFindAllBySearchAsc :  sqlFindAllBySearchDesc);
+
         return jdbcTemplate.query(
-                sqlFindAllBySearch,
+                query,
                 new BeanPropertyRowMapper<>(Account.class),
                 role.getAuthority(), search, search, limit, offset
         );

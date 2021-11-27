@@ -44,6 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // Entry points
         http.authorizeRequests()
                 .antMatchers("/api/auth/**").permitAll()
+                .antMatchers("/api/management/*").permitAll()
 
                 .anyRequest().authenticated().and().csrf().disable().cors().configurationSource(request -> corsConfiguration);;
 

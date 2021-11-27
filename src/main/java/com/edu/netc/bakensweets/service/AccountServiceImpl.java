@@ -153,19 +153,19 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountsPerPageDTO getAllBySearchAccounts(String search, int currentPage, int limit) {
-        return getAllByRole(search, currentPage, limit, AccountRole.ROLE_USER);
+    public AccountsPerPageDTO getAllBySearchAccounts(String search, int currentPage, int limit, boolean order) {
+        return getAllByRole(search, currentPage, limit, AccountRole.ROLE_USER, order);
     }
 
     @Override
-    public AccountsPerPageDTO getAllBySearchModerators(String search, int currentPage, int limit) {
-        return getAllByRole(search, currentPage, limit, AccountRole.ROLE_MODERATOR);
+    public AccountsPerPageDTO getAllBySearchModerators(String search, int currentPage, int limit, boolean order) {
+        return getAllByRole(search, currentPage, limit, AccountRole.ROLE_MODERATOR, order);
     }
 
-    public AccountsPerPageDTO getAllByRole(String search, int currentPage, int limit, AccountRole role) throws DataAccessException {
+    public AccountsPerPageDTO getAllByRole(String search, int currentPage, int limit, AccountRole role, boolean order) throws DataAccessException {
         int accCount = accountRepository.getAllSearchedCount(search, role);
         int pageCount = accCount % limit == 0 ? accCount / limit : accCount / limit + 1;
-        Collection<Account> accounts = accountRepository.getAllSearchedWithLimit(search, limit, (currentPage - 1) * limit, role);
+        Collection<Account> accounts = accountRepository.getAllSearchedWithLimit(search, limit, (currentPage - 1) * limit, role, order);
         return new AccountsPerPageDTO(accounts, currentPage, pageCount);
     }
 
