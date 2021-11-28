@@ -10,7 +10,7 @@ import org.springframework.data.annotation.Id;
 @NoArgsConstructor
 public class Friendship {
     @Id
-    private int Id;
+    private long id;
     private long inviterId;
     private long friendId;
     private FriendshipStatus friendshipStatus;

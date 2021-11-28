@@ -5,7 +5,7 @@ import com.edu.netc.bakensweets.model.FriendshipStatus;
 
 import java.util.Collection;
 
-public interface FriendshipRepository extends BaseCrudRepository<Friendship, Integer> {
+public interface FriendshipRepository extends BaseCrudRepository<Friendship, Long> {
     void updateFriendshipStatus(long id, FriendshipStatus friendshipStatus);
     Collection<Friendship> findByFriendshipStatus(FriendshipStatus friendshipStatus);
     Friendship findByInviterAndFriend(long inviterId, long friendId);

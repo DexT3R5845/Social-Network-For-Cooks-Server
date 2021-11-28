@@ -52,12 +52,12 @@ public class FriendshipRepositoryImpl extends BaseJdbsRepository implements Frie
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
         jdbcTemplate.update(sqlDelete, id);
     }
 
     @Override
-    public Friendship findById(Integer integer) {
+    public Friendship findById(Long integer) {
         throw new UnsupportedOperationException();
        // return null;
     }
