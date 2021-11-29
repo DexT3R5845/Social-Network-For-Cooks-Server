@@ -47,8 +47,10 @@ public class ManagerController {
             @RequestParam(value = "size") int size,
             @RequestParam(value = "pageNum", defaultValue = "1", required = false) int currentPage,
             @RequestParam(value = "search", defaultValue = "", required = false) String search,
-            @RequestParam(value = "order", defaultValue = "true", required = false) boolean order) {
-        return accountService.getAllBySearchModerators(search, currentPage, size, order);
+            @RequestParam(value = "order", defaultValue = "true", required = false) boolean order,
+            @RequestParam(value = "gender", defaultValue = "", required = false) String gender,
+            @RequestParam(value = "status", defaultValue = "", required = false) String status){
+        return accountService.getAllBySearchModerators(search, currentPage, size, order, gender, status);
     }
 
      /**

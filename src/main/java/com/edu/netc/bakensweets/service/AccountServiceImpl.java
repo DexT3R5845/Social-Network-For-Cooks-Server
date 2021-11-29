@@ -9,10 +9,7 @@ import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.exception.FailedAuthorizationException;
 import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
 import com.edu.netc.bakensweets.mapperConfig.CredentialsMapper;
-import com.edu.netc.bakensweets.model.Account;
-import com.edu.netc.bakensweets.model.AccountRole;
-import com.edu.netc.bakensweets.model.Credentials;
-import com.edu.netc.bakensweets.model.WrongAttemptLogin;
+import com.edu.netc.bakensweets.model.*;
 import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.security.JwtTokenProvider;
@@ -140,8 +137,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void updateModerStatus(long id, boolean status) {
         try {
-            if (status) accountRepository.updateStatus(id, AccountRole.ROLE_BAN);
-            else accountRepository.updateStatus(id, AccountRole.ROLE_MODERATOR);
+            accountRepository.updateStatus(id, !status);
         } catch (DataAccessException ex) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "There is no account with such id");
         }
@@ -153,33 +149,42 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountsPerPageDTO getAllBySearchAccounts(String search, int currentPage, int limit, boolean order) {
-        return getAllByRole(search, currentPage, limit, AccountRole.ROLE_USER, order);
+    public AccountsPerPageDTO getAllBySearchAccounts(String search, int currentPage, int limit,
+                                                     boolean order, String gender) {
+        return getAllBySearch(search, currentPage, limit, AccountRole.ROLE_USER, order, gender, "true");
     }
+
 
     @Override
-    public AccountsPerPageDTO getAllBySearchModerators(String search, int currentPage, int limit, boolean order) {
-        return getAllByRole(search, currentPage, limit, AccountRole.ROLE_MODERATOR, order);
+    public AccountsPerPageDTO getAllBySearchModerators(String search, int currentPage, int limit,
+                                                       boolean order, String gender, String status) {
+        return getAllBySearch(search, currentPage, limit, AccountRole.ROLE_MODERATOR, order, gender, status);
     }
 
-    public AccountsPerPageDTO getAllByRole(String search, int currentPage, int limit, AccountRole role, boolean order) throws DataAccessException {
-        int accCount = accountRepository.getAllSearchedCount(search, role);
+
+    public AccountsPerPageDTO getAllBySearch (String search, int currentPage, int limit, AccountRole role,
+                                              boolean order, String gender, String status) {
+        int accCount = accountRepository.countAccountsBySearch(search, role, gender, status);
         int pageCount = accCount % limit == 0 ? accCount / limit : accCount / limit + 1;
-        Collection<Account> accounts = accountRepository.getAllSearchedWithLimit(search, limit, (currentPage - 1) * limit, role, order);
-        return new AccountsPerPageDTO(accounts, currentPage, pageCount);
+        Collection<Account> accounts = accountRepository.findAccountsBySearch(
+                search, gender, role, status, limit,  (currentPage - 1) * limit, order
+        );
+        return new AccountsPerPageDTO(
+                accountMapper.accountsToPersonalInfoDtoCollection(accounts), currentPage, pageCount
+        );
     }
+
 
     @Override
     public AccountPersonalInfoDTO findById (long id) {
         Account account = accountRepository.findById(id);
         Credentials credentials = credentialsRepository.findById(id);
 
-        if (account == null || credentials == null)
+        if (account == null || credentials == null) {
             throw new CustomException(HttpStatus.NOT_FOUND, "no accounts found with such id");
-
+        }
         AccountPersonalInfoDTO responseAcc = accountMapper.accountToAccountPersonalInfoDto(account);
         responseAcc.setEmail(credentials.getEmail());
-        responseAcc.setStatus(!account.getAccountRole().equals(AccountRole.ROLE_BAN));
         return responseAcc;
     }
 }

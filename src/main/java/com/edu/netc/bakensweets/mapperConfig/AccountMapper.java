@@ -9,6 +9,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+
 @Service
 @Mapper(componentModel = "spring")
 public interface AccountMapper {
@@ -36,9 +38,21 @@ public interface AccountMapper {
             @Mapping(target="lastName", source="account.lastName"),
             @Mapping(target = "birthDate", source = "account.birthDate"),
             @Mapping(target = "gender", source = "account.gender"),
-            @Mapping(target = "imgUrl", source = "account.imgUrl")
+            @Mapping(target = "imgUrl", source = "account.imgUrl"),
+            @Mapping(target = "status", source = "account.status")
     })
     AccountPersonalInfoDTO accountToAccountPersonalInfoDto(Account account);
+
+    @Mappings({
+            @Mapping(target = "id", source = "accounts.id"),
+            @Mapping(target="firstName", source="accounts.firstName"),
+            @Mapping(target="lastName", source="accounts.lastName"),
+            @Mapping(target = "birthDate", source = "accounts.birthDate"),
+            @Mapping(target = "gender", source = "accounts.gender"),
+            @Mapping(target = "imgUrl", source = "accounts.imgUrl"),
+            @Mapping(target = "status", source = "accounts.status")
+    })
+    Collection<AccountPersonalInfoDTO> accountsToPersonalInfoDtoCollection (Collection<Account> accounts);
 
     @Mappings({
             @Mapping(target="firstName", source="updateDTO.firstName"),
