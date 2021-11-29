@@ -19,6 +19,7 @@ import com.edu.netc.bakensweets.service.interfaces.WrongAttemptLoginService;
 import com.edu.netc.bakensweets.utils.Utils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -96,7 +97,7 @@ public class AccountServiceImpl implements AccountService {
         long uniqueId = Utils.generateUniqueId();
 
         Credentials credentials = credentialsMapper.accountDTOtoCredentials(accountDTO);
-        Account account = accountMapper.accountDTOtoAccounts(accountDTO);
+        Account account = accountMapper.accountDTOtoAccount(accountDTO);
 
         credentials.setId(uniqueId);
         credentials.setPassword(passwordEncoder.encode(credentials.getPassword()));
@@ -144,8 +145,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account getByEmail(String email) {
-        return accountRepository.findByEmail(email);
+    public UpdateAccountDTO getUserInfoByEmail(String email) {
+        try {
+            Account account = accountRepository.findByEmail(email);
+            return accountMapper.accountToUpdateAccountDTO(account);
+        }catch (EmptyResultDataAccessException ex){throw new CustomException(HttpStatus.NOT_FOUND, "Account not found");}
     }
 
     @Override
