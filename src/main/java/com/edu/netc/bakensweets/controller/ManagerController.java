@@ -40,7 +40,7 @@ public class ManagerController {
     }
 
 
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/all")
     @ApiResponse(code = 400, message = "db/repository error")
     public AccountsPerPageDTO getAllBySearch(
