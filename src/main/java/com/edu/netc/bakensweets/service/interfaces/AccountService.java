@@ -11,10 +11,11 @@ public interface AccountService {
     String changePassword(String oldPassword, String newPassword, String email);
     String signIn(String username, String password, String recaptcha_token, String ip);
     String signUp (AccountDTO accountDTO);
+
+    AccountsPerPageDTO getAllBySearchAccounts(String search, int currentPage, int limit, boolean order, String gender);
     UpdateAccountDTO getUserInfoByEmail(String email);
-    AccountsPerPageDTO getAllBySearchAccounts(String search, int currentPage, int limit);
     AccountPersonalInfoDTO findById (long id);
-    AccountsPerPageDTO getAllBySearchModerators(String search, int currentPage, int limit);
+    AccountsPerPageDTO getAllBySearchModerators(String search, int currentPage, int limit, boolean order, String gender, String status);
     void updatePersonalInfo(AccountPersonalInfoDTO accountDto);
     void updateModerStatus(long id, boolean status);
 }

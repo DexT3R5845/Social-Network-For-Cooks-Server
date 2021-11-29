@@ -2,10 +2,14 @@ package com.edu.netc.bakensweets.repository;
 
 import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.model.AccountRole;
+import com.edu.netc.bakensweets.model.Gender;
 import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import java.util.Collection;
 
@@ -25,8 +29,11 @@ public class AccountRepositoryImpl extends BaseJdbsRepository implements Account
     @Value("${sql.account.countAllBySearch}")
     private String sqlCountFindAll;
 
-    @Value("${sql.account.findAllBySearch}")
-    private String sqlFindAllBySearch;
+    @Value("${sql.account.findAllBySearchDesc}")
+    private String sqlFindAllBySearchDesc;
+
+    @Value("${sql.account.findAllBySearchAsc}")
+    private String sqlFindAllBySearchAsc;
 
     @Value("${sql.account.updateAccData}")
     private String sqlUpdateAccData;
@@ -51,8 +58,8 @@ public class AccountRepositoryImpl extends BaseJdbsRepository implements Account
     }
 
     @Override
-    public void updateStatus(long id, AccountRole role) {
-        jdbcTemplate.update(sqlUpdateModerStatus, role.getAuthority(), id);
+    public void updateStatus(long id, boolean status) {
+        jdbcTemplate.update(sqlUpdateModerStatus, status, id);
     }
 
     @Override
@@ -71,19 +78,21 @@ public class AccountRepositoryImpl extends BaseJdbsRepository implements Account
     }
 
     @Override
-    public int getAllSearchedCount (String search, AccountRole role) {
+    public int countAccountsBySearch (String search, AccountRole role, String gender, String status) {
         Integer count = jdbcTemplate.queryForObject(
-                sqlCountFindAll, Integer.class, role.getAuthority(), search, search
+                sqlCountFindAll, Integer.class, role.getAuthority(), search, search, gender, status
         );
         return count == null ? 0 : count;
     }
 
     @Override
-    public Collection<Account> getAllSearchedWithLimit (String search, int limit, int offset, AccountRole role) {
+    public Collection<Account> findAccountsBySearch (String search, String gender, AccountRole role,
+                                                     String status, int limit, int offset, boolean order) {
+
+        String searchQuery = order ? sqlFindAllBySearchAsc : sqlFindAllBySearchDesc;
         return jdbcTemplate.query(
-                sqlFindAllBySearch,
-                new BeanPropertyRowMapper<>(Account.class),
-                role.getAuthority(), search, search, limit, offset
+                searchQuery, new BeanPropertyRowMapper<>(Account.class),
+                role.getAuthority(), search, search, gender, status, limit, offset
         );
     }
 }
