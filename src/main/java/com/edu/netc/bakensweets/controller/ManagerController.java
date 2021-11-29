@@ -27,7 +27,6 @@ public class ManagerController {
         this.moderCreationService = moderCreationService;
     }
 
-
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/new")
     @ApiResponses(value = {
