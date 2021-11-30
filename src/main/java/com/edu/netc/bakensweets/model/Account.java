@@ -9,7 +9,6 @@ import java.util.Date;
 @Data
 @RequiredArgsConstructor
 public class Account {
-    @Id
     private long id;
     private String firstName;
     private String lastName;
@@ -17,4 +16,6 @@ public class Account {
     private Gender gender;
     private String imgUrl;
     private AccountRole accountRole;
+    private boolean status;
 }
+
