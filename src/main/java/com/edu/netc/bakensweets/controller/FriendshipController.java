@@ -72,8 +72,11 @@ public class FriendshipController {
     public AccountsPerPageDTO getFriends(
             @RequestParam(value = "size") int size,
             @RequestParam(value = "pageNum", defaultValue = "1", required = false) int currentPage,
-            @RequestParam(value = "search", defaultValue = "", required = false) String search, Principal principal) {
-        return friendshipService.getFriends(principal.getName(), search, currentPage, size);
+            @RequestParam(value = "search", defaultValue = "", required = false) String search,
+            @RequestParam(value = "order", defaultValue = "true", required = false) boolean order,
+            @RequestParam(value = "gender", defaultValue = "", required = false) String gender,
+            Principal principal) {
+        return friendshipService.getFriends(principal.getName(), search, gender, currentPage, size, order);
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -84,19 +87,25 @@ public class FriendshipController {
     public AccountsPerPageDTO getViableFriends(
             @RequestParam(value = "size") int size,
             @RequestParam(value = "pageNum", defaultValue = "1", required = false) int currentPage,
-            @RequestParam(value = "search", defaultValue = "", required = false) String search, Principal principal) {
-        return friendshipService.getAllViableFriends(principal.getName(), search, currentPage, size);
+            @RequestParam(value = "search", defaultValue = "", required = false) String search,
+            @RequestParam(value = "order", defaultValue = "true", required = false) boolean order,
+            @RequestParam(value = "gender", defaultValue = "", required = false) String gender,
+            Principal principal) {
+        return friendshipService.getAllViableFriends(principal.getName(), search, gender, currentPage, size, order);
     }
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping(value = "/invites")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of invites received"),
             @ApiResponse(code = 400, message = "Something went wrong")})
-    public AccountsPerPageDTO getInvitesFriends(
+    public AccountsPerPageDTO getInvites(
             @RequestParam(value = "size") int size,
             @RequestParam(value = "pageNum", defaultValue = "1", required = false) int currentPage,
-            @RequestParam(value = "search", defaultValue = "", required = false) String search, Principal principal) {
-        return friendshipService.getInvites(principal.getName(), search, currentPage, size);
+            @RequestParam(value = "search", defaultValue = "", required = false) String search,
+            @RequestParam(value = "order", defaultValue = "true", required = false) boolean order,
+            @RequestParam(value = "gender", defaultValue = "", required = false) String gender,
+            Principal principal) {
+        return friendshipService.getInvites(principal.getName(), search, gender, currentPage, size, order);
     }
 }
 

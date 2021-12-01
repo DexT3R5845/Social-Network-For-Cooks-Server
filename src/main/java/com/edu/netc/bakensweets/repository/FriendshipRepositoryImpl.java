@@ -21,14 +21,24 @@ public class FriendshipRepositoryImpl extends BaseJdbsRepository implements Frie
     private String sqlFindByInviterAndFriend;
     @Value("${sql.friendship.updateFriendshipStatus}")
     private String sqlUpdateFriendshipStatus;
-    @Value("${sql.friendship.findByFriendshipStatus}")
-    private String sqlFindByFriendshipStatus;
-    @Value("${sql.friendship.countByFriendshipStatus}")
-    private String sqlCountByFriendshipStatus;
-    @Value("${sql.friendship.findAllNotFriends}")
-    private String sqlFindAllNotFriends;
+    @Value("${sql.friendship.findByFriendshipAcceptedAsc}")
+    private String sqlFindByFriendshipAcceptedAsc;
+    @Value("${sql.friendship.findByFriendshipAcceptedDesc}")
+    private String sqlFindByFriendshipAcceptedDesc;
+    @Value("${sql.friendship.countByFriendshipAccepted}")
+    private String sqlCountByFriendshipAccepted;
+    @Value("${sql.friendship.findAllNotFriendsAsc}")
+    private String sqlFindAllNotFriendsAsc;
+    @Value("${sql.friendship.findAllNotFriendsDesc}")
+    private String sqlFindAllNotFriendsDesc;
     @Value("${sql.friendship.countAllNotFriends}")
     private String sqlCountAllNotFriends;
+    @Value("${sql.friendship.findByFriendshipUnacceptedAsc}")
+    private String sqlFindByFriendshipUnacceptedAsc;
+    @Value("${sql.friendship.findByFriendshipUnacceptedDesc}")
+    private String sqlFindByFriendshipUnacceptedDesc;
+    @Value("${sql.friendship.countByFriendshipUnaccepted}")
+    private String sqlCountByFriendshipUnaccepted;
 
     public FriendshipRepositoryImpl(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
@@ -40,17 +50,30 @@ public class FriendshipRepositoryImpl extends BaseJdbsRepository implements Frie
     }
 
     @Override
-    public Collection<Account> findByFriendshipStatus(long inviterId, String search, int limit, int offset, FriendshipStatus friendshipStatus) {
-        return jdbcTemplate.query(sqlFindByFriendshipStatus,
-                new BeanPropertyRowMapper<>(Account.class), inviterId, inviterId, inviterId, friendshipStatus.toString(),
+    public Collection<Account> findByFriendshipAccepted(long inviterId, String search, String gender, int limit,
+                                                      int offset, boolean order) {
+        String sqlFindByFriendshipAccepted = order ? sqlFindByFriendshipAcceptedAsc : sqlFindByFriendshipAcceptedDesc;
+        return jdbcTemplate.query(sqlFindByFriendshipAccepted,
+                new BeanPropertyRowMapper<>(Account.class), inviterId, inviterId, inviterId, gender,
                 search, search, limit, offset);
     }
 
+    @Override
+    public Collection<Account> findByFriendshipUnaccepted(long inviterId, String search, String gender, int limit,
+                                                          int offset, boolean order) {
+        String sqlFindByFriendshipUnaccepted = order ? sqlFindByFriendshipUnacceptedAsc : sqlFindByFriendshipUnacceptedDesc;
+        return jdbcTemplate.query(sqlFindByFriendshipUnaccepted,
+                new BeanPropertyRowMapper<>(Account.class), inviterId, gender, search, search, limit, offset);
+    }
+
+
 
     @Override
-    public Collection<Account> findFriendsToAdd(long inviterId, String search, int limit, int offset) {
+    public Collection<Account> findFriendsToAdd(long inviterId, String search, String gender, int limit, int offset,
+                                                boolean order) {
+        String sqlFindAllNotFriends = order ? sqlFindAllNotFriendsAsc : sqlFindAllNotFriendsDesc;
         return jdbcTemplate.query(sqlFindAllNotFriends,
-                new BeanPropertyRowMapper<>(Account.class), inviterId, inviterId, inviterId, search, search, limit, offset);
+                new BeanPropertyRowMapper<>(Account.class), inviterId, inviterId, inviterId, gender, search, search, limit, offset);
     }
 
     @Override
@@ -60,15 +83,21 @@ public class FriendshipRepositoryImpl extends BaseJdbsRepository implements Frie
     }
 
     @Override
-    public int countByFriendshipStatus(long inviterId, String search, FriendshipStatus friendshipStatus) {
-        Integer count = jdbcTemplate.queryForObject(sqlCountByFriendshipStatus,Integer.class, inviterId, inviterId, inviterId,
-                friendshipStatus.toString(), search, search);
+    public int countByFriendshipAccepted(long inviterId, String search, String gender) {
+        Integer count = jdbcTemplate.queryForObject(sqlCountByFriendshipAccepted,Integer.class, inviterId, inviterId, inviterId, gender, search, search);
         return count == null ? 0 : count;
     }
 
     @Override
-    public int countFriendsToAdd(long inviterId, String search) {
-        Integer count = jdbcTemplate.queryForObject(sqlCountAllNotFriends,Integer.class, inviterId, inviterId, inviterId, search, search);
+    public int countByFriendshipUnaccepted(long inviterId, String search, String gender) {
+        Integer count = jdbcTemplate.queryForObject(sqlCountByFriendshipUnaccepted,Integer.class,  inviterId, gender, search, search);
+        System.out.println(count);
+        return count == null ? 0 : count;
+    }
+
+    @Override
+    public int countFriendsToAdd(long inviterId, String search, String gender) {
+        Integer count = jdbcTemplate.queryForObject(sqlCountAllNotFriends,Integer.class, inviterId, inviterId, inviterId, gender, search, search);
         System.out.println(count);
         return count == null ? 0 : count;
     }
