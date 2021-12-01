@@ -11,6 +11,5 @@ import java.util.Collection;
 public class AccountsPerPageDTO {
     private Collection<AccountPersonalInfoDTO> accounts;
     private int currentPage;
-    private int pageCount;
-
+    private int itemCount;
 }

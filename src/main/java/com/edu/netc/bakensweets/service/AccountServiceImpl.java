@@ -169,12 +169,11 @@ public class AccountServiceImpl implements AccountService {
     public AccountsPerPageDTO getAllBySearch (String search, int currentPage, int limit, AccountRole role,
                                               boolean order, String gender, String status) {
         int accCount = accountRepository.countAccountsBySearch(search, role, gender, status);
-        int pageCount = accCount % limit == 0 ? accCount / limit : accCount / limit + 1;
         Collection<Account> accounts = accountRepository.findAccountsBySearch(
-                search, gender, role, status, limit,  (currentPage - 1) * limit, order
+                search, gender, role, status, limit,  currentPage * limit, order
         );
         return new AccountsPerPageDTO(
-                accountMapper.accountsToPersonalInfoDtoCollection(accounts), currentPage, pageCount
+                accountMapper.accountsToPersonalInfoDtoCollection(accounts), currentPage,  accCount
         );
     }
 
