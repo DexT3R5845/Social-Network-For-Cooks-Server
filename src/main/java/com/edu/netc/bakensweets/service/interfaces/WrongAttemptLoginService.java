@@ -6,6 +6,6 @@ import java.time.LocalDateTime;
 
 public interface WrongAttemptLoginService {
     WrongAttemptLogin findSessionByIpAndTime(String ip, LocalDateTime time);
-    void CreateSession(WrongAttemptLogin wrongAttemptLogin);
-    void UpdateSession(WrongAttemptLogin wrongAttemptLogin);
+    void createSession(WrongAttemptLogin wrongAttemptLogin);
+    void updateSession(WrongAttemptLogin wrongAttemptLogin);
 }

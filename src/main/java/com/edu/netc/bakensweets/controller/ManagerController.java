@@ -27,7 +27,6 @@ public class ManagerController {
         this.moderCreationService = moderCreationService;
     }
 
-
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/new")
     @ApiResponses(value = {
@@ -46,8 +45,11 @@ public class ManagerController {
     public AccountsPerPageDTO getAllBySearch(
             @RequestParam(value = "size") int size,
             @RequestParam(value = "pageNum", defaultValue = "1", required = false) int currentPage,
-            @RequestParam(value = "search", defaultValue = "", required = false) String search) {
-        return accountService.getAllBySearchModerators(search, currentPage, size);
+            @RequestParam(value = "search", defaultValue = "", required = false) String search,
+            @RequestParam(value = "order", defaultValue = "true", required = false) boolean order,
+            @RequestParam(value = "gender", defaultValue = "", required = false) String gender,
+            @RequestParam(value = "status", defaultValue = "", required = false) String status){
+        return accountService.getAllBySearchModerators(search, currentPage, size, order, gender, status);
     }
 
      /**

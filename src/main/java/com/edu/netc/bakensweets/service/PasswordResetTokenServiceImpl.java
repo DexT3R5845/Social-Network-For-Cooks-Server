@@ -44,7 +44,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
             emailSenderService.sendResetLinkPassword(email, passwordResetToken.getResetToken());
             passResetTokenRepository.create(passwordResetToken);
         } catch (EmptyResultDataAccessException ex){
-            throw new BadRequestParamException("email", String.format("Account %s not found.", email), "ACCOUNT_NOT_FOUND");
+            throw new CustomException(HttpStatus.NOT_FOUND, String.format("Account %s not found.", email));
         }
     }
 

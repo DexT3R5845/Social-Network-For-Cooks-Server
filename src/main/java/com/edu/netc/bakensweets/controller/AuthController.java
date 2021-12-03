@@ -49,8 +49,8 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Something went wrong"),
             @ApiResponse(code = 403, message = "Access denied")})
-    public ResponseEntity<String> signUp(@Valid @RequestBody AccountDTO accountDTO) {
-        return ResponseEntity.ok(accountService.signUp(accountDTO));
+    public void signUp(@Valid @RequestBody AccountDTO accountDTO) {
+        accountService.signUp(accountDTO);
     }
 
     @ApiResponses(value = {
@@ -73,9 +73,8 @@ public class AuthController {
             @ApiResponse(code = 400, message = "Something went wrong")
     })
     @PutMapping("/password/reset")
-    public ResponseEntity<String> resetPasswordUpdate(@Valid @RequestBody AuthRequestResetUpdatePassword modelResetUpdatePassword) {
+    public void resetPasswordUpdate(@Valid @RequestBody AuthRequestResetUpdatePassword modelResetUpdatePassword) {
         passResetTokenService.changePassword(modelResetUpdatePassword);
-        return ResponseEntity.ok("Password successful update");
     }
 
 

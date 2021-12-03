@@ -87,7 +87,6 @@ public class ModerCreationServiceImpl implements ModerCreationService {
         return HttpStatus.OK;
     }
 
-
     private UnconfirmedModerator getModerWithToken (NewModeratorDTO moderatorDTO) {
         UnconfirmedModerator moderator = moderatorMapper.newModerDTOtoUnconfirmedModer((moderatorDTO));
         moderator.setModerToken(Utils.stringGenerateUniqueId());

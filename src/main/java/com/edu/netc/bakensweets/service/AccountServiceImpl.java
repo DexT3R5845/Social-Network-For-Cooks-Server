@@ -9,10 +9,7 @@ import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.exception.FailedAuthorizationException;
 import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
 import com.edu.netc.bakensweets.mapperConfig.CredentialsMapper;
-import com.edu.netc.bakensweets.model.Account;
-import com.edu.netc.bakensweets.model.AccountRole;
-import com.edu.netc.bakensweets.model.Credentials;
-import com.edu.netc.bakensweets.model.WrongAttemptLogin;
+import com.edu.netc.bakensweets.model.*;
 import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.security.JwtTokenProvider;
@@ -29,11 +26,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 
 
 import java.time.LocalDateTime;
+
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -63,36 +62,36 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public String signIn(String username, String password, String recaptcha_token, String ip) {
-        boolean need_captcha = false;
-        WrongAttemptLogin sessionUserWrongAttemt = wrongAttemptLoginService.findSessionByIpAndTime(ip, LocalDateTime.now());
+        WrongAttemptLogin sessionUserWrongAttempt = wrongAttemptLoginService.findSessionByIpAndTime(ip, LocalDateTime.now());
+        boolean needCaptcha = false;
         try {
-            if(sessionUserWrongAttemt != null && sessionUserWrongAttemt.getCountWrongAttempts() >= 5) {
-                need_captcha = true;
+            if(sessionUserWrongAttempt != null && sessionUserWrongAttempt.getCountWrongAttempts() >= 5) {
+                needCaptcha = true;
                 if(recaptcha_token == null || recaptcha_token.isEmpty())
-                    throw new FailedAuthorizationException(HttpStatus.UNPROCESSABLE_ENTITY, "Need captcha", need_captcha);
+                    throw new FailedAuthorizationException(HttpStatus.UNPROCESSABLE_ENTITY, "Need captcha", needCaptcha);
                 if(!captchaService.isValidCaptcha(recaptcha_token)) {
-                    wrongAttemptLoginService.UpdateSession(sessionUserWrongAttemt);
-                    throw new FailedAuthorizationException(HttpStatus.UNPROCESSABLE_ENTITY, "Recaptcha token is invalid", need_captcha);
+                    wrongAttemptLoginService.updateSession(sessionUserWrongAttempt);
+                    throw new FailedAuthorizationException(HttpStatus.UNPROCESSABLE_ENTITY, "Recaptcha token is invalid", needCaptcha);
                 }
             }
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
             return jwtTokenProvider.createToken(username, accountRepository.findByEmail(username).getAccountRole());
         } catch (AuthenticationException e) {
-            if(sessionUserWrongAttemt == null)
-                wrongAttemptLoginService.CreateSession(new WrongAttemptLogin(ip, LocalDateTime.now(), 1));
+            if(sessionUserWrongAttempt == null)
+                wrongAttemptLoginService.createSession(new WrongAttemptLogin(ip, LocalDateTime.now(), 1));
             else
-                wrongAttemptLoginService.UpdateSession(sessionUserWrongAttemt);
-            throw new FailedAuthorizationException(HttpStatus.UNAUTHORIZED, "Invalid username/password supplied", need_captcha);
+                wrongAttemptLoginService.updateSession(sessionUserWrongAttempt);
+            throw new FailedAuthorizationException(HttpStatus.UNAUTHORIZED, "Invalid username/password supplied", needCaptcha);
         }
     }
 
     @Override
-    public String signUp(AccountDTO accountDTO) {
+    @Transactional
+    public void signUp(AccountDTO accountDTO) {
         try {
             createNewAccount(accountDTO, AccountRole.ROLE_USER);
-            return "Reg Success";
         } catch (DuplicateKeyException ex) {
-            throw new BadRequestParamException("email", "Email already exists", "EMAIL_EXIST");
+            throw new CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Email already exists");
         }
     }
 
@@ -141,8 +140,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void updateModerStatus(long id, boolean status) {
         try {
-            if (status) accountRepository.updateStatus(id, AccountRole.ROLE_BAN);
-            else accountRepository.updateStatus(id, AccountRole.ROLE_MODERATOR);
+            accountRepository.updateStatus(id, !status);
         } catch (DataAccessException ex) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "There is no account with such id");
         }
@@ -157,33 +155,42 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountsPerPageDTO getAllBySearchAccounts(String search, int currentPage, int limit) {
-        return getAllByRole(search, currentPage, limit, AccountRole.ROLE_USER);
+    public AccountsPerPageDTO getAllBySearchAccounts(String search, int currentPage, int limit,
+                                                     boolean order, String gender) {
+        return getAllBySearch(search, currentPage, limit, AccountRole.ROLE_USER, order, gender, "true");
     }
+
 
     @Override
-    public AccountsPerPageDTO getAllBySearchModerators(String search, int currentPage, int limit) {
-        return getAllByRole(search, currentPage, limit, AccountRole.ROLE_MODERATOR);
+    public AccountsPerPageDTO getAllBySearchModerators(String search, int currentPage, int limit,
+                                                       boolean order, String gender, String status) {
+        return getAllBySearch(search, currentPage, limit, AccountRole.ROLE_MODERATOR, order, gender, status);
     }
 
-    public AccountsPerPageDTO getAllByRole(String search, int currentPage, int limit, AccountRole role) throws DataAccessException {
-        int accCount = accountRepository.getAllSearchedCount(search, role);
+
+    public AccountsPerPageDTO getAllBySearch (String search, int currentPage, int limit, AccountRole role,
+                                              boolean order, String gender, String status) {
+        int accCount = accountRepository.countAccountsBySearch(search, role, gender, status);
         int pageCount = accCount % limit == 0 ? accCount / limit : accCount / limit + 1;
-        Collection<Account> accounts = accountRepository.getAllSearchedWithLimit(search, limit, (currentPage - 1) * limit, role);
-        return new AccountsPerPageDTO(accounts, currentPage, pageCount);
+        Collection<Account> accounts = accountRepository.findAccountsBySearch(
+                search, gender, role, status, limit,  (currentPage - 1) * limit, order
+        );
+        return new AccountsPerPageDTO(
+                accountMapper.accountsToPersonalInfoDtoCollection(accounts), currentPage, pageCount
+        );
     }
+
 
     @Override
     public AccountPersonalInfoDTO findById (long id) {
         Account account = accountRepository.findById(id);
         Credentials credentials = credentialsRepository.findById(id);
 
-        if (account == null || credentials == null)
+        if (account == null || credentials == null) {
             throw new CustomException(HttpStatus.NOT_FOUND, "no accounts found with such id");
-
+        }
         AccountPersonalInfoDTO responseAcc = accountMapper.accountToAccountPersonalInfoDto(account);
         responseAcc.setEmail(credentials.getEmail());
-        responseAcc.setStatus(!account.getAccountRole().equals(AccountRole.ROLE_BAN));
         return responseAcc;
     }
 }

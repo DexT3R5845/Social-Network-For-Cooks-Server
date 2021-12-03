@@ -9,7 +9,7 @@ import java.util.Collection;
 @Data
 @AllArgsConstructor
 public class AccountsPerPageDTO {
-    private Collection<Account> accounts;
+    private Collection<AccountPersonalInfoDTO> accounts;
     private int currentPage;
     private int pageCount;
 

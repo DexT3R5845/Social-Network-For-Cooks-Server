@@ -30,5 +30,5 @@ public class NewModeratorDTO {
     @NotNull(message = "Gender is mandatory")
     @NotBlank(message = "Gender is mandatory")
     @Pattern(regexp = "^[F|M]$", message = "Gender must be contain F or M")
-    private String gender;
+    private Gender gender;
 }
