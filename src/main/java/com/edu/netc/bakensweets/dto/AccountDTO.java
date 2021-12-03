@@ -31,7 +31,7 @@ public class AccountDTO {
     @Pattern(regexp = "[^0-9]+", message = "Lastname must not contain numbers")
     private String lastName;
     @NotNull(message = "Birthdate is mandatory")
-    private Date birthDate;
+    private String birthDate;
     @NotNull(message = "Gender is mandatory")
     @NotBlank(message = "Gender is mandatory")
     @Pattern(regexp = "^[F|M]$", message = "Gender must be contain F or M")
