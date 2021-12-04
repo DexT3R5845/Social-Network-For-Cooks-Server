@@ -26,7 +26,7 @@ public interface AccountMapper {
             @Mapping(target = "id", source = "infoDto.id"),
             @Mapping(target = "firstName", source = "infoDto.firstName"),
             @Mapping(target = "lastName", source = "infoDto.lastName"),
-            @Mapping(target = "birthDate", source = "infoDto.birthDate", dateFormat = "yyyy-MM-dd"),
+            @Mapping(target = "birthDate", source = "infoDto.birthDate"),
             @Mapping(target = "gender", source = "infoDto.gender"),
             @Mapping(target = "imgUrl", source = "infoDto.imgUrl")
     })
@@ -36,7 +36,7 @@ public interface AccountMapper {
             @Mapping(target = "id", source = "account.id"),
             @Mapping(target = "firstName", source = "account.firstName"),
             @Mapping(target = "lastName", source = "account.lastName"),
-            @Mapping(target = "birthDate", source = "account.birthDate", dateFormat = "yyyy-MM-dd"),
+            @Mapping(target = "birthDate", source = "account.birthDate"),
             @Mapping(target = "gender", source = "account.gender"),
             @Mapping(target = "imgUrl", source = "account.imgUrl"),
             @Mapping(target = "status", source = "account.status")

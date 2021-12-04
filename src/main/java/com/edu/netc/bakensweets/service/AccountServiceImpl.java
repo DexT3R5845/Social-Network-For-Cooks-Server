@@ -111,16 +111,15 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public UpdateAccountDTO updateProfile(UpdateAccountDTO accountDTO, String email) {
+    public void updateProfile(UpdateAccountDTO accountDTO, String email) {
         Credentials credentials = credentialsRepository.findByEmail(email);
         Account accountUpdate = accountMapper.updateAccountDTOtoAccount(accountDTO);
         accountUpdate.setId(credentials.getId());
         accountRepository.update(accountUpdate);
-        return accountDTO;
     }
 
     @Override
-    public String changePassword(String oldPassword, String newPassword, String email) {
+    public void changePassword(String oldPassword, String newPassword, String email) {
         Credentials credentials = credentialsRepository.findByEmail(email);
         String requiredPassword = credentials.getPassword();
         if (!passwordEncoder.matches(oldPassword, requiredPassword)) {
@@ -128,7 +127,6 @@ public class AccountServiceImpl implements AccountService {
         }
         credentials.setPassword(passwordEncoder.encode(newPassword));
         credentialsRepository.update(credentials);
-        return "Password successfully changed";
     }
 
     @Override
