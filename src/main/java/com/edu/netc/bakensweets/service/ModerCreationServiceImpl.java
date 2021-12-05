@@ -59,18 +59,18 @@ public class ModerCreationServiceImpl implements ModerCreationService {
     }
 
     @Override
-    public HttpStatus validateModerToken(String token){
+    public boolean validateModerToken(String token){
         UnconfirmedModerator moderator = moderRepository.getByToken(token);
         if (moderator != null) {
-            return moderator.getExpiryDate().isAfter(LocalDateTime.now()) ? HttpStatus.OK : HttpStatus.GONE;
+            return moderator.getExpiryDate().isAfter(LocalDateTime.now());
         }
         throw new CustomException(HttpStatus.NOT_FOUND, "row is not found in db");
     }
 
     @Override
-    public HttpStatus createAccount(AuthRequestResetUpdatePassword authRequestResetUpdatePassword) {
-        if (!validateModerToken(authRequestResetUpdatePassword.getToken()).is2xxSuccessful()) {
-            return HttpStatus.GONE;
+    public void createAccount(AuthRequestResetUpdatePassword authRequestResetUpdatePassword) {
+        if (!validateModerToken(authRequestResetUpdatePassword.getToken())) {
+            throw new CustomException(HttpStatus.GONE, "Invalid or expired token");
         }
         UnconfirmedModerator moderator = moderRepository.getByToken(authRequestResetUpdatePassword.getToken());
         if (moderator == null) throw new CustomException(HttpStatus.NOT_FOUND, "Moderator is not found");
@@ -83,8 +83,6 @@ public class ModerCreationServiceImpl implements ModerCreationService {
         account.setAccountRole(AccountRole.ROLE_MODERATOR);
         account.setId(id);
         accountRepository.create(account);
-
-        return HttpStatus.OK;
     }
 
     private UnconfirmedModerator getModerWithToken (NewModeratorDTO moderatorDTO) {
