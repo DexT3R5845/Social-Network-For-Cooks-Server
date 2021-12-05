@@ -44,4 +44,13 @@ public interface KitchenwareMapper {
             @Mapping(target="name", source="categories.categoryName")
     })
     Collection<KitchenwareCategoryDTO> kitchenwareCategoriesToDtoCollection (Collection<KitchenwareCategory> categories);
+
+    @Mappings({
+            @Mapping(target="id", source="kitchenwarePage.id"),
+            @Mapping(target="name", source="kitchenwarePage.kitchwarName"),
+            @Mapping(target = "imgUrl", source = "kitchenwarePage.kitchwarImg"),
+            @Mapping(target = "category", source = "kitchenwarePage.kitchwarCategory"),
+            @Mapping(target = "active", source = "kitchenwarePage.active")
+    })
+    Collection<KitchenwareDTO> kitchenwarePageToDtoCollection (Collection<Kitchenware> kitchenwarePage);
 }

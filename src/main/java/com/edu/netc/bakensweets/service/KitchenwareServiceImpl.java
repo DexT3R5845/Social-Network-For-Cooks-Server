@@ -1,9 +1,6 @@
 package com.edu.netc.bakensweets.service;
 
-import com.edu.netc.bakensweets.dto.AccountsPerPageDTO;
-import com.edu.netc.bakensweets.dto.KitchenwareCategoryCollectionDTO;
-import com.edu.netc.bakensweets.dto.KitchenwareCategoryDTO;
-import com.edu.netc.bakensweets.dto.KitchenwareDTO;
+import com.edu.netc.bakensweets.dto.*;
 import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
 import com.edu.netc.bakensweets.mapperConfig.CredentialsMapper;
@@ -19,6 +16,7 @@ import com.edu.netc.bakensweets.service.interfaces.FriendshipService;
 
 import com.edu.netc.bakensweets.service.interfaces.KitchenwareService;
 import com.edu.netc.bakensweets.service.interfaces.WrongAttemptLoginService;
+import com.edu.netc.bakensweets.utils.Utils;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
 
 @AllArgsConstructor
 @Service
@@ -48,14 +47,33 @@ public class KitchenwareServiceImpl implements KitchenwareService {
 
 
     @Override
-    public String createKitchenware(KitchenwareDTO kitchenwareDTO) {
+    public KitchenwareDTO createKitchenware(KitchenwareDTO kitchenwareDTO) {
         Collection<KitchenwareCategory> categories = kitchenwareRepository.getAllCategories();
         if (!categories.contains(new KitchenwareCategory(kitchenwareDTO.getCategory()))) {
             throw new CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Category is invalid");
         }
             Kitchenware kitchenware = kitchenwareMapper.kitchenwareDTOtoKitchenware(kitchenwareDTO);
-            kitchenwareRepository.create(kitchenware);
-            return "Kitchenware has been added";
+        Long id = Utils.generateUniqueId();
+        kitchenware.setId(id);
+        kitchenwareRepository.create(kitchenware);
+        kitchenwareDTO.setId(id.toString());
+        kitchenwareDTO.setActive(true);
+        return kitchenwareDTO;
+    }
+
+    @Override
+    public ItemsPerPageDTO<KitchenwareDTO> getFilteredKitchenware(String name, List<Object> args, int limit, boolean order, int currentPage) {
+        int count = kitchenwareRepository.countFilteredKitchenware(name, args);
+        int pageCount = count % limit == 0 ? count / limit : count / limit + 1;
+        if (limit < 1 || currentPage < 1 || currentPage > pageCount) {
+            throw new CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Invalid params");
+        }
+        Collection<Kitchenware> kitchenwarePage = kitchenwareRepository.filterKitchenware(
+                name, args, limit,  (currentPage - 1) * limit, order
+        );
+        return new ItemsPerPageDTO<KitchenwareDTO>(
+                kitchenwareMapper.kitchenwarePageToDtoCollection(kitchenwarePage), currentPage, count
+        );
     }
 
 

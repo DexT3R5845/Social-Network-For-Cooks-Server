@@ -13,6 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -38,7 +40,23 @@ public class KitchenwareController {
             @ApiResponse(code = 200, message = "Kitchenware has been added"),
             @ApiResponse(code = 400, message = "Something went wrong"),
             @ApiResponse(code = 422, message = "Category is invalid")})
-    public ResponseEntity<String> createKitchenware(@RequestBody KitchenwareDTO kitchenwareDTO) {
-        return ResponseEntity.ok(kitchenwareService.createKitchenware(kitchenwareDTO));
+    public ResponseEntity<KitchenwareDTO> createKitchenware(@RequestBody KitchenwareDTO kitchenwareDTO) {
+        KitchenwareDTO dto = kitchenwareService.createKitchenware(kitchenwareDTO);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PreAuthorize("hasRole('ROLE_MODERATOR')")
+    @GetMapping(value = "/filter")
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Something went wrong"),
+            @ApiResponse(code = 422, message = "Invalid params")})
+    public ResponseEntity<ItemsPerPageDTO<KitchenwareDTO>> getFilteredKitchenware(
+            @RequestParam(value = "pageSize") int pageSize,
+            @RequestParam(value = "pageNum", defaultValue = "1", required = false) int currentPage,
+            @RequestParam(value = "name", defaultValue = "", required = false) String name,
+            @RequestParam(value = "categories", required = false) List<Object> categories,
+            @RequestParam(value = "order", defaultValue = "true", required = false) boolean order)
+     {
+        return ResponseEntity.ok(kitchenwareService.getFilteredKitchenware(name, categories, pageSize, order, currentPage));
     }
 }
