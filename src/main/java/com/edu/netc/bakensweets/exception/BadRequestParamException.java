@@ -10,5 +10,4 @@ import java.util.HashMap;
 public class BadRequestParamException extends RuntimeException {
     private final String param;
     private final String paramMessage;
-    private final String message;
 }

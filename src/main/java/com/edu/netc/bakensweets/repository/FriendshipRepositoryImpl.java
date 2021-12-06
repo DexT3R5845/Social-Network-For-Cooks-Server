@@ -1,6 +1,5 @@
 package com.edu.netc.bakensweets.repository;
 
-import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.model.Friendship;
 import com.edu.netc.bakensweets.model.FriendshipStatus;
 import com.edu.netc.bakensweets.repository.interfaces.FriendshipRepository;
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 
 @Repository
-public class FriendshipRepositoryImpl extends BaseJdbsRepository implements FriendshipRepository {
+public class FriendshipRepositoryImpl extends BaseJdbcRepository implements FriendshipRepository {
     @Value("${sql.friendship.create}")
     private String sqlCreate;
     @Value("${sql.friendship.delete}")

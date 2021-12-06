@@ -69,7 +69,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
         PasswordResetToken passResetToken = passResetTokenRepository.findByToken(token);
         Credentials credentials = credentialsRepository.findById(passResetToken.getAccountId());
         if(passwordEncoder.matches(newPassword, credentials.getPassword()))
-            throw new BadRequestParamException("password", "The new password is similar to the old one", "PASSWORD_SIMILAR");
+            throw new BadRequestParamException("password", "The new password is similar to the old one");
         credentials.setPassword(passwordEncoder.encode(newPassword));
         credentialsRepository.update(credentials);
         passResetToken.setActive(false);
