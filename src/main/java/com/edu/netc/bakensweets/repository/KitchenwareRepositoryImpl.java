@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 import java.util.*;
 
 @Repository
-public class KitchenwareRepositoryImpl extends BaseJdbsRepository implements KitchenwareRepository {
+public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements KitchenwareRepository {
     public KitchenwareRepositoryImpl(JdbcTemplate jdbcTemplate) {super(jdbcTemplate);}
 
     @Value("${sql.kitchenware.create}")
