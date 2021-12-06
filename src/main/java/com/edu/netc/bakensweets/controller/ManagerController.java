@@ -8,6 +8,7 @@ import com.edu.netc.bakensweets.service.interfaces.ModerCreationService;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -75,7 +76,8 @@ public class ManagerController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/profile-status")
     @ApiResponse(code = 400, message = "no such id in db")
-    public void updateStatus(@RequestParam long id, @RequestParam boolean status) {
+    public HttpStatus updateStatus(@RequestParam long id, @RequestParam boolean status) {
         accountService.updateModerStatus(id, status);
+        return HttpStatus.OK;
     }
 }
