@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 
 @Repository
-public class WrongAttempLoginRepositoryImpl extends BaseJdbsRepository implements WrongAttempLoginRepository {
+public class WrongAttempLoginRepositoryImpl extends BaseJdbcRepository implements WrongAttempLoginRepository {
 
     @Value("${sql.wrongAttemptLogin.create}")
     private String sqlQueryCreate;

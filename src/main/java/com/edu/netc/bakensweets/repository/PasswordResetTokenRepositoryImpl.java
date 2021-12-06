@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class PasswordResetTokenRepositoryImpl extends BaseJdbsRepository implements PasswordResetTokenRepository {
+public class PasswordResetTokenRepositoryImpl extends BaseJdbcRepository implements PasswordResetTokenRepository {
     @Value("${sql.passwordResetToken.create}")
     private String sqlQueryCreate;
     @Value("${sql.passwordResetToken.findByAccountId}")
@@ -36,13 +36,13 @@ public class PasswordResetTokenRepositoryImpl extends BaseJdbsRepository impleme
 
     @Override
     public void update(PasswordResetToken passResetToken) {
-            jdbcTemplate.update(sqlQueryUpdate, passResetToken.getResetToken(), passResetToken.getExpiryDate(), passResetToken.getAccountId(),
-                    passResetToken.isActive(), passResetToken.getId());
+        jdbcTemplate.update(sqlQueryUpdate, passResetToken.getResetToken(), passResetToken.getExpiryDate(), passResetToken.getAccountId(),
+                passResetToken.isActive(), passResetToken.getId());
     }
 
     @Override
     public void deleteById(Long id) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
