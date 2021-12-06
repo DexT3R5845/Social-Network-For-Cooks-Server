@@ -26,6 +26,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 
@@ -61,36 +62,36 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public String signIn(String username, String password, String recaptcha_token, String ip) {
-        boolean need_captcha = false;
-        WrongAttemptLogin sessionUserWrongAttemt = wrongAttemptLoginService.findSessionByIpAndTime(ip, LocalDateTime.now());
+        WrongAttemptLogin sessionUserWrongAttempt = wrongAttemptLoginService.findSessionByIpAndTime(ip, LocalDateTime.now());
+        boolean needCaptcha = false;
         try {
-            if(sessionUserWrongAttemt != null && sessionUserWrongAttemt.getCountWrongAttempts() >= 5) {
-                need_captcha = true;
+            if(sessionUserWrongAttempt != null && sessionUserWrongAttempt.getCountWrongAttempts() >= 5) {
+                needCaptcha = true;
                 if(recaptcha_token == null || recaptcha_token.isEmpty())
-                    throw new FailedAuthorizationException(HttpStatus.UNPROCESSABLE_ENTITY, "Need captcha", need_captcha);
+                    throw new FailedAuthorizationException(HttpStatus.UNPROCESSABLE_ENTITY, "Need captcha", needCaptcha);
                 if(!captchaService.isValidCaptcha(recaptcha_token)) {
-                    wrongAttemptLoginService.UpdateSession(sessionUserWrongAttemt);
-                    throw new FailedAuthorizationException(HttpStatus.UNPROCESSABLE_ENTITY, "Recaptcha token is invalid", need_captcha);
+                    wrongAttemptLoginService.updateSession(sessionUserWrongAttempt);
+                    throw new FailedAuthorizationException(HttpStatus.UNPROCESSABLE_ENTITY, "Recaptcha token is invalid", needCaptcha);
                 }
             }
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
             return jwtTokenProvider.createToken(username, accountRepository.findByEmail(username).getAccountRole());
         } catch (AuthenticationException e) {
-            if(sessionUserWrongAttemt == null)
-                wrongAttemptLoginService.CreateSession(new WrongAttemptLogin(ip, LocalDateTime.now(), 1));
+            if(sessionUserWrongAttempt == null)
+                wrongAttemptLoginService.createSession(new WrongAttemptLogin(ip, LocalDateTime.now(), 1));
             else
-                wrongAttemptLoginService.UpdateSession(sessionUserWrongAttemt);
-            throw new FailedAuthorizationException(HttpStatus.UNAUTHORIZED, "Invalid username/password supplied", need_captcha);
+                wrongAttemptLoginService.updateSession(sessionUserWrongAttempt);
+            throw new FailedAuthorizationException(HttpStatus.UNAUTHORIZED, "Invalid username/password supplied", needCaptcha);
         }
     }
 
     @Override
-    public String signUp(AccountDTO accountDTO) {
+    @Transactional
+    public void signUp(AccountDTO accountDTO) {
         try {
             createNewAccount(accountDTO, AccountRole.ROLE_USER);
-            return "Reg Success";
         } catch (DuplicateKeyException ex) {
-            throw new BadRequestParamException("email", "Email already exists", "EMAIL_EXIST");
+            throw new CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Email already exists");
         }
     }
 

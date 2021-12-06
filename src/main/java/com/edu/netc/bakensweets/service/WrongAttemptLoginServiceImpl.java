@@ -28,12 +28,12 @@ public class WrongAttemptLoginServiceImpl implements WrongAttemptLoginService {
         }
     }
 
-    public void CreateSession(WrongAttemptLogin wrongAttemptLogin){
+    public void createSession(WrongAttemptLogin wrongAttemptLogin){
         wrongAttemptLogin.setExpiryTime(wrongAttemptLogin.getExpiryTime().plusMinutes(expiryCaptchaForUserInMinutes));
         wrongAttempLoginRepository.create(wrongAttemptLogin);
     }
 
-    public void UpdateSession(WrongAttemptLogin wrongAttemptLogin){
+    public void updateSession(WrongAttemptLogin wrongAttemptLogin){
         wrongAttemptLogin.setExpiryTime(LocalDateTime.now().plusMinutes(expiryCaptchaForUserInMinutes));
         wrongAttemptLogin.setCountWrongAttempts(wrongAttemptLogin.getCountWrongAttempts()+1);
         wrongAttempLoginRepository.update(wrongAttemptLogin);

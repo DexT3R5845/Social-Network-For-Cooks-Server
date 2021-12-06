@@ -44,7 +44,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
             emailSenderService.sendResetLinkPassword(email, passwordResetToken.getResetToken());
             passResetTokenRepository.create(passwordResetToken);
         } catch (EmptyResultDataAccessException ex){
-            throw new BadRequestParamException("email", String.format("Account %s not found.", email), "ACCOUNT_NOT_FOUND");
+            throw new CustomException(HttpStatus.NOT_FOUND, String.format("Account %s not found.", email));
         }
     }
 
@@ -69,7 +69,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
         PasswordResetToken passResetToken = passResetTokenRepository.findByToken(token);
         Credentials credentials = credentialsRepository.findById(passResetToken.getAccountId());
         if(passwordEncoder.matches(newPassword, credentials.getPassword()))
-            throw new BadRequestParamException("password", "The new password is similar to the old one", "PASSWORD_SIMILAR");
+            throw new BadRequestParamException("password", "The new password is similar to the old one");
         credentials.setPassword(passwordEncoder.encode(newPassword));
         credentialsRepository.update(credentials);
         passResetToken.setActive(false);
