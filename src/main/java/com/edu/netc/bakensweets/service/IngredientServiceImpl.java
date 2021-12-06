@@ -2,13 +2,16 @@ package com.edu.netc.bakensweets.service;
 
 import com.edu.netc.bakensweets.dto.IngredientDTO;
 import com.edu.netc.bakensweets.dto.PaginationDTO;
+import com.edu.netc.bakensweets.exception.BadRequestParamException;
+import com.edu.netc.bakensweets.exception.CustomException;
+import com.edu.netc.bakensweets.mapperConfig.IngredientMapper;
 import com.edu.netc.bakensweets.model.Ingredient;
 import com.edu.netc.bakensweets.model.form.SearchIngredientModel;
 import com.edu.netc.bakensweets.repository.interfaces.IngredientRepository;
 import com.edu.netc.bakensweets.service.interfaces.IngredientService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -16,38 +19,56 @@ import java.util.Collection;
 @Service
 public class IngredientServiceImpl implements IngredientService {
     private final IngredientRepository ingredientRepository;
+    private final IngredientMapper ingredientMapper;
 
-    public IngredientServiceImpl(IngredientRepository ingredientRepository) {
+    public IngredientServiceImpl(IngredientRepository ingredientRepository, IngredientMapper ingredientMapper) {
         this.ingredientRepository = ingredientRepository;
+        this.ingredientMapper = ingredientMapper;
     }
 
     @Override
     public void createIngredient(IngredientDTO ingredientDto) {
-
+        try {
+            Ingredient ingredient = ingredientMapper.ingredientDTOtoIngredient(ingredientDto);
+            ingredientRepository.create(ingredient);
+        } catch (DataIntegrityViolationException ex) {
+            throw new BadRequestParamException("categoryIngredient", String.format("Category '%s' not found", ingredientDto.getIngredientCategory()));
+        }
     }
 
     @Override
     public Ingredient getIngredientById(Long id) {
-        return ingredientRepository.findById(id);
+        try {
+            return ingredientRepository.findById(id);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new CustomException(HttpStatus.NOT_FOUND, String.format("Ingredient with id %s not found.", id));
+        }
     }
 
     @Override
     public PaginationDTO<Ingredient> getAllIngredients(SearchIngredientModel searchIngredientModel) {
-        PageRequest pageRequest = PageRequest.of(searchIngredientModel.getNumPage(), searchIngredientModel.getSizePage());
-        searchIngredientModel.setNumPage(pageRequest.getPageNumber());
-        int totalElements = ingredientRepository.count();
+        long numPage = searchIngredientModel.getNumPage();
+        int sizePage = searchIngredientModel.getSizePage();
+
+        searchIngredientModel.setNumPage(searchIngredientModel.getNumPage() > 0 ? (numPage * sizePage) : 0);
+        int totalElements = ingredientRepository.count(searchIngredientModel);
         Collection<Ingredient> ingredients = ingredientRepository.findAll(searchIngredientModel);
 
-        return new PaginationDTO<Ingredient>(ingredients, totalElements);
+        return new PaginationDTO<>(ingredients, totalElements);
     }
 
     @Override
     public void updateIngredient(Ingredient ingredient) {
-        ingredientRepository.update(ingredient);
+        try {
+            ingredientRepository.update(ingredient);
+        } catch (DataIntegrityViolationException ex) {
+            throw new BadRequestParamException("categoryIngredient", String.format("Category '%s' not found", ingredient.getIngredientCategory()));
+        }
     }
 
     @Override
     public void updateStatus(Long id, boolean status) {
-        ingredientRepository.updateStatus(id, status);
+        if (!ingredientRepository.updateStatus(id, status))
+            throw new CustomException(HttpStatus.NOT_FOUND, String.format("Ingredient with id %s not found", id));
     }
 }

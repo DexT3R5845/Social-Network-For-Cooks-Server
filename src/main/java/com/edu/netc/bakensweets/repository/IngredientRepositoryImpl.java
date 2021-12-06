@@ -11,6 +11,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @Repository
 public class IngredientRepositoryImpl extends BaseJdbcRepository implements IngredientRepository {
@@ -57,18 +59,21 @@ public class IngredientRepositoryImpl extends BaseJdbcRepository implements Ingr
     public Collection<Ingredient> findAll(SearchIngredientModel searchIngredientModel) {
         NamedParameterJdbcTemplate npJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
 
-        String query = String.format(sqlQueryFindAllByFilter, searchIngredientModel.isFilterASC() ? "ASC": "DESC");
+        String query = String.format(sqlQueryFindAllByFilter, searchIngredientModel.getIngredientCategory() == null,
+                searchIngredientModel.getSortBy(), searchIngredientModel.isSortASC() ? "ASC" : "DESC");
         return npJdbcTemplate.query(query, new BeanPropertySqlParameterSource(searchIngredientModel),
                 new BeanPropertyRowMapper<>(Ingredient.class));
     }
 
     @Override
-    public int count() {
-        return jdbcTemplate.queryForObject(sqlQueryRowCount, Integer.class);
+    public int count(SearchIngredientModel searchIngredientModel) {
+        String query = String.format(sqlQueryRowCount, searchIngredientModel.getIngredientCategory() == null);
+        return namedParameterJdbcTemplate.queryForObject(query, new BeanPropertySqlParameterSource(searchIngredientModel),
+                Integer.class);
     }
 
     @Override
-    public void updateStatus(Long id, boolean status) {
-        jdbcTemplate.update(sqlQueryUpdateStatus, status, id);
+    public boolean updateStatus(Long id, boolean status) {
+        return jdbcTemplate.update(sqlQueryUpdateStatus, status, id) != 0;
     }
 }

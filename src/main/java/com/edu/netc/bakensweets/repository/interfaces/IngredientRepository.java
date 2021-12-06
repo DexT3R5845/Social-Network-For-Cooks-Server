@@ -9,6 +9,6 @@ import java.util.Collection;
 
 public interface IngredientRepository extends BaseCrudRepository<Ingredient, Long> {
     Collection<Ingredient> findAll(SearchIngredientModel searchIngredientModel);
-    int count();
-    void updateStatus(Long id, boolean status);
+    int count(SearchIngredientModel searchIngredientModel);
+    boolean updateStatus(Long id, boolean status);
 }
