@@ -31,19 +31,6 @@ public interface KitchenwareMapper {
             @Mapping(target = "active", source = "kitchenware.active")
     })
     KitchenwareDTO kitchenwaretoKitchenwareDTO(Kitchenware kitchenware);
-    @Mappings({
-            @Mapping(target="categoryName", source="kitchenwareCategoryDTO.name")
-    })
-    KitchenwareCategory KitchenwareCategoryDTOtoKitchenwareCategory(KitchenwareCategoryDTO kitchenwareCategoryDTO);
-    @Mappings({
-            @Mapping(target="name", source="kitchenwareCategory.categoryName")
-    })
-    KitchenwareCategoryDTO KitchenwareCategorytoKitchenwareCategoryDTO(KitchenwareCategory kitchenwareCategory);
-
-    @Mappings({
-            @Mapping(target="name", source="categories.categoryName")
-    })
-    Collection<KitchenwareCategoryDTO> kitchenwareCategoriesToDtoCollection (Collection<KitchenwareCategory> categories);
 
     @Mappings({
             @Mapping(target="id", source="kitchenwarePage.id"),

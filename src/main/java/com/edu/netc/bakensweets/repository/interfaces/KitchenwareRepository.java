@@ -9,7 +9,8 @@ import java.util.Collection;
 import java.util.List;
 
 public interface KitchenwareRepository extends  BaseCrudRepository<Kitchenware, Long>{
-    Collection<KitchenwareCategory> getAllCategories();
+    Collection<String> getAllCategories();
+    void reactivateById(Long id);
     Collection<Kitchenware> filterKitchenware (String name, List<Object> args, int limit, int offset, boolean order);
     int countFilteredKitchenware (String name, List<Object> args);
 }

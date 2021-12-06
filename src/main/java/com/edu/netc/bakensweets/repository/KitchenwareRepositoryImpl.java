@@ -9,6 +9,7 @@ import com.edu.netc.bakensweets.repository.interfaces.KitchenwareRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -32,31 +33,49 @@ public class KitchenwareRepositoryImpl extends BaseJdbsRepository implements Kit
     @Value("${sql.kitchenware.filterDesc}")
     private String sqlFilterDesc;
 
+    @Value("${sql.kitchenware.update}")
+    private String sqlUpdate;
+
+    @Value("${sql.kitchenware.reactivate}")
+    private String sqlReactivate;
+
+    @Value("${sql.kitchenware.delete}")
+    private String sqlDelete;
+
+    @Value("${sql.kitchenware.findById}")
+    private String sqlFindById;
+
+
     @Override
-    public void create(Kitchenware kitchenware) {
-        jdbcTemplate.update(sqlCreate, kitchenware.getId(), kitchenware.getKitchwarName(), kitchenware.getKitchwarImg(), kitchenware.getKitchwarCategory());
+    public void create(Kitchenware item) {
+        jdbcTemplate.update(sqlCreate, item.getId(), item.getKitchwarName(), item.getKitchwarImg(), item.getKitchwarCategory());
     }
 
     @Override
     public void update(Kitchenware item) {
-        throw new UnsupportedOperationException();
+        jdbcTemplate.update(sqlUpdate, item.getKitchwarName(), item.getKitchwarImg(), item.getKitchwarCategory(), item.getId());
     }
 
     @Override
     public void deleteById(Long id) {
-        throw new UnsupportedOperationException();
+        jdbcTemplate.update(sqlDelete, id);
     }
 
     @Override
-    public Kitchenware findById(Long integer) {
-        throw new UnsupportedOperationException();
-        // return null;
+    public void reactivateById(Long id) {
+        jdbcTemplate.update(sqlReactivate, id);
     }
 
     @Override
-    public Collection<KitchenwareCategory> getAllCategories() {
-        return jdbcTemplate.query(
-                sqlGetAllCategories, new BeanPropertyRowMapper<>(KitchenwareCategory.class));
+    public Kitchenware findById(Long id) {
+        return jdbcTemplate.queryForObject(
+                sqlFindById, new BeanPropertyRowMapper<>(Kitchenware.class), id);
+    }
+
+    @Override
+    public Collection<String> getAllCategories() {
+        return jdbcTemplate.queryForList(
+                sqlGetAllCategories, String.class);
     };
 
     @Override

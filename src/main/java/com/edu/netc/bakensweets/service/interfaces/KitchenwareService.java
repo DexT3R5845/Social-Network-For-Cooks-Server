@@ -7,7 +7,10 @@ import java.util.Collection;
 import java.util.List;
 
 public interface KitchenwareService {
-    KitchenwareCategoryCollectionDTO getAllCategories();
+    Collection<String> getAllCategories();
     KitchenwareDTO createKitchenware(KitchenwareDTO kitchenwareDTO);
+    KitchenwareDTO updateKitchenware(KitchenwareDTO kitchenwareDTO);
+    KitchenwareDTO deleteKitchenware(String id);
+    KitchenwareDTO reactivateKitchenware(String id);
     ItemsPerPageDTO<KitchenwareDTO> getFilteredKitchenware(String name, List<Object> args, int limit, boolean order, int currentPage);
 }

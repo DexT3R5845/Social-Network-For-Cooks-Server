@@ -30,7 +30,7 @@ public class KitchenwareController {
     @GetMapping(value = "/categories")
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Something went wrong")})
-    public ResponseEntity<KitchenwareCategoryCollectionDTO> getAllCategories() {
+    public ResponseEntity<Collection<String>> getAllCategories() {
         return ResponseEntity.ok(kitchenwareService.getAllCategories());
     }
 
@@ -42,6 +42,39 @@ public class KitchenwareController {
             @ApiResponse(code = 422, message = "Category is invalid")})
     public ResponseEntity<KitchenwareDTO> createKitchenware(@RequestBody KitchenwareDTO kitchenwareDTO) {
         KitchenwareDTO dto = kitchenwareService.createKitchenware(kitchenwareDTO);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PreAuthorize("hasRole('ROLE_MODERATOR')")
+    @PutMapping(value = "/update")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Update successful"),
+            @ApiResponse(code = 400, message = "Something went wrong"),
+            @ApiResponse(code = 422, message = "Parameter(s) is/are invalid")})
+    public ResponseEntity<KitchenwareDTO> updateKitchenware(@RequestBody KitchenwareDTO kitchenwareDTO) {
+        KitchenwareDTO dto = kitchenwareService.updateKitchenware(kitchenwareDTO);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PreAuthorize("hasRole('ROLE_MODERATOR')")
+    @DeleteMapping(value = "/delete/{id}")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Deactivation successful"),
+            @ApiResponse(code = 400, message = "Something went wrong"),
+            @ApiResponse(code = 422, message = "Id is invalid")})
+    public ResponseEntity<KitchenwareDTO> deleteKitchenware(@PathVariable String id) {
+        KitchenwareDTO dto = kitchenwareService.deleteKitchenware(id);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PreAuthorize("hasRole('ROLE_MODERATOR')")
+    @PutMapping(value = "/reactivate/{id}")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Reactivation successful"),
+            @ApiResponse(code = 400, message = "Something went wrong"),
+            @ApiResponse(code = 422, message = "Id is invalid")})
+    public ResponseEntity<KitchenwareDTO> reactivateKitchenware(@PathVariable String id) {
+        KitchenwareDTO dto = kitchenwareService.reactivateKitchenware(id);
         return ResponseEntity.ok(dto);
     }
 
