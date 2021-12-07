@@ -79,11 +79,20 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
     public Collection<Kitchenware> filterKitchenware (String name, List<Object> args, Boolean active, int limit, int offset, boolean order) {
         String searchQuery = order ? sqlFilterAsc : sqlFilterDesc;
         name = "%" + name + "%";
-        String questionMarks = String.join(",", Collections.nCopies(args.size(), "?"));
+        String questionMarks;
+        boolean filterByCategories = false;
+        if (args != null) {
+            questionMarks = String.join(",", Collections.nCopies(args.size(), "?"));
+            filterByCategories = true;
+        }
+        else {
+            questionMarks = "?";
+            args = new ArrayList<Object>();
+            args.add(null);
+        }
+        args.add(!filterByCategories);
         args.add(name);
-        System.out.println(active);
         args.add(active);
-        System.out.println(args);
         args.add(limit);
         args.add(offset);
         return jdbcTemplate.query(
@@ -94,14 +103,31 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
 
     @Override
     public int countFilteredKitchenware (String name, List<Object> args, Boolean active) {
-        String questionMarks = String.join(",", Collections.nCopies(args.size(), "?"));
         name = "%" + name + "%";
-        Collection<Object> argsCopy = new ArrayList<Object>(args);
+        String questionMarks;
+        boolean filterByCategories = false;
+        if (args != null) {
+            questionMarks = String.join(",", Collections.nCopies(args.size(), "?"));
+            filterByCategories = true;
+        }
+        else {
+            questionMarks = "?";
+        }
+        Collection<Object> argsCopy = new ArrayList<Object>();
+        if (args != null) {
+            for (Object obj : args) {
+                argsCopy.add(obj);
+            }
+        }
+        else {
+            argsCopy.add(null);
+        }
+        argsCopy.add(!filterByCategories);
         argsCopy.add(name);
-        System.out.println(active);
         argsCopy.add(active);
-        System.out.println(argsCopy);
         String request = String.format(sqlFilter, questionMarks);
+        System.out.println(argsCopy);
+        System.out.println(request);
         Integer count = jdbcTemplate.queryForObject(
                 request, Integer.class, argsCopy.toArray());
         return count == null ? 0 : count;
