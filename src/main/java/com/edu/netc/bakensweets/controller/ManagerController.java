@@ -1,7 +1,7 @@
 package com.edu.netc.bakensweets.controller;
 
 import com.edu.netc.bakensweets.dto.AccountPersonalInfoDTO;
-import com.edu.netc.bakensweets.dto.AccountsPerPageDTO;
+import com.edu.netc.bakensweets.dto.ItemsPerPageDTO;
 import com.edu.netc.bakensweets.dto.NewModeratorDTO;
 import com.edu.netc.bakensweets.service.interfaces.AccountService;
 import com.edu.netc.bakensweets.service.interfaces.ModerCreationService;
@@ -28,13 +28,14 @@ public class ManagerController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping(value = "/new")
+    @PostMapping("/new")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "the link has been sent to your email"),
         @ApiResponse(code = 400, message = "Something went wrong"),
         @ApiResponse(code = 401, message = "Invalid email supplied"),
         @ApiResponse(code = 409, message = "email is not unique")})
     public ResponseEntity<String> addModerator(@Valid @RequestBody NewModeratorDTO moderatorDTO) {
+        System.err.println(moderatorDTO.toString());
         return ResponseEntity.ok(moderCreationService.createToken(moderatorDTO));
     }
 
@@ -42,9 +43,9 @@ public class ManagerController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/all")
     @ApiResponse(code = 400, message = "db/repository error")
-    public AccountsPerPageDTO getAllBySearch(
+    public ItemsPerPageDTO getAllBySearch(
             @RequestParam(value = "size") int size,
-            @RequestParam(value = "pageNum", defaultValue = "1", required = false) int currentPage,
+            @RequestParam(value = "pageNum", defaultValue = "0", required = false) int currentPage,
             @RequestParam(value = "search", defaultValue = "", required = false) String search,
             @RequestParam(value = "order", defaultValue = "true", required = false) boolean order,
             @RequestParam(value = "gender", defaultValue = "", required = false) String gender,
@@ -74,7 +75,8 @@ public class ManagerController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/profile-status")
     @ApiResponse(code = 400, message = "no such id in db")
-    public void updateStatus(@RequestParam long id, @RequestParam boolean status) {
+    public HttpStatus updateStatus(@RequestParam long id, @RequestParam boolean status) {
         accountService.updateModerStatus(id, status);
+        return HttpStatus.OK;
     }
 }
