@@ -7,14 +7,14 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class KitchenwareDTO {
-    @NotNull(message = "id is mandatory")
-    @NotBlank(message = "id is mandatory")
+    @Pattern(regexp = "^[0-9]+$", message = "Id should be numeric")
     private String id;
     @NotNull(message = "name is mandatory")
     @NotBlank(message = "name is mandatory")

@@ -10,14 +10,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.Collection;
 import java.util.List;
 
 @Slf4j
 @RestController
+@Validated
 @RequestMapping("/api/kitchenware")
 public class KitchenwareController {
     private final KitchenwareService kitchenwareService;
@@ -40,7 +45,7 @@ public class KitchenwareController {
             @ApiResponse(code = 200, message = "Kitchenware has been added"),
             @ApiResponse(code = 400, message = "Something went wrong"),
             @ApiResponse(code = 422, message = "Category is invalid")})
-    public ResponseEntity<KitchenwareDTO> createKitchenware(@RequestBody KitchenwareDTO kitchenwareDTO) {
+    public ResponseEntity<KitchenwareDTO> createKitchenware(@RequestBody @Valid KitchenwareDTO kitchenwareDTO) {
         KitchenwareDTO dto = kitchenwareService.createKitchenware(kitchenwareDTO);
         return ResponseEntity.ok(dto);
     }
@@ -51,45 +56,42 @@ public class KitchenwareController {
             @ApiResponse(code = 200, message = "Update successful"),
             @ApiResponse(code = 400, message = "Something went wrong"),
             @ApiResponse(code = 422, message = "Parameter(s) is/are invalid")})
-    public ResponseEntity<KitchenwareDTO> updateKitchenware(@RequestBody KitchenwareDTO kitchenwareDTO) {
+    public ResponseEntity<KitchenwareDTO> updateKitchenware(@RequestBody @Valid KitchenwareDTO kitchenwareDTO) {
         KitchenwareDTO dto = kitchenwareService.updateKitchenware(kitchenwareDTO);
         return ResponseEntity.ok(dto);
     }
 
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
-    @DeleteMapping(value = "/delete/{id}")
+    @PutMapping(value = "/changeStatus/{id}")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Deactivation successful"),
+            @ApiResponse(code = 200, message = "Change successful"),
             @ApiResponse(code = 400, message = "Something went wrong"),
             @ApiResponse(code = 422, message = "Id is invalid")})
-    public ResponseEntity<KitchenwareDTO> deleteKitchenware(@PathVariable String id) {
-        KitchenwareDTO dto = kitchenwareService.deleteKitchenware(id);
-        return ResponseEntity.ok(dto);
+    public void changeKitchenwareStatus(@PathVariable long id) {
+        kitchenwareService.changeKitchenwareStatus(id);
     }
 
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
-    @PutMapping(value = "/reactivate/{id}")
+    @GetMapping(value = "/{id}")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Reactivation successful"),
             @ApiResponse(code = 400, message = "Something went wrong"),
             @ApiResponse(code = 422, message = "Id is invalid")})
-    public ResponseEntity<KitchenwareDTO> reactivateKitchenware(@PathVariable String id) {
-        KitchenwareDTO dto = kitchenwareService.reactivateKitchenware(id);
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<KitchenwareDTO> getKitchenwareById(@PathVariable long id) {
+        return ResponseEntity.ok(kitchenwareService.getKitchenwareById(id));
     }
 
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
     @GetMapping(value = "/filter")
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Something went wrong"),
-            @ApiResponse(code = 422, message = "Invalid params")})
+            @ApiResponse(code = 400, message = "Bad request")})
     public ResponseEntity<ItemsPerPageDTO<KitchenwareDTO>> getFilteredKitchenware(
-            @RequestParam(value = "pageSize") int pageSize,
-            @RequestParam(value = "pageNum", defaultValue = "1", required = false) int currentPage,
+            @RequestParam(value = "pageSize") @Min(value = 1, message = "Page size must be higher than 0") int pageSize,
+            @RequestParam(value = "pageNum", defaultValue = "0", required = false) @Min(value = 0, message = "Current page must be higher than 0") int currentPage,
             @RequestParam(value = "name", defaultValue = "", required = false) String name,
             @RequestParam(value = "categories", required = false) List<Object> categories,
+            @RequestParam(value = "active",  required = false) Boolean active,
             @RequestParam(value = "order", defaultValue = "true", required = false) boolean order)
      {
-        return ResponseEntity.ok(kitchenwareService.getFilteredKitchenware(name, categories, pageSize, order, currentPage));
+        return ResponseEntity.ok(kitchenwareService.getFilteredKitchenware(name, categories, active, pageSize, order, currentPage));
     }
 }

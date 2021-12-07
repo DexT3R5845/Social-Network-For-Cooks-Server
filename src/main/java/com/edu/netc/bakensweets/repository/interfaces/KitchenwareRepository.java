@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface KitchenwareRepository extends  BaseCrudRepository<Kitchenware, Long>{
     Collection<String> getAllCategories();
-    void reactivateById(Long id);
-    Collection<Kitchenware> filterKitchenware (String name, List<Object> args, int limit, int offset, boolean order);
-    int countFilteredKitchenware (String name, List<Object> args);
+    Collection<Kitchenware> filterKitchenware (String name, List<Object> args, Boolean active, int limit, int offset, boolean order);
+    int countFilteredKitchenware (String name, List<Object> args, Boolean active);
+    void changeStatusById(Long id);
 }

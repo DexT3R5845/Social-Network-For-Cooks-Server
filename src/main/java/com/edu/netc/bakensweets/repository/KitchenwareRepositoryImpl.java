@@ -36,11 +36,8 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
     @Value("${sql.kitchenware.update}")
     private String sqlUpdate;
 
-    @Value("${sql.kitchenware.reactivate}")
-    private String sqlReactivate;
-
-    @Value("${sql.kitchenware.delete}")
-    private String sqlDelete;
+    @Value("${sql.kitchenware.changeStatus}")
+    private String sqlChangeStatus;
 
     @Value("${sql.kitchenware.findById}")
     private String sqlFindById;
@@ -58,12 +55,12 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update(sqlDelete, id);
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void reactivateById(Long id) {
-        jdbcTemplate.update(sqlReactivate, id);
+    public void changeStatusById(Long id) {
+        jdbcTemplate.update(sqlChangeStatus, id);
     }
 
     @Override
@@ -79,11 +76,14 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
     };
 
     @Override
-    public Collection<Kitchenware> filterKitchenware (String name, List<Object> args, int limit, int offset, boolean order) {
+    public Collection<Kitchenware> filterKitchenware (String name, List<Object> args, Boolean active, int limit, int offset, boolean order) {
         String searchQuery = order ? sqlFilterAsc : sqlFilterDesc;
         name = "%" + name + "%";
         String questionMarks = String.join(",", Collections.nCopies(args.size(), "?"));
         args.add(name);
+        System.out.println(active);
+        args.add(active);
+        System.out.println(args);
         args.add(limit);
         args.add(offset);
         return jdbcTemplate.query(
@@ -93,11 +93,14 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
     }
 
     @Override
-    public int countFilteredKitchenware (String name, List<Object> args) {
+    public int countFilteredKitchenware (String name, List<Object> args, Boolean active) {
         String questionMarks = String.join(",", Collections.nCopies(args.size(), "?"));
         name = "%" + name + "%";
         Collection<Object> argsCopy = new ArrayList<Object>(args);
         argsCopy.add(name);
+        System.out.println(active);
+        argsCopy.add(active);
+        System.out.println(argsCopy);
         String request = String.format(sqlFilter, questionMarks);
         Integer count = jdbcTemplate.queryForObject(
                 request, Integer.class, argsCopy.toArray());

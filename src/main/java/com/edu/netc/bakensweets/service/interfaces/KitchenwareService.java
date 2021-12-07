@@ -10,7 +10,7 @@ public interface KitchenwareService {
     Collection<String> getAllCategories();
     KitchenwareDTO createKitchenware(KitchenwareDTO kitchenwareDTO);
     KitchenwareDTO updateKitchenware(KitchenwareDTO kitchenwareDTO);
-    KitchenwareDTO deleteKitchenware(String id);
-    KitchenwareDTO reactivateKitchenware(String id);
-    ItemsPerPageDTO<KitchenwareDTO> getFilteredKitchenware(String name, List<Object> args, int limit, boolean order, int currentPage);
+    void changeKitchenwareStatus(long id);
+    KitchenwareDTO getKitchenwareById(Long id);
+    ItemsPerPageDTO<KitchenwareDTO> getFilteredKitchenware(String name, List<Object> args, Boolean active, int limit, boolean order, int currentPage);
 }
