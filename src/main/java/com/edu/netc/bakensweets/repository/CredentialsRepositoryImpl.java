@@ -16,8 +16,6 @@ public class CredentialsRepositoryImpl extends BaseJdbcRepository implements Cre
     private String sqlQueryFindByEmail;
     @Value("${sql.credentials.findById}")
     private String sqlQueryFindById;
-    @Value("${sql.credentials.insertJwtToken}")
-    private String sqlQueryInsertJwtToken;
     @Value("${sql.credentials.update}")
     private String sqlQueryUpdate;
     @Value("${sql.credentials.countEmailUsages}")
@@ -39,7 +37,6 @@ public class CredentialsRepositoryImpl extends BaseJdbcRepository implements Cre
 
     @Override
     public void deleteById(Long id) {
-        //jdbcTemplate.update(sqlQueryDelete, id);
         throw new UnsupportedOperationException();
     }
 

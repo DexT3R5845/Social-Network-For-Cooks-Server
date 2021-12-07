@@ -2,7 +2,7 @@ package com.edu.netc.bakensweets.service;
 
 import com.edu.netc.bakensweets.dto.AccountDTO;
 import com.edu.netc.bakensweets.dto.AccountPersonalInfoDTO;
-import com.edu.netc.bakensweets.dto.AccountsPerPageDTO;
+import com.edu.netc.bakensweets.dto.ItemsPerPageDTO;
 import com.edu.netc.bakensweets.dto.UpdateAccountDTO;
 import com.edu.netc.bakensweets.exception.BadRequestParamException;
 import com.edu.netc.bakensweets.exception.CustomException;
@@ -26,6 +26,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 
@@ -61,36 +62,36 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public String signIn(String username, String password, String recaptcha_token, String ip) {
-        boolean need_captcha = false;
-        WrongAttemptLogin sessionUserWrongAttemt = wrongAttemptLoginService.findSessionByIpAndTime(ip, LocalDateTime.now());
+        WrongAttemptLogin sessionUserWrongAttempt = wrongAttemptLoginService.findSessionByIpAndTime(ip, LocalDateTime.now());
+        boolean needCaptcha = false;
         try {
-            if(sessionUserWrongAttemt != null && sessionUserWrongAttemt.getCountWrongAttempts() >= 5) {
-                need_captcha = true;
+            if(sessionUserWrongAttempt != null && sessionUserWrongAttempt.getCountWrongAttempts() >= 5) {
+                needCaptcha = true;
                 if(recaptcha_token == null || recaptcha_token.isEmpty())
-                    throw new FailedAuthorizationException(HttpStatus.UNPROCESSABLE_ENTITY, "Need captcha", need_captcha);
+                    throw new FailedAuthorizationException(HttpStatus.UNPROCESSABLE_ENTITY, "Need captcha", needCaptcha);
                 if(!captchaService.isValidCaptcha(recaptcha_token)) {
-                    wrongAttemptLoginService.UpdateSession(sessionUserWrongAttemt);
-                    throw new FailedAuthorizationException(HttpStatus.UNPROCESSABLE_ENTITY, "Recaptcha token is invalid", need_captcha);
+                    wrongAttemptLoginService.updateSession(sessionUserWrongAttempt);
+                    throw new FailedAuthorizationException(HttpStatus.UNPROCESSABLE_ENTITY, "Recaptcha token is invalid", needCaptcha);
                 }
             }
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
             return jwtTokenProvider.createToken(username, accountRepository.findByEmail(username).getAccountRole());
         } catch (AuthenticationException e) {
-            if(sessionUserWrongAttemt == null)
-                wrongAttemptLoginService.CreateSession(new WrongAttemptLogin(ip, LocalDateTime.now(), 1));
+            if(sessionUserWrongAttempt == null)
+                wrongAttemptLoginService.createSession(new WrongAttemptLogin(ip, LocalDateTime.now(), 1));
             else
-                wrongAttemptLoginService.UpdateSession(sessionUserWrongAttemt);
-            throw new FailedAuthorizationException(HttpStatus.UNAUTHORIZED, "Invalid username/password supplied", need_captcha);
+                wrongAttemptLoginService.updateSession(sessionUserWrongAttempt);
+            throw new FailedAuthorizationException(HttpStatus.UNAUTHORIZED, "Invalid username/password supplied", needCaptcha);
         }
     }
 
     @Override
-    public String signUp(AccountDTO accountDTO) {
+    @Transactional
+    public void signUp(AccountDTO accountDTO) {
         try {
             createNewAccount(accountDTO, AccountRole.ROLE_USER);
-            return "Reg Success";
         } catch (DuplicateKeyException ex) {
-            throw new BadRequestParamException("email", "Email already exists", "EMAIL_EXIST");
+            throw new CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Email already exists");
         }
     }
 
@@ -154,28 +155,27 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountsPerPageDTO getAllBySearchAccounts(String search, int currentPage, int limit,
-                                                     boolean order, String gender) {
+    public ItemsPerPageDTO getAllBySearchAccounts(String search, int currentPage, int limit,
+                                                  boolean order, String gender) {
         return getAllBySearch(search, currentPage, limit, AccountRole.ROLE_USER, order, gender, "true");
     }
 
 
     @Override
-    public AccountsPerPageDTO getAllBySearchModerators(String search, int currentPage, int limit,
-                                                       boolean order, String gender, String status) {
+    public ItemsPerPageDTO getAllBySearchModerators(String search, int currentPage, int limit,
+                                                    boolean order, String gender, String status) {
         return getAllBySearch(search, currentPage, limit, AccountRole.ROLE_MODERATOR, order, gender, status);
     }
 
 
-    public AccountsPerPageDTO getAllBySearch (String search, int currentPage, int limit, AccountRole role,
-                                              boolean order, String gender, String status) {
+    public ItemsPerPageDTO getAllBySearch (String search, int currentPage, int limit, AccountRole role,
+                                           boolean order, String gender, String status) {
         int accCount = accountRepository.countAccountsBySearch(search, role, gender, status);
-        int pageCount = accCount % limit == 0 ? accCount / limit : accCount / limit + 1;
         Collection<Account> accounts = accountRepository.findAccountsBySearch(
-                search, gender, role, status, limit,  (currentPage - 1) * limit, order
+                search, gender, role, status, limit,  currentPage * limit, order
         );
-        return new AccountsPerPageDTO(
-                accountMapper.accountsToPersonalInfoDtoCollection(accounts), currentPage, pageCount
+        return new ItemsPerPageDTO(
+                accountMapper.accountsToPersonalInfoDtoCollection(accounts), currentPage,  accCount
         );
     }
 

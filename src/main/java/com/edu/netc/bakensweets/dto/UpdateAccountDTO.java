@@ -13,7 +13,7 @@ import java.util.Date;
 public class UpdateAccountDTO {
     private String firstName;
     private String lastName;
-    @JsonFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern="dd/MM/yyyy")
     private Date birthDate;
     private String gender;
     private String imgUrl;
