@@ -6,6 +6,6 @@ import org.springframework.http.HttpStatus;
 
 public interface ModerCreationService {
     String createToken(NewModeratorDTO moderatorDTO);
-    HttpStatus validateModerToken(String token);
-    HttpStatus createAccount(AuthRequestResetUpdatePassword authRequestResetUpdatePassword);
+    boolean validateModerToken(String token);
+    void createAccount(AuthRequestResetUpdatePassword authRequestResetUpdatePassword);
 }
