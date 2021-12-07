@@ -1,5 +1,6 @@
 package com.edu.netc.bakensweets.repository;
 
+import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.model.Friendship;
 import com.edu.netc.bakensweets.model.FriendshipStatus;
 import com.edu.netc.bakensweets.repository.interfaces.FriendshipRepository;
@@ -50,7 +51,7 @@ public class FriendshipRepositoryImpl extends BaseJdbcRepository implements Frie
 
     @Override
     public Collection<Account> findByFriendshipAccepted(long inviterId, String search, String gender, int limit,
-                                                      int offset, boolean order) {
+                                                        int offset, boolean order) {
         String sqlFindByFriendshipAccepted = order ? sqlFindByFriendshipAcceptedAsc : sqlFindByFriendshipAcceptedDesc;
         return jdbcTemplate.query(sqlFindByFriendshipAccepted,
                 new BeanPropertyRowMapper<>(Account.class), inviterId, inviterId, inviterId, gender,
