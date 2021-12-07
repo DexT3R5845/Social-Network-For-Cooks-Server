@@ -2,20 +2,18 @@ package com.edu.netc.bakensweets.repository;
 
 import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.model.AccountRole;
-import com.edu.netc.bakensweets.model.Gender;
 import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
+
+import java.lang.reflect.Array;
 import java.util.Collection;
 
 
 @Repository
-public class AccountRepositoryImpl extends BaseJdbsRepository implements AccountRepository {
+public class AccountRepositoryImpl extends BaseJdbcRepository implements AccountRepository {
 
     @Value("${sql.account.create}")
     private String sqlQueryCreate;

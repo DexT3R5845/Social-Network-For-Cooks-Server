@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 
 @Repository
-public class UnconfirmedModerRepositoryImpl extends BaseJdbsRepository implements UnconfirmedModerRepository {
+public class UnconfirmedModerRepositoryImpl extends BaseJdbcRepository implements UnconfirmedModerRepository {
 
     @Value("${sql.unconfirmedModer.create}")
     private String sqlCreateQuery;
