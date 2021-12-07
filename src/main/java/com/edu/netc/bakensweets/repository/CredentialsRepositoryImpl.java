@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class CredentialsRepositoryImpl extends BaseJdbsRepository implements CredentialsRepository {
+public class CredentialsRepositoryImpl extends BaseJdbcRepository implements CredentialsRepository {
 
     @Value("${sql.credentials.create}")
     private String sqlQueryCreate;

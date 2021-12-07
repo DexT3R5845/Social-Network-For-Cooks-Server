@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 
 @Repository
-public class FriendshipRepositoryImpl extends BaseJdbsRepository implements FriendshipRepository {
+public class FriendshipRepositoryImpl extends BaseJdbcRepository implements FriendshipRepository {
     @Value("${sql.friendship.create}")
     private String sqlCreate;
     @Value("${sql.friendship.delete}")

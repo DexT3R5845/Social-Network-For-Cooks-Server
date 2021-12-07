@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class PasswordResetTokenRepositoryImpl extends BaseJdbsRepository implements PasswordResetTokenRepository {
+public class PasswordResetTokenRepositoryImpl extends BaseJdbcRepository implements PasswordResetTokenRepository {
     @Value("${sql.passwordResetToken.create}")
     private String sqlQueryCreate;
     @Value("${sql.passwordResetToken.findByAccountId}")

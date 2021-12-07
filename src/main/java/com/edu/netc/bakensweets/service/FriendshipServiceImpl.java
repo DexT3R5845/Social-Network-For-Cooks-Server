@@ -25,16 +25,13 @@ public class FriendshipServiceImpl implements FriendshipService {
     private final FriendshipRepository friendshipRepository;
     private final AccountMapper accountMapper;
 
-    public int countPage ( int size, int limit){
-        return size % limit == 0 ? size / limit : size/ limit + 1;
-    }
 
     @Override
     public void createInvite(String inviterEmail, long friendId) {
         Account inviterAcc = accountRepository.findByEmail(inviterEmail);
         try {
             friendshipRepository.create(new Friendship(inviterAcc.getId(), friendId));
-        }catch (DataAccessException ex) {
+        } catch (DataAccessException ex) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "There is no account with such id");
         }
     }
@@ -42,18 +39,17 @@ public class FriendshipServiceImpl implements FriendshipService {
     @Override
     public void deleteFriendship(String inviterEmail, long friendId) {
         Account inviterAcc = accountRepository.findByEmail(inviterEmail);
-        Friendship newFriendShip = friendshipRepository.findByInviterAndFriend(inviterAcc.getId(),friendId);
+        Friendship newFriendShip = friendshipRepository.findByInviterAndFriend(inviterAcc.getId(), friendId);
         friendshipRepository.deleteById(newFriendShip.getId());
-
     }
 
     @Override
     public void acceptInvite(String inviterEmail, long friendId) {
         Account inviterAcc = accountRepository.findByEmail(inviterEmail);
         try {
-            Friendship newFriendShip = friendshipRepository.findByInviterAndFriend(inviterAcc.getId(),friendId);
+            Friendship newFriendShip = friendshipRepository.findByInviterAndFriend(inviterAcc.getId(), friendId);
             friendshipRepository.updateFriendshipStatus(newFriendShip.getId(), FriendshipStatus.accepted);
-        }catch (DataAccessException ex) {
+        } catch (DataAccessException ex) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "There is no account with such id");
         }
     }
@@ -62,9 +58,9 @@ public class FriendshipServiceImpl implements FriendshipService {
     public AccountsPerPageDTO getAllViableFriends(String inviterEmail, String search, String gender, int currentPage,
                                                   int limit, boolean order) {
         Account sessionAcc = accountRepository.findByEmail(inviterEmail);
-        int personsSize = friendshipRepository.countFriendsToAdd(sessionAcc.getId(), search,gender);
+        int personsSize = friendshipRepository.countFriendsToAdd(sessionAcc.getId(), search, gender);
         int pageCount = countPage(personsSize, limit);
-        Collection<Account> persons = friendshipRepository.findFriendsToAdd(sessionAcc.getId(),search,gender, limit,
+        Collection<Account> persons = friendshipRepository.findFriendsToAdd(sessionAcc.getId(), search, gender, limit,
                 (currentPage - 1) * limit, order);
         return new AccountsPerPageDTO(accountMapper.accountsToPersonalInfoDtoCollection(persons), currentPage, pageCount);
     }
@@ -74,7 +70,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         Account sessionAcc = accountRepository.findByEmail(inviterEmail);
         int invitesSize = friendshipRepository.countByFriendshipUnaccepted(sessionAcc.getId(), search, gender);
         int pageCount = countPage(invitesSize, limit);
-        Collection<Account> friends = friendshipRepository.findByFriendshipUnaccepted(sessionAcc.getId(),search, gender, limit,
+        Collection<Account> friends = friendshipRepository.findByFriendshipUnaccepted(sessionAcc.getId(), search, gender, limit,
                 (currentPage - 1) * limit, order);
         return new AccountsPerPageDTO(accountMapper.accountsToPersonalInfoDtoCollection(friends), currentPage, pageCount);
     }
@@ -83,15 +79,14 @@ public class FriendshipServiceImpl implements FriendshipService {
     public AccountsPerPageDTO getFriends(String inviterEmail, String search, String gender, int currentPage, int limit, boolean order) {
         Account sessionAcc = accountRepository.findByEmail(inviterEmail);
         int friendsSize = friendshipRepository.countByFriendshipAccepted(sessionAcc.getId(), search, gender);
-        int pageCount = countPage(friendsSize, limit);;
-        Collection<Account> friends = friendshipRepository.findByFriendshipAccepted(sessionAcc.getId(),search, gender, limit,
+        int pageCount = countPage(friendsSize, limit);
+        ;
+        Collection<Account> friends = friendshipRepository.findByFriendshipAccepted(sessionAcc.getId(), search, gender, limit,
                 (currentPage - 1) * limit, order);
         return new AccountsPerPageDTO(accountMapper.accountsToPersonalInfoDtoCollection(friends), currentPage, pageCount);
     }
 
-
-
-
-
-
+    private int countPage(int size, int limit) {
+        return size % limit == 0 ? size / limit : size / limit + 1;
+    }
 }
