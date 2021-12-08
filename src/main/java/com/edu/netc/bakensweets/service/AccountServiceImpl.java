@@ -2,9 +2,8 @@ package com.edu.netc.bakensweets.service;
 
 import com.edu.netc.bakensweets.dto.AccountDTO;
 import com.edu.netc.bakensweets.dto.AccountPersonalInfoDTO;
-import com.edu.netc.bakensweets.dto.ItemsPerPageDTO;
+import com.edu.netc.bakensweets.dto.PageDTO;
 import com.edu.netc.bakensweets.dto.UpdateAccountDTO;
-import com.edu.netc.bakensweets.exception.BadRequestParamException;
 import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.exception.FailedAuthorizationException;
 import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
@@ -161,27 +160,25 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public ItemsPerPageDTO getAllBySearchAccounts(String search, int currentPage, int limit,
-                                                  boolean order, String gender) {
+    public PageDTO getAllBySearchAccounts(String search, int currentPage, int limit,
+                                          boolean order, String gender) {
         return getAllBySearch(search, currentPage, limit, AccountRole.ROLE_USER, order, gender, "true");
     }
 
 
     @Override
-    public ItemsPerPageDTO getAllBySearchModerators(String search, int currentPage, int limit,
-                                                    boolean order, String gender, String status) {
+    public PageDTO getAllBySearchModerators(String search, int currentPage, int limit,
+                                            boolean order, String gender, String status) {
         return getAllBySearch(search, currentPage, limit, AccountRole.ROLE_MODERATOR, order, gender, status);
     }
 
-    public ItemsPerPageDTO getAllBySearch (String search, int currentPage, int limit, AccountRole role,
-                                           boolean order, String gender, String status) {
+    public PageDTO getAllBySearch (String search, int currentPage, int limit, AccountRole role,
+                                   boolean order, String gender, String status) {
         int accCount = accountRepository.countAccountsBySearch(search, role, gender, status);
         Collection<Account> accounts = accountRepository.findAccountsBySearch(
                 search, gender, role, status, limit,  currentPage * limit, order
         );
-        return new ItemsPerPageDTO(
-                accountMapper.accountsToPersonalInfoDtoCollection(accounts), currentPage,  accCount
-        );
+        return new PageDTO(accountMapper.accountsToPersonalInfoDtoCollection(accounts),  accCount);
     }
 
 
