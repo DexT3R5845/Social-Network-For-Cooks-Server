@@ -97,6 +97,7 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
         createFilterArgsList(name, args, active);
         filterArgsList.add(limit);
         filterArgsList.add(offset);
+        System.out.println(filterArgsList);
         return jdbcTemplate.query(
                 String.format(searchQuery, filterQuestionMarks), new BeanPropertyRowMapper<>(Kitchenware.class),
                 filterArgsList.toArray()
@@ -123,7 +124,7 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
         else {
             filterQuestionMarks = "?";
             filterArgsList = new ArrayList<>();
-            filterArgsList.add(null);
+            filterArgsList.add("");
         }
         filterArgsList.add(!isFilteredByCategories);
         filterArgsList.add(name);

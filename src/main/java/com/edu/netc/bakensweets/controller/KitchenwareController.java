@@ -84,7 +84,7 @@ public class KitchenwareController {
     @GetMapping(value = "/")
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Bad request")})
-    public ResponseEntity<ItemsPerPageDTO<KitchenwareDTO>> getFilteredKitchenware(
+    public ResponseEntity<PaginationDTO<KitchenwareDTO>> getFilteredKitchenware(
             @RequestParam(value = "pageSize") @Min(value = 1, message = "Page size must be higher than 0") int pageSize,
             @RequestParam(value = "pageNum", defaultValue = "0", required = false) @Min(value = 0, message = "Current page must be higher than 0") int currentPage,
             @RequestParam(value = "name", defaultValue = "", required = false) String name,

@@ -12,5 +12,5 @@ public interface KitchenwareService {
     KitchenwareDTO updateKitchenware(KitchenwareDTO kitchenwareDTO, long id);
     void changeKitchenwareStatus(long id);
     KitchenwareDTO getKitchenwareById(Long id);
-    ItemsPerPageDTO<KitchenwareDTO> getFilteredKitchenware(String name, List<Object> args, Boolean active, int limit, boolean order, int currentPage);
+    PaginationDTO<KitchenwareDTO> getFilteredKitchenware(String name, List<Object> args, Boolean active, int limit, boolean order, int currentPage);
 }

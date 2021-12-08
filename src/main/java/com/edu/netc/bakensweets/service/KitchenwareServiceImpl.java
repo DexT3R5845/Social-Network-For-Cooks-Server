@@ -100,13 +100,13 @@ public class KitchenwareServiceImpl implements KitchenwareService {
 
     @Override
     @Transactional
-    public ItemsPerPageDTO<KitchenwareDTO> getFilteredKitchenware(String name, List<Object> args, Boolean active, int limit, boolean order, int currentPage) {
+    public PaginationDTO<KitchenwareDTO> getFilteredKitchenware(String name, List<Object> args, Boolean active, int limit, boolean order, int currentPage) {
         int count = kitchenwareRepository.countFilteredKitchenware(name, args, active);
         Collection<Kitchenware> kitchenwarePage = kitchenwareRepository.filterKitchenware(
                 name, args, active, limit,  currentPage * limit, order
         );
-        return new ItemsPerPageDTO<>(
-                kitchenwareMapper.kitchenwarePageToDtoCollection(kitchenwarePage), currentPage, count
+        return new PaginationDTO<>(
+                kitchenwareMapper.kitchenwarePageToDtoCollection(kitchenwarePage), count
         );
     }
 }
