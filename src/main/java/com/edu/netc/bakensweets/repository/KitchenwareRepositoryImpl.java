@@ -42,6 +42,10 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
     @Value("${sql.kitchenware.findById}")
     private String sqlFindById;
 
+    private List<Object> filterArgsList;
+
+    private String filterQuestionMarks;
+
 
     @Override
     public void create(Kitchenware item) {
@@ -49,18 +53,30 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
     }
 
     @Override
-    public void update(Kitchenware item) {
-        jdbcTemplate.update(sqlUpdate, item.getKitchwarName(), item.getKitchwarImg(), item.getKitchwarCategory(), item.getId());
+    public boolean update(Kitchenware item) {
+        int updated = jdbcTemplate.update(sqlUpdate, item.getKitchwarName(), item.getKitchwarImg(), item.getKitchwarCategory(), item.getId());
+        if (updated == 1) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     @Override
-    public void deleteById(Long id) {
+    public boolean deleteById(Long id) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void changeStatusById(Long id) {
-        jdbcTemplate.update(sqlChangeStatus, id);
+    public boolean changeStatusById(Long id) {
+        int updated = jdbcTemplate.update(sqlChangeStatus, id);
+        if (updated == 1) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     @Override
@@ -78,58 +94,39 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
     @Override
     public Collection<Kitchenware> filterKitchenware (String name, List<Object> args, Boolean active, int limit, int offset, boolean order) {
         String searchQuery = order ? sqlFilterAsc : sqlFilterDesc;
-        name = "%" + name + "%";
-        String questionMarks;
-        boolean filterByCategories = false;
-        if (args != null) {
-            questionMarks = String.join(",", Collections.nCopies(args.size(), "?"));
-            filterByCategories = true;
-        }
-        else {
-            questionMarks = "?";
-            args = new ArrayList<Object>();
-            args.add(null);
-        }
-        args.add(!filterByCategories);
-        args.add(name);
-        args.add(active);
-        args.add(limit);
-        args.add(offset);
+        createFilterArgsList(name, args, active);
+        filterArgsList.add(limit);
+        filterArgsList.add(offset);
         return jdbcTemplate.query(
-                String.format(searchQuery, questionMarks), new BeanPropertyRowMapper<>(Kitchenware.class),
-                args.toArray()
+                String.format(searchQuery, filterQuestionMarks), new BeanPropertyRowMapper<>(Kitchenware.class),
+                filterArgsList.toArray()
         );
     }
 
     @Override
     public int countFilteredKitchenware (String name, List<Object> args, Boolean active) {
-        name = "%" + name + "%";
-        String questionMarks;
-        boolean filterByCategories = false;
-        if (args != null) {
-            questionMarks = String.join(",", Collections.nCopies(args.size(), "?"));
-            filterByCategories = true;
-        }
-        else {
-            questionMarks = "?";
-        }
-        Collection<Object> argsCopy = new ArrayList<Object>();
-        if (args != null) {
-            for (Object obj : args) {
-                argsCopy.add(obj);
-            }
-        }
-        else {
-            argsCopy.add(null);
-        }
-        argsCopy.add(!filterByCategories);
-        argsCopy.add(name);
-        argsCopy.add(active);
-        String request = String.format(sqlFilter, questionMarks);
-        System.out.println(argsCopy);
-        System.out.println(request);
+        createFilterArgsList(name, args, active);
+        String request = String.format(sqlFilter, filterQuestionMarks);
         Integer count = jdbcTemplate.queryForObject(
-                request, Integer.class, argsCopy.toArray());
+                request, Integer.class, filterArgsList.toArray());
         return count == null ? 0 : count;
+    }
+
+    private void createFilterArgsList (String name, List<Object> args, Boolean active) {
+        name = "%" + name + "%";
+        boolean isFilteredByCategories = false;
+        if (args != null) {
+            filterQuestionMarks = String.join(",", Collections.nCopies(args.size(), "?"));
+            isFilteredByCategories = true;
+            filterArgsList = new ArrayList<>(args);
+        }
+        else {
+            filterQuestionMarks = "?";
+            filterArgsList = new ArrayList<>();
+            filterArgsList.add(null);
+        }
+        filterArgsList.add(!isFilteredByCategories);
+        filterArgsList.add(name);
+        filterArgsList.add(active);
     }
 }

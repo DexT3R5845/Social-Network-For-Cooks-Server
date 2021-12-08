@@ -1,6 +1,7 @@
 package com.edu.netc.bakensweets.service;
 
 import com.edu.netc.bakensweets.dto.*;
+import com.edu.netc.bakensweets.exception.BadRequestParamException;
 import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
 import com.edu.netc.bakensweets.mapperConfig.CredentialsMapper;
@@ -18,11 +19,13 @@ import com.edu.netc.bakensweets.service.interfaces.KitchenwareService;
 import com.edu.netc.bakensweets.service.interfaces.WrongAttemptLoginService;
 import com.edu.netc.bakensweets.utils.Utils;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,71 +37,76 @@ public class KitchenwareServiceImpl implements KitchenwareService {
     private final KitchenwareMapper kitchenwareMapper;
 
     @Override
+    @Transactional
     public Collection<String> getAllCategories() {
         return kitchenwareRepository.getAllCategories();
     }
 
-    private void checkCategory(String category) {
-        Collection<String> categories = kitchenwareRepository.getAllCategories();
-        if (!categories.contains(category)) {
-            throw new CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Category is invalid");
-        }
-    }
 
-    private void checkId(String id) {
-        if (id == null) {
-            throw new CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "No id provided");
-        }
-        else if (!id.matches("^[0-9]+$")) {
-            throw new CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Id is invalid");
-        }
-    }
 
     @Override
+    @Transactional
     public KitchenwareDTO getKitchenwareById(Long id) {
         try {
             return kitchenwareMapper.kitchenwaretoKitchenwareDTO(kitchenwareRepository.findById(id));
         } catch (EmptyResultDataAccessException ex) {
-            throw new CustomException(HttpStatus.NOT_FOUND, String.format("Ingredient with id %s not found.", id));
+            throw new CustomException(HttpStatus.NOT_FOUND, String.format("Kitchenware with id %s not found.", id));
         }
     }
 
     @Override
+    @Transactional
     public KitchenwareDTO createKitchenware(KitchenwareDTO kitchenwareDTO) {
-        checkCategory(kitchenwareDTO.getCategory());
-        Kitchenware kitchenware = kitchenwareMapper.kitchenwareDTOtoKitchenware(kitchenwareDTO);
-        Long id = Utils.generateUniqueId();
-        kitchenware.setId(id);
-        kitchenwareRepository.create(kitchenware);
-        kitchenwareDTO.setId(id.toString());
-        kitchenwareDTO.setActive(true);
-        return kitchenwareDTO;
+        try {
+            Kitchenware kitchenware = kitchenwareMapper.kitchenwareDTOtoKitchenware(kitchenwareDTO);
+            Long id = Utils.generateUniqueId();
+            kitchenware.setId(id);
+            kitchenwareRepository.create(kitchenware);
+            kitchenwareDTO.setId(id.toString());
+            kitchenwareDTO.setActive(true);
+            return kitchenwareDTO;
+
+        } catch (
+        DataIntegrityViolationException ex) {
+            throw new BadRequestParamException("category", "Category is invalid");
+        }
     }
 
     @Override
-    public KitchenwareDTO updateKitchenware(KitchenwareDTO kitchenwareDTO) {
-        checkCategory(kitchenwareDTO.getCategory());
-        checkId(kitchenwareDTO.getId());
-        Kitchenware kitchenware = kitchenwareMapper.kitchenwareDTOtoKitchenware(kitchenwareDTO);
-        kitchenwareRepository.update(kitchenware);
-        return kitchenwareDTO;
+    @Transactional
+    public KitchenwareDTO updateKitchenware(KitchenwareDTO kitchenwareDTO, long id) {
+        try {
+            kitchenwareDTO.setId(String.valueOf(id));
+            Kitchenware kitchenware = kitchenwareMapper.kitchenwareDTOtoKitchenware(kitchenwareDTO);
+            boolean updated = kitchenwareRepository.update(kitchenware);
+            if (!updated) {
+                throw new CustomException(HttpStatus.NOT_FOUND, String.format("Kitchenware with id %s not found.", id));
+            }
+            return kitchenwareDTO;
+        } catch (
+                DataIntegrityViolationException ex) {
+            throw new BadRequestParamException("category", "Category is invalid");
+        }
     }
 
     @Override
+    @Transactional
     public void changeKitchenwareStatus(long id) {
-        kitchenwareRepository.changeStatusById(id);
+        boolean updated = kitchenwareRepository.changeStatusById(id);
+        if (!updated) {
+            throw new CustomException(HttpStatus.NOT_FOUND, String.format("Kitchenware with id %s not found.", id));
+        }
     }
 
     @Override
+    @Transactional
     public ItemsPerPageDTO<KitchenwareDTO> getFilteredKitchenware(String name, List<Object> args, Boolean active, int limit, boolean order, int currentPage) {
         int count = kitchenwareRepository.countFilteredKitchenware(name, args, active);
         Collection<Kitchenware> kitchenwarePage = kitchenwareRepository.filterKitchenware(
                 name, args, active, limit,  currentPage * limit, order
         );
-        return new ItemsPerPageDTO<KitchenwareDTO>(
+        return new ItemsPerPageDTO<>(
                 kitchenwareMapper.kitchenwarePageToDtoCollection(kitchenwarePage), currentPage, count
         );
     }
-
-
 }

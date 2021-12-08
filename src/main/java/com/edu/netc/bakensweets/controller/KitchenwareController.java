@@ -40,7 +40,7 @@ public class KitchenwareController {
     }
 
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
-    @PostMapping(value = "/new")
+    @PostMapping(value = "/")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Kitchenware has been added"),
             @ApiResponse(code = 400, message = "Something went wrong"),
@@ -51,13 +51,13 @@ public class KitchenwareController {
     }
 
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
-    @PutMapping(value = "/update")
+    @PutMapping(value = "/{id}")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Update successful"),
             @ApiResponse(code = 400, message = "Something went wrong"),
             @ApiResponse(code = 422, message = "Parameter(s) is/are invalid")})
-    public ResponseEntity<KitchenwareDTO> updateKitchenware(@RequestBody @Valid KitchenwareDTO kitchenwareDTO) {
-        KitchenwareDTO dto = kitchenwareService.updateKitchenware(kitchenwareDTO);
+    public ResponseEntity<KitchenwareDTO> updateKitchenware(@PathVariable long id, @RequestBody @Valid KitchenwareDTO kitchenwareDTO) {
+        KitchenwareDTO dto = kitchenwareService.updateKitchenware(kitchenwareDTO, id);
         return ResponseEntity.ok(dto);
     }
 
@@ -81,7 +81,7 @@ public class KitchenwareController {
     }
 
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
-    @GetMapping(value = "/filter")
+    @GetMapping(value = "/")
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Bad request")})
     public ResponseEntity<ItemsPerPageDTO<KitchenwareDTO>> getFilteredKitchenware(

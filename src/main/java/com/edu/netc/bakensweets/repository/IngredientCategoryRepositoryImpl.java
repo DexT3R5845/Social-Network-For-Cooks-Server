@@ -24,12 +24,12 @@ public class IngredientCategoryRepositoryImpl extends BaseJdbcRepository impleme
     }
 
     @Override
-    public void update(IngredientCategory item) {
+    public boolean update(IngredientCategory item) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void deleteById(Long aLong) {
+    public boolean deleteById(Long aLong) {
         throw new UnsupportedOperationException();
     }
 

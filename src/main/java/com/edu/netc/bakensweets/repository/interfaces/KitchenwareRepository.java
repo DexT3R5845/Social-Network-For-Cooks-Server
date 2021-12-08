@@ -12,5 +12,5 @@ public interface KitchenwareRepository extends  BaseCrudRepository<Kitchenware, 
     Collection<String> getAllCategories();
     Collection<Kitchenware> filterKitchenware (String name, List<Object> args, Boolean active, int limit, int offset, boolean order);
     int countFilteredKitchenware (String name, List<Object> args, Boolean active);
-    void changeStatusById(Long id);
+    boolean changeStatusById(Long id);
 }
