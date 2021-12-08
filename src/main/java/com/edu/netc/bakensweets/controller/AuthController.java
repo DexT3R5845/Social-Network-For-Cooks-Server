@@ -21,7 +21,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Validated
-@RequestMapping("/api/auth")
+@RequestMapping(path = "/api/auth", produces = "application/json")
 @RestController
 public class AuthController {
     private final AccountService accountService;
@@ -84,7 +84,7 @@ public class AuthController {
             @ApiResponse(code = 400, message = "passwords do not match"),
             @ApiResponse(code = 410, message = "invalid token"),
             @ApiResponse(code = 404, message = "row is not found in db")})
-    public HttpStatus passwordCreation(@RequestParam String token) {
+    public boolean passwordCreation(@RequestParam @NotNull(message = "Token link is mandatory") @NotBlank(message = "Token link is mandatory") String token) {
         return moderCreationService.validateModerToken(token);
     }
 
@@ -93,11 +93,11 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "passwords do not match"),
             @ApiResponse(code = 410, message = "invalid token")})
-    public ResponseEntity<String> passwordCreationUpdate(@RequestBody AuthRequestResetUpdatePassword modelResetUpdatePassword) {
+    public HttpStatus passwordCreationUpdate(@Valid @RequestBody AuthRequestResetUpdatePassword modelResetUpdatePassword) {
         if (!modelResetUpdatePassword.getPassword().equals(modelResetUpdatePassword.getConfirmPassword()))
             throw new CustomException(HttpStatus.BAD_REQUEST, "Passwords do not match");
         moderCreationService.createAccount(modelResetUpdatePassword);
-        return ResponseEntity.ok("Moder account confirmed and created");
+        return HttpStatus.OK;
     }
 
 }
