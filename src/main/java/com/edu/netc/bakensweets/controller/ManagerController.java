@@ -5,6 +5,7 @@ import com.edu.netc.bakensweets.dto.ItemsPerPageDTO;
 import com.edu.netc.bakensweets.dto.NewModeratorDTO;
 import com.edu.netc.bakensweets.service.interfaces.AccountService;
 import com.edu.netc.bakensweets.service.interfaces.ModerCreationService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
@@ -28,21 +29,18 @@ public class ManagerController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping("/new")
+    @PostMapping("")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "the link has been sent to your email"),
-        @ApiResponse(code = 400, message = "Something went wrong"),
-        @ApiResponse(code = 401, message = "Invalid email supplied"),
-        @ApiResponse(code = 409, message = "email is not unique")})
+        @ApiResponse(code = 403, message = "this email has actual link that is valid until *time*"),
+        @ApiResponse(code = 409, message = "email in not unique")})
     public ResponseEntity<String> addModerator(@Valid @RequestBody NewModeratorDTO moderatorDTO) {
-        System.err.println(moderatorDTO.toString());
         return ResponseEntity.ok(moderCreationService.createToken(moderatorDTO));
     }
 
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @GetMapping("/all")
-    @ApiResponse(code = 400, message = "db/repository error")
+    @GetMapping("")
     public ItemsPerPageDTO getAllBySearch(
             @RequestParam(value = "size") int size,
             @RequestParam(value = "pageNum", defaultValue = "0", required = false) int currentPage,
@@ -58,25 +56,24 @@ public class ManagerController {
      * */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/{id}")
+    @ApiResponse(code = 404, message = "There is no account with such id")
     public AccountPersonalInfoDTO getModerById(@PathVariable long id) {
         return accountService.findById(id);
     }
 
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PutMapping("/profile")
+    @PutMapping("")
+    @ApiResponse(code = 404, message = "There is no account with such id")
     public void updateModerator(@RequestBody AccountPersonalInfoDTO accountDTO) {
         accountService.updatePersonalInfo(accountDTO);
     }
 
-    /**
-     * @param status GETS TRUE: CHANGE FROM ROLE_MODER TO ROLE_BAN, FALSE: CHANGE FROM ROLE_BAN TO ROLE_MODER
-     */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PutMapping("/profile-status")
-    @ApiResponse(code = 400, message = "no such id in db")
-    public HttpStatus updateStatus(@RequestParam long id, @RequestParam boolean status) {
-        accountService.updateModerStatus(id, status);
+    @PutMapping("/{id}")
+    @ApiResponse(code = 404, message = "There is no account with such id")
+    public HttpStatus updateStatus(@PathVariable long id) {
+        accountService.updateModerStatus(id);
         return HttpStatus.OK;
     }
 }

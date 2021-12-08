@@ -132,17 +132,23 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public void updatePersonalInfo(AccountPersonalInfoDTO accountDto) {
         Account account = accountMapper.accountPersonalInfoDTOtoAccounts(accountDto);
-        accountRepository.update(account);
+        try {
+            accountRepository.update(account);
+        } catch (DataAccessException e) {
+            throw new CustomException(HttpStatus.NOT_FOUND, "There is no account with such id");
+        }
     }
 
     @Override
-    public void updateModerStatus(long id, boolean status) {
+    @Transactional
+    public void updateModerStatus(long id) {
         try {
-            accountRepository.updateStatus(id, !status);
+            accountRepository.updateStatus(id);
         } catch (DataAccessException ex) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "There is no account with such id");
+            throw new CustomException(HttpStatus.NOT_FOUND, "There is no account with such id");
         }
     }
 
@@ -166,7 +172,6 @@ public class AccountServiceImpl implements AccountService {
                                                     boolean order, String gender, String status) {
         return getAllBySearch(search, currentPage, limit, AccountRole.ROLE_MODERATOR, order, gender, status);
     }
-
 
     public ItemsPerPageDTO getAllBySearch (String search, int currentPage, int limit, AccountRole role,
                                            boolean order, String gender, String status) {
