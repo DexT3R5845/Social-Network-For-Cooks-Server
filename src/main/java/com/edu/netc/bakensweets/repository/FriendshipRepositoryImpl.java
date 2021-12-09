@@ -108,13 +108,14 @@ public class FriendshipRepositoryImpl extends BaseJdbcRepository implements Frie
     }
 
     @Override
-    public void update(Friendship item) {
+    public boolean update(Friendship item) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void deleteById(Long id) {
+    public boolean deleteById(Long id) {
         jdbcTemplate.update(sqlDelete, id);
+        return true;
     }
 
     @Override
