@@ -40,7 +40,7 @@ public class KitchenwareController {
     }
 
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
-    @PostMapping(value = "/")
+    @PostMapping(value = "")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Kitchenware has been added"),
             @ApiResponse(code = 400, message = "Something went wrong"),
@@ -81,7 +81,7 @@ public class KitchenwareController {
     }
 
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
-    @GetMapping(value = "/")
+    @GetMapping(value = "")
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Bad request")})
     public ResponseEntity<PaginationDTO<KitchenwareDTO>> getFilteredKitchenware(

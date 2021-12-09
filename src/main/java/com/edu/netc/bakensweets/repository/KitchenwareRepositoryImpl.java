@@ -117,9 +117,14 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
         name = "%" + name + "%";
         boolean isFilteredByCategories = false;
         if (args != null) {
-            filterQuestionMarks = String.join(",", Collections.nCopies(args.size(), "?"));
-            isFilteredByCategories = true;
             filterArgsList = new ArrayList<>(args);
+            if (args.size() > 0) {
+                isFilteredByCategories = true;
+            }
+            else {
+                filterArgsList.add("");
+            }
+            filterQuestionMarks = String.join(",", Collections.nCopies(filterArgsList.size(), "?"));
         }
         else {
             filterQuestionMarks = "?";
