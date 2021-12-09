@@ -56,8 +56,8 @@ public class AccountRepositoryImpl extends BaseJdbcRepository implements Account
     }
 
     @Override
-    public void updateStatus(long id, boolean status) {
-        jdbcTemplate.update(sqlUpdateModerStatus, status, id);
+    public void updateStatus(long id) {
+        jdbcTemplate.update(sqlUpdateModerStatus, id);
     }
 
     @Override
