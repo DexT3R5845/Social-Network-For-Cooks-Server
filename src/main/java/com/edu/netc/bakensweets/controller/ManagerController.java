@@ -1,8 +1,8 @@
 package com.edu.netc.bakensweets.controller;
 
 import com.edu.netc.bakensweets.dto.AccountPersonalInfoDTO;
-import com.edu.netc.bakensweets.dto.PageDTO;
 import com.edu.netc.bakensweets.dto.NewModeratorDTO;
+import com.edu.netc.bakensweets.dto.PaginationDTO;
 import com.edu.netc.bakensweets.service.interfaces.AccountService;
 import com.edu.netc.bakensweets.service.interfaces.ModerCreationService;
 import io.swagger.annotations.ApiResponse;
@@ -40,7 +40,7 @@ public class ManagerController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("")
-    public PageDTO getAllBySearch(
+    public PaginationDTO getAllBySearch(
             @RequestParam(value = "size") int size,
             @RequestParam(value = "pageNum", defaultValue = "0", required = false) int currentPage,
             @RequestParam(value = "search", defaultValue = "", required = false) String search,

@@ -1,9 +1,6 @@
 package com.edu.netc.bakensweets.service;
 
-import com.edu.netc.bakensweets.dto.AccountDTO;
-import com.edu.netc.bakensweets.dto.AccountPersonalInfoDTO;
-import com.edu.netc.bakensweets.dto.PageDTO;
-import com.edu.netc.bakensweets.dto.UpdateAccountDTO;
+import com.edu.netc.bakensweets.dto.*;
 import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.exception.FailedAuthorizationException;
 import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
@@ -160,25 +157,25 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public PageDTO getAllBySearchAccounts(String search, int currentPage, int limit,
+    public PaginationDTO getAllBySearchAccounts(String search, int currentPage, int limit,
                                           boolean order, String gender) {
         return getAllBySearch(search, currentPage, limit, AccountRole.ROLE_USER, order, gender, "true");
     }
 
 
     @Override
-    public PageDTO getAllBySearchModerators(String search, int currentPage, int limit,
-                                            boolean order, String gender, String status) {
+    public PaginationDTO getAllBySearchModerators(String search, int currentPage, int limit,
+                                                  boolean order, String gender, String status) {
         return getAllBySearch(search, currentPage, limit, AccountRole.ROLE_MODERATOR, order, gender, status);
     }
 
-    public PageDTO getAllBySearch (String search, int currentPage, int limit, AccountRole role,
+    public PaginationDTO getAllBySearch (String search, int currentPage, int limit, AccountRole role,
                                    boolean order, String gender, String status) {
         int accCount = accountRepository.countAccountsBySearch(search, role, gender, status);
         Collection<Account> accounts = accountRepository.findAccountsBySearch(
                 search, gender, role, status, limit,  currentPage * limit, order
         );
-        return new PageDTO(accountMapper.accountsToPersonalInfoDtoCollection(accounts),  accCount);
+        return new PaginationDTO(accountMapper.accountsToPersonalInfoDtoCollection(accounts),  accCount);
     }
 
 

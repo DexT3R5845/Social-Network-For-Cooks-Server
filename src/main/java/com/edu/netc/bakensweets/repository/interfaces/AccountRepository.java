@@ -2,7 +2,6 @@ package com.edu.netc.bakensweets.repository.interfaces;
 
 import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.model.AccountRole;
-import com.edu.netc.bakensweets.model.Gender;
 
 import java.util.Collection;
 
