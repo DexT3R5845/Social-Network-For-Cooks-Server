@@ -57,19 +57,15 @@ public class IngredientRepositoryImpl extends BaseJdbcRepository implements Ingr
 
     @Override
     public Collection<Ingredient> findAll(SearchIngredientModel searchIngredientModel) {
-        NamedParameterJdbcTemplate npJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+        String query = String.format(sqlQueryFindAllByFilter, searchIngredientModel.getSortBy(), searchIngredientModel.isSortASC() ? "ASC" : "DESC");
 
-        String query = String.format(sqlQueryFindAllByFilter, searchIngredientModel.getIngredientCategory() == null,
-                searchIngredientModel.getSortBy(), searchIngredientModel.isSortASC() ? "ASC" : "DESC");
-        return npJdbcTemplate.query(query, new BeanPropertySqlParameterSource(searchIngredientModel),
+        return namedParameterJdbcTemplate.query(query, new BeanPropertySqlParameterSource(searchIngredientModel),
                 new BeanPropertyRowMapper<>(Ingredient.class));
     }
 
     @Override
     public int count(SearchIngredientModel searchIngredientModel) {
-        String query = String.format(sqlQueryRowCount, searchIngredientModel.getIngredientCategory() == null);
-        return namedParameterJdbcTemplate.queryForObject(query, new BeanPropertySqlParameterSource(searchIngredientModel),
-                Integer.class);
+        return namedParameterJdbcTemplate.queryForObject(sqlQueryRowCount, new BeanPropertySqlParameterSource(searchIngredientModel), Integer.class);
     }
 
     @Override

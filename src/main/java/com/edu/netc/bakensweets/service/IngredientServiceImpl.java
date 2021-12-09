@@ -13,6 +13,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 
@@ -26,6 +27,7 @@ public class IngredientServiceImpl implements IngredientService {
         this.ingredientMapper = ingredientMapper;
     }
 
+    @Transactional
     @Override
     public void createIngredient(IngredientDTO ingredientDto) {
         try {
@@ -57,15 +59,19 @@ public class IngredientServiceImpl implements IngredientService {
         return new PaginationDTO<>(ingredients, totalElements);
     }
 
+    @Transactional
     @Override
-    public void updateIngredient(Ingredient ingredient) {
+    public void updateIngredient(IngredientDTO ingredientDto, Long id) {
         try {
+            Ingredient ingredient = ingredientMapper.ingredientDTOtoIngredient(ingredientDto);
+            ingredient.setId(id);
             ingredientRepository.update(ingredient);
         } catch (DataIntegrityViolationException ex) {
-            throw new BadRequestParamException("categoryIngredient", String.format("Category '%s' not found", ingredient.getIngredientCategory()));
+            throw new BadRequestParamException("categoryIngredient", String.format("Category '%s' not found", ingredientDto.getIngredientCategory()));
         }
     }
 
+    @Transactional
     @Override
     public void updateStatus(Long id, boolean status) {
         if (!ingredientRepository.updateStatus(id, status))
