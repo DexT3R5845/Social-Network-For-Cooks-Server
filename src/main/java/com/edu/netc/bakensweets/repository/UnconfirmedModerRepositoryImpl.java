@@ -40,12 +40,12 @@ public class UnconfirmedModerRepositoryImpl extends BaseJdbcRepository implement
     }
 
     @Override
-    public void update (UnconfirmedModerator moderator) {
+    public boolean update (UnconfirmedModerator moderator) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void deleteById (Integer integer) {
+    public boolean deleteById (Integer integer) {
         throw new UnsupportedOperationException();
     }
 

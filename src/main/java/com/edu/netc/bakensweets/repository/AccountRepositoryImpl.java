@@ -50,18 +50,19 @@ public class AccountRepositoryImpl extends BaseJdbcRepository implements Account
     }
 
     @Override
-    public void update(Account account) {
+    public boolean update(Account account) {
         jdbcTemplate.update(sqlUpdateAccData, account.getFirstName(), account.getLastName(),
                 account.getBirthDate(), account.getImgUrl(), account.getGender().name(), account.getId());
+        return true;
     }
 
     @Override
-    public void updateStatus(long id, boolean status) {
-        jdbcTemplate.update(sqlUpdateModerStatus, status, id);
+    public void updateStatus(long id) {
+        jdbcTemplate.update(sqlUpdateModerStatus, id);
     }
 
     @Override
-    public void deleteById(Long id) {
+    public boolean deleteById(Long id) {
         throw new UnsupportedOperationException();
     }
 

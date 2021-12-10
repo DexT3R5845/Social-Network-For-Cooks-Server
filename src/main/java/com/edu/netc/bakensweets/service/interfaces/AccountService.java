@@ -1,9 +1,6 @@
 package com.edu.netc.bakensweets.service.interfaces;
 
-import com.edu.netc.bakensweets.dto.UpdateAccountDTO;
-import com.edu.netc.bakensweets.dto.AccountDTO;
-import com.edu.netc.bakensweets.dto.AccountPersonalInfoDTO;
-import com.edu.netc.bakensweets.dto.ItemsPerPageDTO;
+import com.edu.netc.bakensweets.dto.*;
 
 public interface AccountService {
     void updateProfile(UpdateAccountDTO accountDTO, String email);
@@ -11,10 +8,10 @@ public interface AccountService {
     String signIn(String username, String password, String recaptcha_token, String ip);
     void signUp (AccountDTO accountDTO);
 
-    ItemsPerPageDTO getAllBySearchAccounts(String search, int currentPage, int limit, boolean order, String gender);
+    PaginationDTO getAllBySearchAccounts(String search, int currentPage, int limit, boolean order, String gender);
     UpdateAccountDTO getUserInfoByEmail(String email);
     AccountPersonalInfoDTO findById (long id);
-    ItemsPerPageDTO getAllBySearchModerators(String search, int currentPage, int limit, boolean order, String gender, String status);
+    PaginationDTO getAllBySearchModerators(String search, int currentPage, int limit, boolean order, String gender, String status);
     void updatePersonalInfo(AccountPersonalInfoDTO accountDto);
-    void updateModerStatus(long id, boolean status);
+    void updateModerStatus(long id);
 }

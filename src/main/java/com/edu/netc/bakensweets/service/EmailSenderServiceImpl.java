@@ -32,6 +32,6 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 
     @Override
     public void sendNewModerLinkPassword(String to, String token) {
-        sendSimpleMessage(to, "Password creation", String.format("Password creation link: %s%s", currentlyDomainClient, token));
+        sendSimpleMessage(to, "Password creation", String.format("Password creation link: %s/account/confirm-moderator/%s", currentlyDomainClient, token));
     }
 }

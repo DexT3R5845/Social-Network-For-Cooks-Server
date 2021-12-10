@@ -41,12 +41,13 @@ public class IngredientRepositoryImpl extends BaseJdbcRepository implements Ingr
     }
 
     @Override
-    public void update(Ingredient ingredient) {
+    public boolean update(Ingredient ingredient) {
         namedParameterJdbcTemplate.update(sqlQueryUpdate, new BeanPropertySqlParameterSource(ingredient));
+        return true;
     }
 
     @Override
-    public void deleteById(Long id) {
+    public boolean deleteById(Long id) {
         throw new UnsupportedOperationException();
     }
 

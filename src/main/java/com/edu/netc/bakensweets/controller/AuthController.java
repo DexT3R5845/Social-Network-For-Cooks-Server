@@ -81,9 +81,8 @@ public class AuthController {
 
     @GetMapping(value = "/password/creation")
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "passwords do not match"),
             @ApiResponse(code = 410, message = "invalid token"),
-            @ApiResponse(code = 404, message = "row is not found in db")})
+            @ApiResponse(code = 404, message = "token not found")})
     public boolean passwordCreation(@RequestParam @NotNull(message = "Token link is mandatory") @NotBlank(message = "Token link is mandatory") String token) {
         return moderCreationService.validateModerToken(token);
     }
@@ -91,8 +90,9 @@ public class AuthController {
 
     @PutMapping("/password/creation")
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "passwords do not match"),
-            @ApiResponse(code = 410, message = "invalid token")})
+            @ApiResponse(code = 400, message = "Passwords do not match"),
+            @ApiResponse(code = 410, message = "invalid token"),
+            @ApiResponse(code = 404, message = "token not found")})
     public HttpStatus passwordCreationUpdate(@Valid @RequestBody AuthRequestResetUpdatePassword modelResetUpdatePassword) {
         if (!modelResetUpdatePassword.getPassword().equals(modelResetUpdatePassword.getConfirmPassword()))
             throw new CustomException(HttpStatus.BAD_REQUEST, "Passwords do not match");

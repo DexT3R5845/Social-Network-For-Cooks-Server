@@ -33,14 +33,16 @@ public class WrongAttempLoginRepositoryImpl extends BaseJdbcRepository implement
     }
 
     @Override
-    public void update(WrongAttemptLogin wrongAttemptLogin) {
+    public boolean update(WrongAttemptLogin wrongAttemptLogin) {
         jdbcTemplate.update(sqlQueryUpdate, wrongAttemptLogin.getIp(), wrongAttemptLogin.getExpiryTime(), wrongAttemptLogin.getCountWrongAttempts(),
                 wrongAttemptLogin.getId());
+        return true;
     }
 
     @Override
-    public void deleteById(Long id) {
+    public boolean deleteById(Long id) {
         jdbcTemplate.update(sqlQueryDelete, id);
+        return true;
     }
 
     @Override

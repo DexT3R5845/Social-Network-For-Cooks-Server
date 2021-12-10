@@ -1,7 +1,7 @@
 package com.edu.netc.bakensweets.service;
 
 import com.edu.netc.bakensweets.dto.AccountPersonalInfoDTO;
-import com.edu.netc.bakensweets.dto.ItemsPerPageDTO;
+import com.edu.netc.bakensweets.dto.PageDTO;
 import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.model.Friendship;
@@ -55,34 +55,34 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public ItemsPerPageDTO<AccountPersonalInfoDTO> getAllViableFriends(String inviterEmail, String search, String gender, int currentPage,
-                                                                       int limit, boolean order) {
+    public PageDTO<AccountPersonalInfoDTO> getAllViableFriends(String inviterEmail, String search, String gender, int currentPage,
+                                                               int limit, boolean order) {
         Account sessionAcc = accountRepository.findByEmail(inviterEmail);
         int personsSize = friendshipRepository.countFriendsToAdd(sessionAcc.getId(), search, gender);
         int pageCount = countPage(personsSize, limit);
         Collection<Account> persons = friendshipRepository.findFriendsToAdd(sessionAcc.getId(), search, gender, limit,
                 (currentPage - 1) * limit, order);
-        return new ItemsPerPageDTO<AccountPersonalInfoDTO>(accountMapper.accountsToPersonalInfoDtoCollection(persons), currentPage, pageCount);
+        return new PageDTO<>(accountMapper.accountsToPersonalInfoDtoCollection(persons), pageCount);
     }
 
     @Override
-    public ItemsPerPageDTO<AccountPersonalInfoDTO> getInvites(String inviterEmail, String search, String gender, int currentPage, int limit, boolean order) {
+    public PageDTO<AccountPersonalInfoDTO> getInvites(String inviterEmail, String search, String gender, int currentPage, int limit, boolean order) {
         Account sessionAcc = accountRepository.findByEmail(inviterEmail);
         int invitesSize = friendshipRepository.countByFriendshipUnaccepted(sessionAcc.getId(), search, gender);
         int pageCount = countPage(invitesSize, limit);
         Collection<Account> friends = friendshipRepository.findByFriendshipUnaccepted(sessionAcc.getId(), search, gender, limit,
                 (currentPage - 1) * limit, order);
-        return new ItemsPerPageDTO<AccountPersonalInfoDTO>(accountMapper.accountsToPersonalInfoDtoCollection(friends), currentPage, pageCount);
+        return new PageDTO<>(accountMapper.accountsToPersonalInfoDtoCollection(friends), pageCount);
     }
 
     @Override
-    public ItemsPerPageDTO<AccountPersonalInfoDTO> getFriends(String inviterEmail, String search, String gender, int currentPage, int limit, boolean order) {
+    public PageDTO<AccountPersonalInfoDTO> getFriends(String inviterEmail, String search, String gender, int currentPage, int limit, boolean order) {
         Account sessionAcc = accountRepository.findByEmail(inviterEmail);
         int friendsSize = friendshipRepository.countByFriendshipAccepted(sessionAcc.getId(), search, gender);
         int pageCount = countPage(friendsSize, limit);
         Collection<Account> friends = friendshipRepository.findByFriendshipAccepted(sessionAcc.getId(), search, gender, limit,
                 (currentPage - 1) * limit, order);
-        return new ItemsPerPageDTO<AccountPersonalInfoDTO>(accountMapper.accountsToPersonalInfoDtoCollection(friends), currentPage, pageCount);
+        return new PageDTO<>(accountMapper.accountsToPersonalInfoDtoCollection(friends), pageCount);
     }
 
     private int countPage(int size, int limit) {

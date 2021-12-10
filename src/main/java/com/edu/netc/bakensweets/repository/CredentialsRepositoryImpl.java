@@ -31,12 +31,13 @@ public class CredentialsRepositoryImpl extends BaseJdbcRepository implements Cre
     }
 
     @Override
-    public void update(Credentials credentials) {
+    public boolean update(Credentials credentials) {
         jdbcTemplate.update(sqlQueryUpdate, credentials.getPassword(), credentials.getEmail());
+        return true;
     }
 
     @Override
-    public void deleteById(Long id) {
+    public boolean deleteById(Long id) {
         throw new UnsupportedOperationException();
     }
 

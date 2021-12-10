@@ -35,13 +35,14 @@ public class PasswordResetTokenRepositoryImpl extends BaseJdbcRepository impleme
     }
 
     @Override
-    public void update(PasswordResetToken passResetToken) {
+    public boolean update(PasswordResetToken passResetToken) {
         jdbcTemplate.update(sqlQueryUpdate, passResetToken.getResetToken(), passResetToken.getExpiryDate(), passResetToken.getAccountId(),
                 passResetToken.isActive(), passResetToken.getId());
+        return true;
     }
 
     @Override
-    public void deleteById(Long id) {
+    public boolean deleteById(Long id) {
         throw new UnsupportedOperationException();
     }
 

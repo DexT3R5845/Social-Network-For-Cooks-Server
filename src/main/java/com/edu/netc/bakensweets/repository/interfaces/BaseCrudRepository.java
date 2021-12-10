@@ -4,7 +4,7 @@ import java.util.Collection;
 
 public interface BaseCrudRepository<T,ID> {
     void create(T item);
-    void update(T item);
-    void deleteById(ID id);
+    boolean update(T item);
+    boolean deleteById(ID id);
     T findById(ID id);
 }
