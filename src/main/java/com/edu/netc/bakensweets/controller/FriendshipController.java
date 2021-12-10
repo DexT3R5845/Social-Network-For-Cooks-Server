@@ -2,6 +2,7 @@ package com.edu.netc.bakensweets.controller;
 
 import com.edu.netc.bakensweets.dto.AccountPersonalInfoDTO;
 import com.edu.netc.bakensweets.dto.PageDTO;
+import com.edu.netc.bakensweets.dto.PaginationDTO;
 import com.edu.netc.bakensweets.service.interfaces.FriendshipService;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -70,7 +71,7 @@ public class FriendshipController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of friends received"),
             @ApiResponse(code = 400, message = "Something went wrong")})
-    public PageDTO<AccountPersonalInfoDTO> getFriends(
+    public PaginationDTO<AccountPersonalInfoDTO> getFriends(
             @RequestParam(value = "size") int size,
             @RequestParam(value = "pageNum", defaultValue = "1", required = false) int currentPage,
             @RequestParam(value = "search", defaultValue = "", required = false) String search,
@@ -85,7 +86,7 @@ public class FriendshipController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of viable friends received"),
             @ApiResponse(code = 400, message = "Something went wrong")})
-    public PageDTO<AccountPersonalInfoDTO> getViableFriends(
+    public PaginationDTO<AccountPersonalInfoDTO> getViableFriends(
             @RequestParam(value = "size") int size,
             @RequestParam(value = "pageNum", defaultValue = "1", required = false) int currentPage,
             @RequestParam(value = "search", defaultValue = "", required = false) String search,
@@ -100,7 +101,7 @@ public class FriendshipController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of invites received"),
             @ApiResponse(code = 400, message = "Something went wrong")})
-    public PageDTO<AccountPersonalInfoDTO> getInvites(
+    public PaginationDTO<AccountPersonalInfoDTO> getInvites(
             @RequestParam(value = "size") int size,
             @RequestParam(value = "pageNum", defaultValue = "1", required = false) int currentPage,
             @RequestParam(value = "search", defaultValue = "", required = false) String search,
