@@ -60,7 +60,6 @@ public class StockRepositoryImpl extends BaseJdbcRepository implements StockRepo
     @Override
     public boolean deleteById(Long id) {
         jdbcTemplate.update(sqlDelete, id);
-        System.out.println(jdbcTemplate.update(sqlDelete, id));
         return true;
     }
 

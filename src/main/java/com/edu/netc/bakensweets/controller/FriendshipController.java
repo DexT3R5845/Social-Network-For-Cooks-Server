@@ -54,7 +54,7 @@ public class FriendshipController {
             @ApiResponse(code = 200, message = "The invite has been declined"),
             @ApiResponse(code = 400, message = "Something went wrong")})
     public void declineInvite(@RequestParam(value = "friendId") long friendId, Principal principal) {
-        friendshipService.deleteFriendship(principal.getName(), friendId);
+        friendshipService.declineInvite(principal.getName(), friendId);
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
