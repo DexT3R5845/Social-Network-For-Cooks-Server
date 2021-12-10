@@ -1,6 +1,5 @@
 package com.edu.netc.bakensweets.service;
 
-import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.model.Credentials;
 import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;

@@ -1,10 +1,7 @@
 package com.edu.netc.bakensweets.mapperConfig;
 
 import com.edu.netc.bakensweets.dto.*;
-import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.model.Kitchenware;
-import com.edu.netc.bakensweets.model.KitchenwareCategory;
-import com.edu.netc.bakensweets.model.UnconfirmedModerator;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
