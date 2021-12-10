@@ -1,5 +1,13 @@
 package com.edu.netc.bakensweets.controller;
 
+import com.edu.netc.bakensweets.dto.AccountPersonalInfoDTO;
+import com.edu.netc.bakensweets.dto.PaginationDTO;
+import com.edu.netc.bakensweets.dto.StockIngredientDTO;
+import com.edu.netc.bakensweets.model.Ingredient;
+import com.edu.netc.bakensweets.model.form.SearchIngredientModel;
+import com.edu.netc.bakensweets.model.form.SearchStockIngredientModel;
+import com.edu.netc.bakensweets.service.IngredientServiceImpl;
+import com.edu.netc.bakensweets.service.interfaces.IngredientService;
 import com.edu.netc.bakensweets.service.interfaces.StockService;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -9,10 +17,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
+
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.Size;
 import java.security.Principal;
+import java.util.List;
 
 @Validated
 @RestController
@@ -20,6 +29,8 @@ import java.security.Principal;
 @AllArgsConstructor
 public class StockController {
     private final StockService stockService;
+    private final IngredientService ingredientService;
+
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping(value = "/new")
@@ -32,6 +43,22 @@ public class StockController {
                               @Max(value = 999, message = "amount must be < 1000") int amount, Principal principal) {
         stockService.addToStock(principal.getName(), ingredientId, amount);
     }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping(value = "/new")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "List of ingredients to add to stock"),
+            @ApiResponse(code = 400, message = "Something went wrong")})
+    public PaginationDTO<Ingredient> getIngredients(@RequestParam(value = "size") int size,
+                                                    @RequestParam(value = "pageNum", defaultValue = "1", required = false) int currentPage,
+                                                    @RequestParam(value = "search", defaultValue = "", required = false) String search,
+                                                    @RequestParam(value = "order", defaultValue = "true", required = false) boolean order,
+                                                    @RequestParam(value = "sortBy", defaultValue = "name", required = false) String sortBy,
+                                                    @RequestParam(value = "ingredientCategory", defaultValue = "", required = false) List<String> ingredientCategory) {
+        SearchIngredientModel searchIngredient = new SearchIngredientModel(true, search, ingredientCategory, order, sortBy, size, currentPage);
+        return ingredientService.getAllIngredients(searchIngredient);
+    }
+
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @DeleteMapping(value = "/new")
@@ -61,5 +88,21 @@ public class StockController {
             @ApiResponse(code = 400, message = "Something went wrong")})
     public void deleteIngredientFromStock(@PathVariable long userId, @RequestParam(value = "ingredientId") long ingredientId) {
         stockService.deleteFromStock(userId, ingredientId);
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping()
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Your stock"),
+            @ApiResponse(code = 400, message = "Something went wrong")})
+    public PaginationDTO<StockIngredientDTO> getStock(
+            @RequestParam(value = "size") int size,
+            @RequestParam(value = "pageNum", defaultValue = "0", required = false) int currentPage,
+            @RequestParam(value = "search", defaultValue = "", required = false) String search,
+            @RequestParam(value = "order", defaultValue = "true", required = false) boolean order,
+            @RequestParam(value = "sortBy", defaultValue = "name", required = false) String sortBy,
+            @RequestParam(value = "ingredientCategory", defaultValue = "", required = false) List<String> ingredientCategory,
+            Principal principal) {
+        return stockService.getIngredientsFromStock(size, currentPage, search,  order, sortBy, ingredientCategory, principal.getName());
     }
 }

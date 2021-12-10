@@ -61,7 +61,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         Account sessionAcc = accountRepository.findByEmail(inviterEmail);
         int personsSize = friendshipRepository.countFriendsToAdd(sessionAcc.getId(), search, gender);
         Collection<Account> persons = friendshipRepository.findFriendsToAdd(sessionAcc.getId(), search, gender, limit,
-                (currentPage - 1) * limit, order);
+                currentPage  * limit, order);
         return new PaginationDTO<AccountPersonalInfoDTO>(accountMapper.accountsToPersonalInfoDtoCollection(persons), personsSize);
     }
 
@@ -70,7 +70,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         Account sessionAcc = accountRepository.findByEmail(inviterEmail);
         int invitesSize = friendshipRepository.countByFriendshipUnaccepted(sessionAcc.getId(), search, gender);
         Collection<Account> friends = friendshipRepository.findByFriendshipUnaccepted(sessionAcc.getId(), search, gender, limit,
-                (currentPage - 1) * limit, order);
+                currentPage  * limit, order);
         return new PaginationDTO<AccountPersonalInfoDTO>(accountMapper.accountsToPersonalInfoDtoCollection(friends), invitesSize);
     }
 
@@ -79,7 +79,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         Account sessionAcc = accountRepository.findByEmail(inviterEmail);
         int friendsSize = friendshipRepository.countByFriendshipAccepted(sessionAcc.getId(), search, gender);
         Collection<Account> friends = friendshipRepository.findByFriendshipAccepted(sessionAcc.getId(), search, gender, limit,
-                (currentPage - 1) * limit, order);
+                currentPage * limit, order);
         return new PaginationDTO<AccountPersonalInfoDTO>(accountMapper.accountsToPersonalInfoDtoCollection(friends), friendsSize);
     }
 

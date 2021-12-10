@@ -91,14 +91,12 @@ public class FriendshipRepositoryImpl extends BaseJdbcRepository implements Frie
     @Override
     public int countByFriendshipUnaccepted(long inviterId, String search, String gender) {
         Integer count = jdbcTemplate.queryForObject(sqlCountByFriendshipUnaccepted,Integer.class,  inviterId, gender, search, search);
-        System.out.println(count);
         return count == null ? 0 : count;
     }
 
     @Override
     public int countFriendsToAdd(long inviterId, String search, String gender) {
         Integer count = jdbcTemplate.queryForObject(sqlCountAllNotFriends,Integer.class, inviterId, inviterId, inviterId, gender, search, search);
-        System.out.println(count);
         return count == null ? 0 : count;
     }
 

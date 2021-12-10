@@ -1,15 +1,24 @@
 package com.edu.netc.bakensweets.repository;
 
+import com.edu.netc.bakensweets.dto.StockIngredientDTO;
+import com.edu.netc.bakensweets.model.Account;
+import com.edu.netc.bakensweets.model.Ingredient;
 import com.edu.netc.bakensweets.model.Stock;
+import com.edu.netc.bakensweets.model.form.SearchStockIngredientModel;
 import com.edu.netc.bakensweets.repository.interfaces.StockRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import java.util.Collection;
 
 @Repository
 public class StockRepositoryImpl extends BaseJdbcRepository implements StockRepository {
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     @Value("${sql.stock.create}")
     private String sqlCreate;
     @Value("${sql.stock.findById}")
@@ -20,9 +29,21 @@ public class StockRepositoryImpl extends BaseJdbcRepository implements StockRepo
     private String sqlFindByAccountAndIngredient;
     @Value("${sql.stock.update}")
     private String sqlUpdate;
+    @Value("${sql.stock.findAll}")
+    private String sqlFindAll;
+    @Value("${sql.stock.countAll}")
+    private String sqlCountAll;
+    @Value("${sql.stock.countAccountsWithStock}")
+    private String sqlCountStock;
+    @Value("${sql.stock.findAccountsWithStock}")
+    private String sqlFindStock;
 
-    public StockRepositoryImpl(JdbcTemplate jdbcTemplate) {
+
+
+
+    public StockRepositoryImpl(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         super(jdbcTemplate);
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
     @Override
@@ -53,8 +74,34 @@ public class StockRepositoryImpl extends BaseJdbcRepository implements StockRepo
         try {
             return jdbcTemplate.queryForObject(sqlFindByAccountAndIngredient, new BeanPropertyRowMapper<>(Stock.class), accountId,
                     ingredientId);
-        } catch (EmptyResultDataAccessException ex){
+        } catch (EmptyResultDataAccessException ex) {
             return null;
         }
+    }
+
+    @Override
+    public Collection<StockIngredientDTO> findAllIngredientsInStock(SearchStockIngredientModel searchStockIngredient) {
+        String query = sqlFindAll.replace("order", searchStockIngredient.getOrder());
+        String sqlQuery = query.replace("sortBy", searchStockIngredient.getSortBy());
+        return namedParameterJdbcTemplate.query(sqlQuery, new BeanPropertySqlParameterSource(searchStockIngredient),
+                new BeanPropertyRowMapper<>(StockIngredientDTO.class));
+    }
+
+    @Override
+    public int countAllIngredientsInStock(SearchStockIngredientModel searchStockIngredient) {
+        Integer count = namedParameterJdbcTemplate.queryForObject(sqlCountAll, new BeanPropertySqlParameterSource(searchStockIngredient), Integer.class);
+        return count == null ? 0 : count;
+    }
+
+    @Override
+    public Collection<Account> findAllAccountsWithStock(int limit, int offset) {
+        return jdbcTemplate.query(sqlFindStock,
+                new BeanPropertyRowMapper<>(Account.class), limit, offset);
+    }
+
+    @Override
+    public int countAllAccountsWithStock() {
+        Integer count = jdbcTemplate.queryForObject(sqlCountStock, Integer.class);
+        return count == null ? 0 : count;
     }
 }

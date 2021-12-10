@@ -73,7 +73,7 @@ public class FriendshipController {
             @ApiResponse(code = 400, message = "Something went wrong")})
     public PaginationDTO<AccountPersonalInfoDTO> getFriends(
             @RequestParam(value = "size") int size,
-            @RequestParam(value = "pageNum", defaultValue = "1", required = false) int currentPage,
+            @RequestParam(value = "pageNum", defaultValue = "0", required = false) int currentPage,
             @RequestParam(value = "search", defaultValue = "", required = false) String search,
             @RequestParam(value = "order", defaultValue = "true", required = false) boolean order,
             @RequestParam(value = "gender", defaultValue = "", required = false) String gender,
@@ -88,7 +88,7 @@ public class FriendshipController {
             @ApiResponse(code = 400, message = "Something went wrong")})
     public PaginationDTO<AccountPersonalInfoDTO> getViableFriends(
             @RequestParam(value = "size") int size,
-            @RequestParam(value = "pageNum", defaultValue = "1", required = false) int currentPage,
+            @RequestParam(value = "pageNum", defaultValue = "0", required = false) int currentPage,
             @RequestParam(value = "search", defaultValue = "", required = false) String search,
             @RequestParam(value = "order", defaultValue = "true", required = false) boolean order,
             @RequestParam(value = "gender", defaultValue = "", required = false) String gender,
@@ -103,7 +103,7 @@ public class FriendshipController {
             @ApiResponse(code = 400, message = "Something went wrong")})
     public PaginationDTO<AccountPersonalInfoDTO> getInvites(
             @RequestParam(value = "size") int size,
-            @RequestParam(value = "pageNum", defaultValue = "1", required = false) int currentPage,
+            @RequestParam(value = "pageNum", defaultValue = "0", required = false) int currentPage,
             @RequestParam(value = "search", defaultValue = "", required = false) String search,
             @RequestParam(value = "order", defaultValue = "true", required = false) boolean order,
             @RequestParam(value = "gender", defaultValue = "", required = false) String gender,
