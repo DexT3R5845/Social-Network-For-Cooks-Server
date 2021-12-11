@@ -11,4 +11,5 @@ public interface IngredientRepository extends BaseCrudRepository<Ingredient, Lon
     Collection<Ingredient> findAll(SearchIngredientModel searchIngredientModel);
     int count(SearchIngredientModel searchIngredientModel);
     boolean updateStatus(Long id, boolean status);
+
 }

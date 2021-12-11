@@ -1,5 +1,6 @@
 package com.edu.netc.bakensweets.repository;
 
+
 import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.model.AccountRole;
 import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
@@ -8,7 +9,6 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.lang.reflect.Array;
 import java.util.Collection;
 
 
@@ -61,6 +61,7 @@ public class AccountRepositoryImpl extends BaseJdbcRepository implements Account
         jdbcTemplate.update(sqlUpdateModerStatus, id);
     }
 
+
     @Override
     public boolean deleteById(Long id) {
         throw new UnsupportedOperationException();
@@ -70,6 +71,7 @@ public class AccountRepositoryImpl extends BaseJdbcRepository implements Account
     public Account findById(Long id) {
         return jdbcTemplate.queryForObject(sqlQueryGetById, new BeanPropertyRowMapper<>(Account.class), id);
     }
+
 
     @Override
     public Account findByEmail(String email) {

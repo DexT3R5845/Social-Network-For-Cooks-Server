@@ -1,6 +1,5 @@
 package com.edu.netc.bakensweets.dto;
 
-import com.edu.netc.bakensweets.model.Gender;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
