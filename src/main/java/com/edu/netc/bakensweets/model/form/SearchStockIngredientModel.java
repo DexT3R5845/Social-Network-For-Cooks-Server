@@ -29,7 +29,7 @@ public class SearchStockIngredientModel {
     }
 
     public String getSortBy() {
-        return sortBy.equals("ingredientCategory") ? "ingredientCategory" : "i.name";
+        return sortBy.equals("ingredientCategory") ? "ingredientCategory" : "name";
     }
 
     public SearchStockIngredientModel(long accountId, String search, Collection<String> ingredientCategory, String order, String sortBy, int currentPage, int limit) {

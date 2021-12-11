@@ -40,7 +40,7 @@ public class StockController {
     public void addIngredient(@RequestParam(value = "ingredientId") long ingredientId,
                               @RequestParam(value = "amount",
                                       defaultValue = "10000", required = false) @Min(value = 1, message = "amount must be > 0")
-                              @Max(value = 999, message = "amount must be < 1000") int amount, Principal principal) {
+                              @Max(value = 10000, message = "amount must be < 10000") int amount, Principal principal) {
         stockService.addToStock(principal.getName(), ingredientId, amount);
     }
 
@@ -50,13 +50,13 @@ public class StockController {
             @ApiResponse(code = 200, message = "List of ingredients to add to stock"),
             @ApiResponse(code = 400, message = "Something went wrong")})
     public PaginationDTO<Ingredient> getIngredients(@RequestParam(value = "size") int size,
-                                                    @RequestParam(value = "pageNum", defaultValue = "1", required = false) int currentPage,
+                                                    @RequestParam(value = "pageNum", defaultValue = "0", required = false) int currentPage,
                                                     @RequestParam(value = "search", defaultValue = "", required = false) String search,
                                                     @RequestParam(value = "order", defaultValue = "true", required = false) boolean order,
                                                     @RequestParam(value = "sortBy", defaultValue = "name", required = false) String sortBy,
-                                                    @RequestParam(value = "ingredientCategory", defaultValue = "", required = false) List<String> ingredientCategory) {
-        SearchIngredientModel searchIngredient = new SearchIngredientModel(true, search, ingredientCategory, order, sortBy, size, currentPage);
-        return ingredientService.getAllIngredients(searchIngredient);
+                                                    @RequestParam(value = "ingredientCategory", defaultValue = "", required = false) List<String> ingredientCategory,
+                                                    Principal principal) {
+        return stockService.getIngredientsToAdd(size, currentPage, search,  order, sortBy, ingredientCategory, principal.getName());
     }
 
 
@@ -77,7 +77,7 @@ public class StockController {
             @ApiResponse(code = 400, message = "Something went wrong")})
     public void changeConfigurationIngredientFromStock(@PathVariable long userId, @RequestParam(value = "ingredientId") long ingredientId,
                                                        @RequestParam(value = "amount") @Min(value = 1, message = "amount must be > 0")
-                                                       @Max(value = 999, message = "amount must be < 1000") int amount) {
+                                                       @Max(value = 10000, message = "amount must be < 10000") int amount) {
         stockService.updateIngredientFromStock(userId, ingredientId, amount);
     }
 

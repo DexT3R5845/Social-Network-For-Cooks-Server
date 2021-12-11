@@ -37,7 +37,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         try {
             friendshipRepository.create(new Friendship(inviterAcc.getId(), friendId));
         } catch (DataIntegrityViolationException ex) {
-            throw new CustomException(HttpStatus.NOT_FOUND, String.format("Friendship with friend id %s not found.", friendId));
+            throw new CustomException(HttpStatus.NOT_FOUND, String.format("Friendship with friend id %s not found or already exists.", friendId));
         }
     }
 

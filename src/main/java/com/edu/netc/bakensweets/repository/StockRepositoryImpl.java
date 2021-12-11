@@ -6,6 +6,7 @@ import com.edu.netc.bakensweets.model.Ingredient;
 import com.edu.netc.bakensweets.model.Stock;
 import com.edu.netc.bakensweets.model.form.SearchStockIngredientModel;
 import com.edu.netc.bakensweets.repository.interfaces.StockRepository;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -37,7 +38,10 @@ public class StockRepositoryImpl extends BaseJdbcRepository implements StockRepo
     private String sqlCountStock;
     @Value("${sql.stock.findAccountsWithStock}")
     private String sqlFindStock;
-
+    @Value("${sql.stock.findAllViableIngredients}")
+    private String sqlFindIngredientsToAdd;
+    @Value("${sql.stock.countAllViableIngredients}")
+    private String sqlCountIngredientsToAdd;
 
 
 
@@ -70,12 +74,8 @@ public class StockRepositoryImpl extends BaseJdbcRepository implements StockRepo
 
     @Override
     public Stock findByAccountAndIngredient(long accountId, long ingredientId) {
-        try {
             return jdbcTemplate.queryForObject(sqlFindByAccountAndIngredient, new BeanPropertyRowMapper<>(Stock.class), accountId,
                     ingredientId);
-        } catch (EmptyResultDataAccessException ex) {
-            return null;
-        }
     }
 
     @Override
@@ -101,6 +101,20 @@ public class StockRepositoryImpl extends BaseJdbcRepository implements StockRepo
     @Override
     public int countAllAccountsWithStock() {
         Integer count = jdbcTemplate.queryForObject(sqlCountStock, Integer.class);
+        return count == null ? 0 : count;
+    }
+
+    @Override
+    public Collection<Ingredient> findViableIngredients(SearchStockIngredientModel searchStockIngredient) {
+        String query = sqlFindIngredientsToAdd.replace("order", searchStockIngredient.getOrder());
+        String sqlQuery = query.replace("sortBy", searchStockIngredient.getSortBy());
+        return namedParameterJdbcTemplate.query(sqlQuery, new BeanPropertySqlParameterSource(searchStockIngredient),
+                new BeanPropertyRowMapper<>(Ingredient.class));
+    }
+
+    @Override
+    public int countViableIngredients(SearchStockIngredientModel searchStockIngredient) {
+        Integer count = namedParameterJdbcTemplate.queryForObject(sqlCountIngredientsToAdd, new BeanPropertySqlParameterSource(searchStockIngredient), Integer.class);
         return count == null ? 0 : count;
     }
 }
