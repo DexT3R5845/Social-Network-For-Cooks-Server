@@ -21,7 +21,7 @@ public class DishController {
     }
 
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
-    @PostMapping(value = "/{id}")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<DishDTO> getDishById(@PathVariable long id) {
         return ResponseEntity.ok(dishService.getDishById(id));
     }
@@ -48,11 +48,20 @@ public class DishController {
     @GetMapping(value = "")
     public ResponseEntity<PaginationDTO<DishDTO>> getFilteredDishes(
             @RequestParam(value = "pageSize") @Min(value = 1, message = "Page size must be higher than 0") int pageSize,
-            @RequestParam(value = "pageNum", defaultValue = "0", required = false) @Min(value = 0, message = "Current page must be higher than 0") int currentPage,
+            @RequestParam(value = "pageNum", defaultValue = "0", required = false) int currentPage,
             @RequestParam(value = "name", defaultValue = "", required = false) String name,
             @RequestParam(value = "categories", required = false) List<String> categories,
             @RequestParam(value = "ingredients",  required = false) List<String> ingredients, // массив айди ингредиентов
             @RequestParam(value = "order", defaultValue = "true", required = false) boolean order) {
         return ResponseEntity.ok(dishService.getFilteredDishes(pageSize, currentPage, name, categories, ingredients, order));
+    }
+
+    @PreAuthorize("hasRole('ROLE_MODERATOR')")
+    @GetMapping(value = "/stock/{id}")
+    public ResponseEntity<PaginationDTO<DishDTO>> getDishesByStock(
+            @PathVariable long id,
+            @RequestParam(value = "pageSize") @Min(value = 1, message = "Page size must be higher than 0") int pageSize,
+            @RequestParam(value = "pageNum", defaultValue = "0", required = false) int currentPage) {
+        return ResponseEntity.ok(dishService.getDishesByStock(id, pageSize, currentPage));
     }
 }

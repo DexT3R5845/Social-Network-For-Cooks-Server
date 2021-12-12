@@ -42,6 +42,11 @@ public class DishRepositoryImpl extends BaseJdbcRepository implements DishReposi
     @Value("${sql.dish.updateDish}")
     private String updateDish;
 
+    @Value("${sql.dish.countDishesByStock}")
+    private String countDishesByStock;
+    @Value("${sql.dish.getDishesByStock}")
+    private String getDishesByStock;
+
     @Value("${sql.dish.countAll}")
     private String countAll;
     @Value("${sql.dish.findAll}")
@@ -127,6 +132,17 @@ public class DishRepositoryImpl extends BaseJdbcRepository implements DishReposi
     @Override
     public Collection<DishIngredient> findIngredientsByDishId(Long id) {
         return this.jdbcTemplate.query(getIngredientsByDishId, new BeanPropertyRowMapper<>(DishIngredient.class), id);
+    }
+
+    @Override
+    public int countDishesByStock(long id) {
+        return this.jdbcTemplate.queryForObject(countDishesByStock, Integer.class, id);
+    }
+
+    public Collection<Dish> getDishesByStock(long id, int limit, int offset) {
+        return this.jdbcTemplate.query(
+                getDishesByStock, new BeanPropertyRowMapper<>(Dish.class), id, limit, offset
+        );
     }
 
     @Override

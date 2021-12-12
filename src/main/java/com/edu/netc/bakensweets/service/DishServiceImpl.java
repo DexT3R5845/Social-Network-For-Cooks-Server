@@ -102,4 +102,11 @@ public class DishServiceImpl implements DishService {
         );
         return new PaginationDTO<>(dishMapper.dishToDishDtoCollection(dishes), totalElements);
     }
+
+    @Override
+    public PaginationDTO<DishDTO> getDishesByStock(long id, int pageSize, int currentPage) {
+        int totalElements = dishRepository.countDishesByStock(id);
+        Collection<Dish> dishes = dishRepository.getDishesByStock(id,  pageSize, pageSize * currentPage);
+        return new PaginationDTO<>(dishMapper.dishToDishDtoCollection(dishes), totalElements);
+    }
 }

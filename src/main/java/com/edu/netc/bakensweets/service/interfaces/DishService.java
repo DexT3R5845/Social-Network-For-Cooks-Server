@@ -11,4 +11,5 @@ public interface DishService {
     void updateDish(long id, DishDTO dishDTO);
     void deleteDish(long id);
     PaginationDTO<DishDTO> getFilteredDishes(int pageSize, int currentPage, String name, List<String> categories, List<String> ingredients, boolean order);
+    PaginationDTO<DishDTO> getDishesByStock(long id, int pageSize, int currentPage);
 }
