@@ -6,6 +6,7 @@ import com.edu.netc.bakensweets.exception.FailedAuthorizationException;
 import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
 import com.edu.netc.bakensweets.mapperConfig.CredentialsMapper;
 import com.edu.netc.bakensweets.model.*;
+import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.security.JwtTokenProvider;

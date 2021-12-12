@@ -1,15 +1,10 @@
 package com.edu.netc.bakensweets.repository;
 
-import com.edu.netc.bakensweets.model.Account;
-import com.edu.netc.bakensweets.model.Friendship;
 import com.edu.netc.bakensweets.model.Kitchenware;
-import com.edu.netc.bakensweets.model.KitchenwareCategory;
-import com.edu.netc.bakensweets.repository.interfaces.FriendshipRepository;
 import com.edu.netc.bakensweets.repository.interfaces.KitchenwareRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
