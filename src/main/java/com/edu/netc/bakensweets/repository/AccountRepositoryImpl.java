@@ -72,7 +72,6 @@ public class AccountRepositoryImpl extends BaseJdbcRepository implements Account
         return jdbcTemplate.queryForObject(sqlQueryGetById, new BeanPropertyRowMapper<>(Account.class), id);
     }
 
-
     @Override
     public Account findByEmail(String email) {
         return jdbcTemplate.queryForObject(sqlQueryFindByEmail, new BeanPropertyRowMapper<>(Account.class), email);
