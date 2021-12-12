@@ -39,17 +39,19 @@ public class IngredientController {
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Something went wrong")})
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
-    @PutMapping("/update")
-    public void updateIngredient(@Valid @RequestBody Ingredient ingredient) {
-        ingredientService.updateIngredient(ingredient);
+    @PutMapping("/{id}")
+    public void updateIngredient(@Valid @RequestBody IngredientDTO ingredientDto,
+                                 @NotNull(message = "ID is mandatory")
+                                 @Min(value = 1, message = "ID must be higher than 0") @PathVariable Long id) {
+        ingredientService.updateIngredient(ingredientDto, id);
     }
 
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Something went wrong"),
             @ApiResponse(code = 404, message = "Ingredient not found")})
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
-    @PostMapping("/updateStatus")
-    public void updateStatusIngredient(@NotNull(message = "ID is mandatory") @Min(value = 1, message = "ID must be higher than 0") @RequestParam Long id,
+    @PatchMapping("/{id}")
+    public void updateStatusIngredient(@NotNull(message = "ID is mandatory") @Min(value = 1, message = "ID must be higher than 0") @PathVariable Long id,
                                        @NotNull(message = "Status is mandatory") @RequestParam boolean status) {
         ingredientService.updateStatus(id, status);
     }

@@ -13,6 +13,6 @@ public interface IngredientService {
     void createIngredient(IngredientDTO ingredientDto);
     Ingredient getIngredientById(Long id);
     PaginationDTO<Ingredient> getAllIngredients(SearchIngredientModel searchIngredientModel);
-    void updateIngredient(Ingredient ingredient);
+    void updateIngredient(IngredientDTO ingredientDto, Long id);
     void updateStatus(Long id, boolean status);
 }

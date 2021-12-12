@@ -57,7 +57,7 @@ public interface AccountMapper {
     @Mappings({
             @Mapping(target="firstName", source="updateDTO.firstName"),
             @Mapping(target="lastName", source="updateDTO.lastName"),
-            @Mapping(target = "birthDate", source = "updateDTO.birthDate"),
+            @Mapping(target = "birthDate", source = "updateDTO.birthDate", dateFormat = "dd/MM/yyyy"),
             @Mapping(target = "gender", source = "updateDTO.gender"),
             @Mapping(target = "imgUrl", source = "updateDTO.imgUrl")
     })
@@ -65,7 +65,7 @@ public interface AccountMapper {
     @Mappings({
             @Mapping(target="firstName", source="entity.firstName"),
             @Mapping(target="lastName", source="entity.lastName"),
-            @Mapping(target = "birthDate", source = "entity.birthDate"),
+            @Mapping(target = "birthDate", source = "entity.birthDate", dateFormat = "dd/MM/yyyy"),
             @Mapping(target = "gender", source = "entity.gender"),
             @Mapping(target = "imgUrl", source = "entity.imgUrl")
     })

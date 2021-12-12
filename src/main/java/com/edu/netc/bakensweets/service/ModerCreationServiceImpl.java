@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -49,6 +50,7 @@ public class ModerCreationServiceImpl implements ModerCreationService {
     }
 
     @Override
+    @Transactional
     public String createToken(NewModeratorDTO moderatorDTO) {
         if (emailIsUnique(moderatorDTO.getEmail()) && hasNoActualExpiryDate(moderatorDTO.getEmail())) {
             UnconfirmedModerator moderator = getModerWithToken(moderatorDTO);
@@ -62,12 +64,16 @@ public class ModerCreationServiceImpl implements ModerCreationService {
     public boolean validateModerToken(String token){
         UnconfirmedModerator moderator = moderRepository.getByToken(token);
         if (moderator != null) {
-            return moderator.getExpiryDate().isAfter(LocalDateTime.now());
+            if (moderator.getExpiryDate().isAfter(LocalDateTime.now())) {
+                return true;
+            }
+            throw new CustomException(HttpStatus.GONE, "token is not valid");
         }
-        throw new CustomException(HttpStatus.NOT_FOUND, "row is not found in db");
+        throw new CustomException(HttpStatus.NOT_FOUND, "token not found");
     }
 
     @Override
+    @Transactional
     public void createAccount(AuthRequestResetUpdatePassword authRequestResetUpdatePassword) {
         if (!validateModerToken(authRequestResetUpdatePassword.getToken())) {
             throw new CustomException(HttpStatus.GONE, "Invalid or expired token");

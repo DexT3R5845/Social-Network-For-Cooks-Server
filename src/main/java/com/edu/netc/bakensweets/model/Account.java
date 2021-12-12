@@ -2,9 +2,8 @@ package com.edu.netc.bakensweets.model;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.annotation.Id;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @RequiredArgsConstructor
@@ -12,10 +11,9 @@ public class Account {
     private long id;
     private String firstName;
     private String lastName;
-    private Date birthDate;
+    private LocalDate birthDate;
     private Gender gender;
     private String imgUrl;
     private AccountRole accountRole;
     private boolean status;
 }
-

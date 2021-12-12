@@ -1,15 +1,12 @@
 package com.edu.netc.bakensweets.service;
 
-import com.edu.netc.bakensweets.dto.AccountDTO;
-import com.edu.netc.bakensweets.dto.AccountPersonalInfoDTO;
-import com.edu.netc.bakensweets.dto.ItemsPerPageDTO;
-import com.edu.netc.bakensweets.dto.UpdateAccountDTO;
-import com.edu.netc.bakensweets.exception.BadRequestParamException;
+import com.edu.netc.bakensweets.dto.*;
 import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.exception.FailedAuthorizationException;
 import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
 import com.edu.netc.bakensweets.mapperConfig.CredentialsMapper;
 import com.edu.netc.bakensweets.model.*;
+import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.security.JwtTokenProvider;
@@ -132,17 +129,23 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public void updatePersonalInfo(AccountPersonalInfoDTO accountDto) {
         Account account = accountMapper.accountPersonalInfoDTOtoAccounts(accountDto);
-        accountRepository.update(account);
+        try {
+            accountRepository.update(account);
+        } catch (DataAccessException e) {
+            throw new CustomException(HttpStatus.NOT_FOUND, "There is no account with such id");
+        }
     }
 
     @Override
-    public void updateModerStatus(long id, boolean status) {
+    @Transactional
+    public void updateModerStatus(long id) {
         try {
-            accountRepository.updateStatus(id, !status);
+            accountRepository.updateStatus(id);
         } catch (DataAccessException ex) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "There is no account with such id");
+            throw new CustomException(HttpStatus.NOT_FOUND, "There is no account with such id");
         }
     }
 
@@ -155,28 +158,25 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public ItemsPerPageDTO getAllBySearchAccounts(String search, int currentPage, int limit,
-                                                  boolean order, String gender) {
+    public PaginationDTO getAllBySearchAccounts(String search, int currentPage, int limit,
+                                          boolean order, String gender) {
         return getAllBySearch(search, currentPage, limit, AccountRole.ROLE_USER, order, gender, "true");
     }
 
 
     @Override
-    public ItemsPerPageDTO getAllBySearchModerators(String search, int currentPage, int limit,
-                                                    boolean order, String gender, String status) {
+    public PaginationDTO getAllBySearchModerators(String search, int currentPage, int limit,
+                                                  boolean order, String gender, String status) {
         return getAllBySearch(search, currentPage, limit, AccountRole.ROLE_MODERATOR, order, gender, status);
     }
 
-
-    public ItemsPerPageDTO getAllBySearch (String search, int currentPage, int limit, AccountRole role,
-                                           boolean order, String gender, String status) {
+    public PaginationDTO getAllBySearch (String search, int currentPage, int limit, AccountRole role,
+                                   boolean order, String gender, String status) {
         int accCount = accountRepository.countAccountsBySearch(search, role, gender, status);
         Collection<Account> accounts = accountRepository.findAccountsBySearch(
                 search, gender, role, status, limit,  currentPage * limit, order
         );
-        return new ItemsPerPageDTO(
-                accountMapper.accountsToPersonalInfoDtoCollection(accounts), currentPage,  accCount
-        );
+        return new PaginationDTO(accountMapper.accountsToPersonalInfoDtoCollection(accounts),  accCount);
     }
 
 

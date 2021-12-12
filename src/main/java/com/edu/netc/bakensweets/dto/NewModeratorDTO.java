@@ -1,6 +1,5 @@
 package com.edu.netc.bakensweets.dto;
 
-import com.edu.netc.bakensweets.model.Gender;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
@@ -30,5 +29,5 @@ public class NewModeratorDTO {
     @NotNull(message = "Gender is mandatory")
     @NotBlank(message = "Gender is mandatory")
     @Pattern(regexp = "^[F|M]$", message = "Gender must be contain F or M")
-    private Gender gender;
+    private String gender;
 }

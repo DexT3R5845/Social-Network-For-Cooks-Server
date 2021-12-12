@@ -1,6 +1,5 @@
 package com.edu.netc.bakensweets.repository.interfaces;
 
-import java.util.Collection;
 
 public interface BaseCrudRepository<T,ID> {
     long create(T item);
@@ -8,3 +7,4 @@ public interface BaseCrudRepository<T,ID> {
     boolean deleteById(ID id);
     T findById(ID id);
 }
+

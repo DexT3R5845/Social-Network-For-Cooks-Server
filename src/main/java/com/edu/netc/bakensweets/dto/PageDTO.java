@@ -7,8 +7,7 @@ import java.util.Collection;
 
 @Data
 @AllArgsConstructor
-public class ItemsPerPageDTO<T> {
+public class PageDTO<T> {
     private Collection<T> items;
-    private int currentPage;
     private int itemCount;
 }
