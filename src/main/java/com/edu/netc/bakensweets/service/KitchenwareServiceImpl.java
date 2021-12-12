@@ -54,7 +54,6 @@ public class KitchenwareServiceImpl implements KitchenwareService {
 
         } catch (
                 DataIntegrityViolationException ex) {
-            ex.printStackTrace();
             throw new BadRequestParamException("category", "Category is invalid");
         }
     }
