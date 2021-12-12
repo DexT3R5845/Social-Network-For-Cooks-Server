@@ -11,6 +11,7 @@ public class IngredientDTO {
     @NotNull(message = "Name is mandatory")
     @Size(min = 4, max = 30, message = "Min length for name - 4. Max - 30.")
     private String name;
+    @Size(max=300, message = "Max size image url is 300 symbols.")
     private String imgUrl;
     @NotEmpty(message = "Category for ingredient is mandatory")
     private String ingredientCategory;
