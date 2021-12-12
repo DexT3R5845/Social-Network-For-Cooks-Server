@@ -8,7 +8,6 @@ import com.edu.netc.bakensweets.mapperConfig.KitchenwareMapper;
 import com.edu.netc.bakensweets.model.Kitchenware;
 import com.edu.netc.bakensweets.repository.interfaces.KitchenwareRepository;
 import com.edu.netc.bakensweets.service.interfaces.KitchenwareService;
-import com.edu.netc.bakensweets.utils.Utils;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.List;
 
 @AllArgsConstructor
 @Service

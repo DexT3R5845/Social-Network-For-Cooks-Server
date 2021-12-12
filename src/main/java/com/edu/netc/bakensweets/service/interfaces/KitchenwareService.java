@@ -4,7 +4,6 @@ import com.edu.netc.bakensweets.dto.KitchenwareDTO;
 import com.edu.netc.bakensweets.dto.PaginationDTO;
 
 import java.util.Collection;
-import java.util.List;
 
 public interface KitchenwareService {
     Collection<String> getAllCategories();

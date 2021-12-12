@@ -3,7 +3,6 @@ package com.edu.netc.bakensweets.repository.interfaces;
 import com.edu.netc.bakensweets.model.Kitchenware;
 
 import java.util.Collection;
-import java.util.List;
 
 public interface KitchenwareRepository extends BaseCrudRepository<Kitchenware, Long> {
     Collection<String> getAllCategories();
