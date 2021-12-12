@@ -28,8 +28,9 @@ public class WrongAttempLoginRepositoryImpl extends BaseJdbcRepository implement
     }
 
     @Override
-    public void create(WrongAttemptLogin wrongAttemptLogin) {
+    public long create(WrongAttemptLogin wrongAttemptLogin) {
         jdbcTemplate.update(sqlQueryCreate, wrongAttemptLogin.getIp(), wrongAttemptLogin.getExpiryTime(), wrongAttemptLogin.getCountWrongAttempts());
+        return 0;
     }
 
     @Override

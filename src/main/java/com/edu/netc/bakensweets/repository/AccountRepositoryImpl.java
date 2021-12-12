@@ -44,9 +44,10 @@ public class AccountRepositoryImpl extends BaseJdbcRepository implements Account
     }
 
     @Override
-    public void create(Account account) {
+    public long create(Account account) {
         jdbcTemplate.update(sqlQueryCreate, account.getId(), account.getFirstName(), account.getLastName(),
                 account.getBirthDate(), account.getGender().name(), account.getAccountRole().getAuthority());
+        return 0;
     }
 
     @Override

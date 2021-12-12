@@ -103,8 +103,9 @@ public class FriendshipRepositoryImpl extends BaseJdbcRepository implements Frie
     }
 
     @Override
-    public void create(Friendship friendship) {
+    public long create(Friendship friendship) {
         jdbcTemplate.update(sqlCreate, friendship.getInviterId(), friendship.getFriendId());
+        return 0;
     }
 
     @Override

@@ -36,8 +36,9 @@ public class IngredientRepositoryImpl extends BaseJdbcRepository implements Ingr
     }
 
     @Override
-    public void create(Ingredient ingredient) {
+    public long create(Ingredient ingredient) {
         namedParameterJdbcTemplate.update(sqlQueryCreate, new BeanPropertySqlParameterSource(ingredient));
+        return 0;
     }
 
     @Override
