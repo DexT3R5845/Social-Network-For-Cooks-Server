@@ -68,7 +68,7 @@ public class DishServiceImpl implements DishService {
 
     @Override
     @Transactional
-    public void updateDish(long id, DishDTO dishDTO) { //TODO THINK ABOUT ANOTHER WAY TO DO THIS (maybe UBSERT or getting flag from client)
+    public void updateDish(long id, DishDTO dishDTO) { //TODO THINK ABOUT ANOTHER WAY TO DO THIS (maybe UPSERT or getting flag from client)
         try { //DELETING ALL OLD KITCHENWARES/INGREDIENTS BEFORE INSERTING NEW LISTS
             dishRepository.deleteIngredientsByDishId(id);
             dishRepository.deleteKitchenwaresByDishId(id);
