@@ -6,7 +6,6 @@ import lombok.*;
 import java.util.Collection;
 
 @Data
-@AllArgsConstructor
 public class SearchStockIngredientModel {
     private long accountId;
     private String search = "";
@@ -14,22 +13,18 @@ public class SearchStockIngredientModel {
     private String order;
     @Getter(AccessLevel.NONE)
     private String sortBy;
-    @Getter(AccessLevel.NONE)
-    private Boolean checkCategory;
     private int currentPage;
     private int limit;
 
-    public Boolean getCheckCategory() {
-        return getIngredientCategory() == null;
-    }
 
     public Collection<String> getIngredientCategory() {
-        return !ingredientCategory.isEmpty() ? ingredientCategory : null;
-
+        if (ingredientCategory != null && !ingredientCategory.isEmpty())
+            return ingredientCategory;
+        return null;
     }
 
     public String getSortBy() {
-        return sortBy.equals("ingredientCategory") ? "ingredientCategory" : "name";
+        return sortBy.equals("ingredient_category") ? "ingredient_category" : "name";
     }
 
     public SearchStockIngredientModel(long accountId, String search, Collection<String> ingredientCategory, String order, String sortBy, int currentPage, int limit) {

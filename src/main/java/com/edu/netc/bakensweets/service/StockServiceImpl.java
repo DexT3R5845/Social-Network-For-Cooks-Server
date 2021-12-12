@@ -1,10 +1,8 @@
 package com.edu.netc.bakensweets.service;
 
 
-import com.edu.netc.bakensweets.dto.AccountPersonalInfoDTO;
 import com.edu.netc.bakensweets.dto.PaginationDTO;
 import com.edu.netc.bakensweets.dto.StockIngredientDTO;
-import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
 import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.model.Ingredient;
@@ -14,8 +12,8 @@ import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import com.edu.netc.bakensweets.repository.interfaces.StockRepository;
 import com.edu.netc.bakensweets.service.interfaces.StockService;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +26,7 @@ import java.util.List;
 public class StockServiceImpl implements StockService {
     private final StockRepository stockRepository;
     private final AccountRepository accountRepository;
-    private final AccountMapper accountMapper;
+
 
     @Transactional
     @Override
@@ -45,24 +43,26 @@ public class StockServiceImpl implements StockService {
     @Transactional
     @Override
     public void deleteFromStock(String accountEmail, long ingredientId) {
-        Account account = accountRepository.findByEmail(accountEmail);
         try {
-            Stock stock = stockRepository.findByAccountAndIngredient(account.getId(), ingredientId);
-            stockRepository.deleteById(stock.getId());
-        } catch (EmptyResultDataAccessException ex){
-        throw new CustomException(HttpStatus.NOT_FOUND, String.format("Ingredient with id %s not found.", ingredientId));
+            Account account = accountRepository.findByEmail(accountEmail);
+            if (!stockRepository.deleteByAccountAndIngredient(account.getId(), ingredientId)) {
+                throw new CustomException(HttpStatus.NOT_FOUND, String.format("Ingredient with id %s not found.", ingredientId));
+            }
+        } catch (DataAccessException ex) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Something wrong with server");
+        }
     }
-}
 
     @Transactional
     @Override
     public void updateIngredientFromStock(long accountId, long ingredientId, int amount) {
         try {
-            Stock stock = stockRepository.findByAccountAndIngredient(accountId, ingredientId);
-            stock.setAmount(amount);
-            stockRepository.update(stock);
-        } catch (EmptyResultDataAccessException ex) {
-            throw new CustomException(HttpStatus.NOT_FOUND, String.format("Ingredient with id %s or user with id %s not found.", ingredientId, accountId));
+            if (!stockRepository.updateAmountByAccountAndIngredient(accountId, ingredientId, amount)) {
+                throw new CustomException(HttpStatus.NOT_FOUND, String.format("Stock with ingredient with id %s or user with id %s not found.", ingredientId, accountId));
+            }
+        } catch (
+                DataAccessException ex) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Something wrong with server");
         }
     }
 
@@ -70,10 +70,11 @@ public class StockServiceImpl implements StockService {
     @Override
     public void deleteFromStock(long accountId, long ingredientId) {
         try {
-            Stock stock = stockRepository.findByAccountAndIngredient(accountId, ingredientId);
-            stockRepository.deleteById(stock.getId());
-        } catch (EmptyResultDataAccessException ex) {
-            throw new CustomException(HttpStatus.NOT_FOUND, String.format("Ingredient with id %s or user with id %s not found.", ingredientId, accountId));
+            if (!stockRepository.deleteByAccountAndIngredient(accountId, ingredientId)) {
+                throw new CustomException(HttpStatus.NOT_FOUND, String.format("Stock with ingredient with id %s or user with id %s not found.", ingredientId, accountId));
+            }
+        }catch (DataAccessException ex) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Something wrong with server");
         }
     }
 
@@ -87,15 +88,9 @@ public class StockServiceImpl implements StockService {
                 orderStr, sortBy, currentPage * size, size);
         int stockSize = stockRepository.countAllIngredientsInStock(searchStockIngredient);
         Collection<StockIngredientDTO> stock = stockRepository.findAllIngredientsInStock(searchStockIngredient);
-        return new PaginationDTO<StockIngredientDTO>(stock, stockSize);
+        return new PaginationDTO<>(stock, stockSize);
     }
 
-    @Transactional
-    @Override
-    public PaginationDTO<AccountPersonalInfoDTO> getAccountsWithStock(int size, int currentPage) {
-        Collection<Account> accounts = stockRepository.findAllAccountsWithStock(size, currentPage * size);
-        return new PaginationDTO<>(accountMapper.accountsToPersonalInfoDtoCollection(accounts), accounts.size());
-    }
 
     @Override
     public PaginationDTO<Ingredient> getIngredientsToAdd(int size, int currentPage, String search, boolean order, String sortBy,
@@ -106,7 +101,7 @@ public class StockServiceImpl implements StockService {
                 orderStr, sortBy, currentPage * size, size);
         int stockSize = stockRepository.countViableIngredients(searchStockIngredient);
         Collection<Ingredient> stock = stockRepository.findViableIngredients(searchStockIngredient);
-        return new PaginationDTO<Ingredient>(stock, stockSize);
+        return new PaginationDTO<>(stock, stockSize);
     }
 
 }

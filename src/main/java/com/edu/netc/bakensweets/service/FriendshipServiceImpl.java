@@ -1,18 +1,15 @@
 package com.edu.netc.bakensweets.service;
 
 import com.edu.netc.bakensweets.dto.AccountPersonalInfoDTO;
-import com.edu.netc.bakensweets.dto.PageDTO;
 import com.edu.netc.bakensweets.dto.PaginationDTO;
 import com.edu.netc.bakensweets.exception.CustomException;
+import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
 import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.model.Friendship;
 import com.edu.netc.bakensweets.model.FriendshipStatus;
-import com.edu.netc.bakensweets.model.Stock;
 import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import com.edu.netc.bakensweets.repository.interfaces.FriendshipRepository;
 import com.edu.netc.bakensweets.service.interfaces.FriendshipService;
-import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
-
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -33,36 +30,46 @@ public class FriendshipServiceImpl implements FriendshipService {
     @Transactional
     @Override
     public void createInvite(String inviterEmail, long friendId) {
-        Account inviterAcc = accountRepository.findByEmail(inviterEmail);
         try {
-            friendshipRepository.create(new Friendship(inviterAcc.getId(), friendId));
-        } catch (DataIntegrityViolationException ex) {
-            throw new CustomException(HttpStatus.NOT_FOUND, String.format("Friendship with friend id %s not found or already exists.", friendId));
+            Account inviterAcc = accountRepository.findByEmail(inviterEmail);
+            if (friendshipRepository.findByInviterAndFriend(inviterAcc.getId(), friendId)) {
+                try {
+                    friendshipRepository.create(new Friendship(inviterAcc.getId(), friendId));
+                } catch (DataIntegrityViolationException ex) {
+                    throw new CustomException(HttpStatus.NOT_FOUND, String.format("Friend with friend id %s not found.", friendId));
+                }
+            } else {
+                throw new CustomException(HttpStatus.NOT_FOUND, "Friendship already exists.");
+            }
+        } catch (DataAccessException ex) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Something wrong with server");
         }
     }
+
 
     @Transactional
     @Override
     public void deleteFriendship(String inviterEmail, long friendId) {
         try {
             Account inviterAcc = accountRepository.findByEmail(inviterEmail);
-            Friendship newFriendShip = friendshipRepository.findByInviterAndFriend(inviterAcc.getId(), friendId);
-            friendshipRepository.deleteById(newFriendShip.getId());
-        } catch (EmptyResultDataAccessException ex) {
-            throw new CustomException(HttpStatus.NOT_FOUND, String.format("Friendship with friend id %s not found.", friendId));
+            if (!friendshipRepository.deleteByInviterAndFriend(inviterAcc.getId(), friendId)) {
+                throw new CustomException(HttpStatus.NOT_FOUND, String.format("Friendship with friend id %s not found.", friendId));
+            }
+        } catch (DataAccessException ex) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Something wrong with server");
         }
     }
 
     @Transactional
     @Override
     public void acceptInvite(String inviterEmail, long friendId) {
-        Account inviterAcc = accountRepository.findByEmail(inviterEmail);
         try {
-            Friendship newFriendShip = friendshipRepository.findByInviterAndFriend( friendId, inviterAcc.getId());
-            newFriendShip.setFriendshipStatus(FriendshipStatus.accepted);
-            friendshipRepository.update(newFriendShip);
-        } catch (EmptyResultDataAccessException ex) {
-            throw new CustomException(HttpStatus.NOT_FOUND, String.format("Friendship with friend id %s not found.", friendId));
+            Account inviterAcc = accountRepository.findByEmail(inviterEmail);
+            if (!friendshipRepository.updateStatusByInviterAndFriend(FriendshipStatus.accepted, friendId, inviterAcc.getId())) {
+                throw new CustomException(HttpStatus.NOT_FOUND, String.format("Friendship with friend id %s not found.", friendId));
+            }
+        } catch (DataAccessException ex) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Something wrong with server");
         }
     }
 
@@ -71,10 +78,11 @@ public class FriendshipServiceImpl implements FriendshipService {
     public void declineInvite(String inviterEmail, long friendId) {
         try {
             Account inviterAcc = accountRepository.findByEmail(inviterEmail);
-            Friendship newFriendShip = friendshipRepository.findByInviterAndFriend(friendId, inviterAcc.getId());
-            friendshipRepository.deleteById(newFriendShip.getId());
-        } catch (EmptyResultDataAccessException ex) {
-            throw new CustomException(HttpStatus.NOT_FOUND, String.format("Friendship with friend id %s not found.", friendId));
+            if (!friendshipRepository.deleteByInviterAndFriend(friendId, inviterAcc.getId())) {
+                throw new CustomException(HttpStatus.NOT_FOUND, String.format("Friendship with friend id %s not found.", friendId));
+            }
+        } catch (DataAccessException ex) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Something wrong with server");
         }
     }
 
@@ -86,7 +94,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         int personsSize = friendshipRepository.countFriendsToAdd(sessionAcc.getId(), search, gender);
         Collection<Account> persons = friendshipRepository.findFriendsToAdd(sessionAcc.getId(), search, gender, limit,
                 currentPage * limit, order);
-        return new PaginationDTO<AccountPersonalInfoDTO>(accountMapper.accountsToPersonalInfoDtoCollection(persons), personsSize);
+        return new PaginationDTO<>(accountMapper.accountsToPersonalInfoDtoCollection(persons), personsSize);
     }
 
     @Transactional
@@ -96,7 +104,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         int invitesSize = friendshipRepository.countByFriendshipUnaccepted(sessionAcc.getId(), search, gender);
         Collection<Account> friends = friendshipRepository.findByFriendshipUnaccepted(sessionAcc.getId(), search, gender, limit,
                 currentPage * limit, order);
-        return new PaginationDTO<AccountPersonalInfoDTO>(accountMapper.accountsToPersonalInfoDtoCollection(friends), invitesSize);
+        return new PaginationDTO<>(accountMapper.accountsToPersonalInfoDtoCollection(friends), invitesSize);
     }
 
     @Transactional
@@ -106,7 +114,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         int friendsSize = friendshipRepository.countByFriendshipAccepted(sessionAcc.getId(), search, gender);
         Collection<Account> friends = friendshipRepository.findByFriendshipAccepted(sessionAcc.getId(), search, gender, limit,
                 currentPage * limit, order);
-        return new PaginationDTO<AccountPersonalInfoDTO>(accountMapper.accountsToPersonalInfoDtoCollection(friends), friendsSize);
+        return new PaginationDTO<>(accountMapper.accountsToPersonalInfoDtoCollection(friends), friendsSize);
     }
 
 }

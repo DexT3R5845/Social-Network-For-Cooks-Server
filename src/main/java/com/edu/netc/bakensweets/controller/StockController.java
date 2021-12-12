@@ -17,7 +17,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
-
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.security.Principal;
@@ -33,14 +32,14 @@ public class StockController {
 
 
     @PreAuthorize("hasRole('ROLE_USER')")
-    @PostMapping(value = "/new")
+    @PostMapping
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Ingredient added to stock"),
             @ApiResponse(code = 400, message = "Something went wrong")})
     public void addIngredient(@RequestParam(value = "ingredientId") long ingredientId,
                               @RequestParam(value = "amount",
-                                      defaultValue = "10000", required = false) @Min(value = 1, message = "amount must be > 0")
-                              @Max(value = 10000, message = "amount must be < 10000") int amount, Principal principal) {
+                                      defaultValue = "10000", required = false) @Min(value = 1, message = "Amount must be > 0")
+                              @Max(value = 10000, message = "Amount must be < 10000") int amount, Principal principal) {
         stockService.addToStock(principal.getName(), ingredientId, amount);
     }
 
@@ -49,35 +48,36 @@ public class StockController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of ingredients to add to stock"),
             @ApiResponse(code = 400, message = "Something went wrong")})
-    public PaginationDTO<Ingredient> getIngredients(@RequestParam(value = "size") int size,
+    public PaginationDTO<Ingredient> getIngredients(@RequestParam(value = "size") @Min(value = 1, message = "Size must be > 0") int size,
                                                     @RequestParam(value = "pageNum", defaultValue = "0", required = false) int currentPage,
                                                     @RequestParam(value = "search", defaultValue = "", required = false) String search,
                                                     @RequestParam(value = "order", defaultValue = "true", required = false) boolean order,
                                                     @RequestParam(value = "sortBy", defaultValue = "name", required = false) String sortBy,
                                                     @RequestParam(value = "ingredientCategory", defaultValue = "", required = false) List<String> ingredientCategory,
                                                     Principal principal) {
-        return stockService.getIngredientsToAdd(size, currentPage, search,  order, sortBy, ingredientCategory, principal.getName());
+        return stockService.getIngredientsToAdd(size, currentPage, search, order, sortBy, ingredientCategory, principal.getName());
     }
 
 
     @PreAuthorize("hasRole('ROLE_USER')")
-    @DeleteMapping(value = "/new")
+    @DeleteMapping
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Cancelled adding ingredient"),
             @ApiResponse(code = 400, message = "Something went wrong")})
-    public void cancelAddingIngredient(@RequestParam(value = "ingredientId") long ingredientId,
+    public void cancelAddingIngredient(@RequestParam(value = "ingredientId") @Min(value = 1, message = "ID must be higher than 0") long ingredientId,
                                        Principal principal) {
         stockService.deleteFromStock(principal.getName(), ingredientId);
     }
 
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
-    @PutMapping(value = "/{userId}")
+    @PatchMapping(value = "/{userId}")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Configuration of stock changed"),
             @ApiResponse(code = 400, message = "Something went wrong")})
-    public void changeConfigurationIngredientFromStock(@PathVariable long userId, @RequestParam(value = "ingredientId") long ingredientId,
-                                                       @RequestParam(value = "amount") @Min(value = 1, message = "amount must be > 0")
-                                                       @Max(value = 10000, message = "amount must be < 10000") int amount) {
+    public void changeConfigurationIngredientFromStock(@PathVariable @Min(value = 1, message = "ID must be higher than 0") long userId,
+                                                       @RequestParam(value = "ingredientId") @Min(value = 1, message = "ID must be higher than 0") long ingredientId,
+                                                       @RequestParam(value = "amount") @Min(value = 1, message = "Amount must be > 0")
+                                                       @Max(value = 10000, message = "Amount must be < 10000") int amount) {
         stockService.updateIngredientFromStock(userId, ingredientId, amount);
     }
 
@@ -86,7 +86,8 @@ public class StockController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Configuration of stock changed"),
             @ApiResponse(code = 400, message = "Something went wrong")})
-    public void deleteIngredientFromStock(@PathVariable long userId, @RequestParam(value = "ingredientId") long ingredientId) {
+    public void deleteIngredientFromStock(@PathVariable @Min(value = 1, message = "ID must be higher than 0") long userId,
+                                          @RequestParam(value = "ingredientId") long ingredientId) {
         stockService.deleteFromStock(userId, ingredientId);
     }
 
@@ -96,13 +97,13 @@ public class StockController {
             @ApiResponse(code = 200, message = "Your stock"),
             @ApiResponse(code = 400, message = "Something went wrong")})
     public PaginationDTO<StockIngredientDTO> getStock(
-            @RequestParam(value = "size") int size,
+            @RequestParam(value = "size") @Min(value = 1, message = "Size must be > 0") int size,
             @RequestParam(value = "pageNum", defaultValue = "0", required = false) int currentPage,
             @RequestParam(value = "search", defaultValue = "", required = false) String search,
             @RequestParam(value = "order", defaultValue = "true", required = false) boolean order,
             @RequestParam(value = "sortBy", defaultValue = "name", required = false) String sortBy,
             @RequestParam(value = "ingredientCategory", defaultValue = "", required = false) List<String> ingredientCategory,
             Principal principal) {
-        return stockService.getIngredientsFromStock(size, currentPage, search,  order, sortBy, ingredientCategory, principal.getName());
+        return stockService.getIngredientsFromStock(size, currentPage, search, order, sortBy, ingredientCategory, principal.getName());
     }
 }

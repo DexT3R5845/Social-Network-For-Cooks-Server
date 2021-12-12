@@ -15,12 +15,12 @@ import java.util.Collection;
 public class FriendshipRepositoryImpl extends BaseJdbcRepository implements FriendshipRepository {
     @Value("${sql.friendship.create}")
     private String sqlCreate;
-    @Value("${sql.friendship.delete}")
-    private String sqlDelete;
+    @Value("${sql.friendship.deleteByInviterAndFriend}")
+    private String sqlDeleteByInviterAndFriend;
     @Value("${sql.friendship.findByInviterAndFriend}")
     private String sqlFindByInviterAndFriend;
-    @Value("${sql.friendship.update}")
-    private String sqlUpdate;
+    @Value("${sql.friendship.updateStatusByInviterAndFriend}")
+    private String sqlUpdateStatusByInviterAndFriend;
     @Value("${sql.friendship.findByFriendshipAccepted}")
     private String sqlFindByFriendshipAccepted;
     @Value("${sql.friendship.countByFriendshipAccepted}")
@@ -66,10 +66,19 @@ public class FriendshipRepositoryImpl extends BaseJdbcRepository implements Frie
     }
 
     @Override
-    public Friendship findByInviterAndFriend(long inviterId, long friendId) {
-        System.out.println(inviterId);
-        return jdbcTemplate.queryForObject(sqlFindByInviterAndFriend,
-                new BeanPropertyRowMapper<>(Friendship.class), inviterId, friendId, friendId, inviterId);
+    public boolean findByInviterAndFriend(long inviterId, long friendId) {
+        Integer count  = jdbcTemplate.queryForObject(sqlFindByInviterAndFriend, Integer.class, inviterId, friendId, inviterId, friendId);
+        return count == 0;
+    }
+
+    @Override
+    public boolean deleteByInviterAndFriend(long inviterId, long friendId) {
+        return jdbcTemplate.update(sqlDeleteByInviterAndFriend, inviterId, friendId, friendId, inviterId) != 0;
+    }
+
+    @Override
+    public boolean updateStatusByInviterAndFriend(FriendshipStatus friendshipStatus, long inviterId, long friendId) {
+        return jdbcTemplate.update(sqlUpdateStatusByInviterAndFriend, friendshipStatus.toString(), inviterId, friendId) != 0;
     }
 
     @Override
@@ -97,19 +106,16 @@ public class FriendshipRepositoryImpl extends BaseJdbcRepository implements Frie
 
     @Override
     public boolean update(Friendship friendship) {
-        jdbcTemplate.update(sqlUpdate, friendship.getInviterId(), friendship.getFriendId(), friendship.getFriendshipStatus().toString(), friendship.getId());
-        return true;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean deleteById(Long id) {
-        jdbcTemplate.update(sqlDelete, id);
-        return true;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Friendship findById(Long integer) {
         throw new UnsupportedOperationException();
-        // return null;
     }
 }

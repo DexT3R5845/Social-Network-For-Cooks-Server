@@ -1,14 +1,11 @@
 package com.edu.netc.bakensweets.repository;
 
 import com.edu.netc.bakensweets.dto.StockIngredientDTO;
-import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.model.Ingredient;
 import com.edu.netc.bakensweets.model.Stock;
 import com.edu.netc.bakensweets.model.form.SearchStockIngredientModel;
 import com.edu.netc.bakensweets.repository.interfaces.StockRepository;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -26,23 +23,20 @@ public class StockRepositoryImpl extends BaseJdbcRepository implements StockRepo
     private String sqlFindById;
     @Value("${sql.stock.delete}")
     private String sqlDelete;
-    @Value("${sql.stock.findByAccountAndIngredient}")
-    private String sqlFindByAccountAndIngredient;
+    @Value("${sql.stock.deleteByAccountAndIngredient}")
+    private String sqlDeleteByAccountAndIngredient;
+    @Value("${sql.stock.updateAmountByAccountAndIngredient}")
+    private String sqlUpdateAmountByAccountAndIngredient;
     @Value("${sql.stock.update}")
     private String sqlUpdate;
     @Value("${sql.stock.findAll}")
     private String sqlFindAll;
     @Value("${sql.stock.countAll}")
     private String sqlCountAll;
-    @Value("${sql.stock.countAccountsWithStock}")
-    private String sqlCountStock;
-    @Value("${sql.stock.findAccountsWithStock}")
-    private String sqlFindStock;
     @Value("${sql.stock.findAllViableIngredients}")
     private String sqlFindIngredientsToAdd;
     @Value("${sql.stock.countAllViableIngredients}")
     private String sqlCountIngredientsToAdd;
-
 
 
     public StockRepositoryImpl(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
@@ -72,11 +66,6 @@ public class StockRepositoryImpl extends BaseJdbcRepository implements StockRepo
         return jdbcTemplate.queryForObject(sqlFindById, new BeanPropertyRowMapper<>(Stock.class), id);
     }
 
-    @Override
-    public Stock findByAccountAndIngredient(long accountId, long ingredientId) {
-            return jdbcTemplate.queryForObject(sqlFindByAccountAndIngredient, new BeanPropertyRowMapper<>(Stock.class), accountId,
-                    ingredientId);
-    }
 
     @Override
     public Collection<StockIngredientDTO> findAllIngredientsInStock(SearchStockIngredientModel searchStockIngredient) {
@@ -93,16 +82,15 @@ public class StockRepositoryImpl extends BaseJdbcRepository implements StockRepo
     }
 
     @Override
-    public Collection<Account> findAllAccountsWithStock(int limit, int offset) {
-        return jdbcTemplate.query(sqlFindStock,
-                new BeanPropertyRowMapper<>(Account.class), limit, offset);
+    public boolean deleteByAccountAndIngredient(long accountId, long ingredientId) {
+        return jdbcTemplate.update(sqlDeleteByAccountAndIngredient, accountId, ingredientId) != 0;
     }
 
     @Override
-    public int countAllAccountsWithStock() {
-        Integer count = jdbcTemplate.queryForObject(sqlCountStock, Integer.class);
-        return count == null ? 0 : count;
+    public boolean updateAmountByAccountAndIngredient(long accountId, long ingredientId, int amount) {
+         return jdbcTemplate.update(sqlUpdateAmountByAccountAndIngredient, amount, accountId, ingredientId) !=0;
     }
+
 
     @Override
     public Collection<Ingredient> findViableIngredients(SearchStockIngredientModel searchStockIngredient) {

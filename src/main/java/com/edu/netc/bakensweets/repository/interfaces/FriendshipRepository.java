@@ -13,7 +13,9 @@ public interface FriendshipRepository extends BaseCrudRepository<Friendship, Lon
                                                  boolean order);
     Collection<Account> findFriendsToAdd(long inviterId, String search, String gender, int limit, int offset,
                                          boolean order);
-    Friendship findByInviterAndFriend(long inviterId, long friendId);
+    boolean findByInviterAndFriend(long inviterId, long friendId);
+    boolean deleteByInviterAndFriend(long inviterId, long friendId);
+    boolean updateStatusByInviterAndFriend(FriendshipStatus friendshipStatus, long inviterId, long friendId);
     int countByFriendshipAccepted(long inviterId, String search, String gender);
     int countByFriendshipUnaccepted(long inviterId, String search, String gender);
     int countFriendsToAdd(long inviterId, String search,String gender);

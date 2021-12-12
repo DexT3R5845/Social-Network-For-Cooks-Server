@@ -9,11 +9,10 @@ import com.edu.netc.bakensweets.model.form.SearchStockIngredientModel;
 import java.util.Collection;
 
 public interface StockRepository extends BaseCrudRepository<Stock, Long> {
-    Stock findByAccountAndIngredient(long accountId, long ingredientId);
     Collection<StockIngredientDTO> findAllIngredientsInStock(SearchStockIngredientModel searchStockIngredient);
     int countAllIngredientsInStock(SearchStockIngredientModel searchStockIngredient);
-    Collection<Account> findAllAccountsWithStock(int limit, int offset);
-    int countAllAccountsWithStock();
+    boolean deleteByAccountAndIngredient(long accountId, long ingredientId);
+    boolean updateAmountByAccountAndIngredient(long accountId, long ingredientId, int amount);
     Collection<Ingredient> findViableIngredients(SearchStockIngredientModel searchStockIngredientModel);
     int countViableIngredients(SearchStockIngredientModel searchStockIngredientModel);
 }
