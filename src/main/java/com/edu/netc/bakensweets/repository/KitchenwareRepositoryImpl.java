@@ -97,7 +97,7 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
 
     private void createFilterArgsList (String name, Collection<String> categories, Boolean active) {
         if (categories != null && categories.size() == 0) {
-            categories.add("");
+            categories.add(null);
         }
         namedParameters = new HashMap();
         namedParameters.put("categories", categories);
