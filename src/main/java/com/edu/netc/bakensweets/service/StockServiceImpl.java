@@ -55,10 +55,11 @@ public class StockServiceImpl implements StockService {
 
     @Transactional
     @Override
-    public void updateIngredientFromStock(long accountId, long ingredientId, int amount) {
+    public void updateIngredientFromStock(String accountEmail, long ingredientId, int amount) {
         try {
-            if (!stockRepository.updateAmountByAccountAndIngredient(accountId, ingredientId, amount)) {
-                throw new CustomException(HttpStatus.NOT_FOUND, String.format("Stock with ingredient with id %s or user with id %s not found.", ingredientId, accountId));
+            Account account = accountRepository.findByEmail(accountEmail);
+            if (!stockRepository.updateAmountByAccountAndIngredient(account.getId(), ingredientId, amount)) {
+                throw new CustomException(HttpStatus.NOT_FOUND, String.format("Ingredient with id %s not found.", ingredientId));
             }
         } catch (
                 DataAccessException ex) {
@@ -66,17 +67,6 @@ public class StockServiceImpl implements StockService {
         }
     }
 
-    @Transactional
-    @Override
-    public void deleteFromStock(long accountId, long ingredientId) {
-        try {
-            if (!stockRepository.deleteByAccountAndIngredient(accountId, ingredientId)) {
-                throw new CustomException(HttpStatus.NOT_FOUND, String.format("Stock with ingredient with id %s or user with id %s not found.", ingredientId, accountId));
-            }
-        }catch (DataAccessException ex) {
-            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Something wrong with server");
-        }
-    }
 
     @Transactional
     @Override
