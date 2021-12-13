@@ -2,8 +2,6 @@ package com.edu.netc.bakensweets.controller;
 
 import com.edu.netc.bakensweets.dto.UpdateAccountDTO;
 import com.edu.netc.bakensweets.service.interfaces.AccountService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -18,17 +16,15 @@ public class AccountController {
     }
 
     @PutMapping(value = "/profile")
-    public ResponseEntity<UpdateAccountDTO> updateProfile(@RequestBody UpdateAccountDTO accountDTO, Principal principal) {
-        UpdateAccountDTO response = accountService.updateProfile(accountDTO, principal.getName());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public void updateProfile(@RequestBody UpdateAccountDTO accountDTO, Principal principal) {
+        accountService.updateProfile(accountDTO, principal.getName());
     }
 
     @PutMapping(value = "/profile/changePassword")
-    public ResponseEntity<String> changePassword(@RequestParam String oldPassword,
+    public void changePassword(@RequestParam String oldPassword,
                                                  @RequestParam String newPassword,
                                                  Principal principal) {
-        String response = accountService.changePassword(oldPassword, newPassword, principal.getName());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        accountService.changePassword(oldPassword, newPassword, principal.getName());
     }
 
     @GetMapping("/profile")

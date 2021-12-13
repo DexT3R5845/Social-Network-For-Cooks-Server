@@ -3,8 +3,8 @@ package com.edu.netc.bakensweets.service.interfaces;
 import com.edu.netc.bakensweets.dto.*;
 
 public interface AccountService {
-    UpdateAccountDTO updateProfile(UpdateAccountDTO accountDTO, String email);
-    String changePassword(String oldPassword, String newPassword, String email);
+    void updateProfile(UpdateAccountDTO accountDTO, String email);
+    void changePassword(String oldPassword, String newPassword, String email);
     String signIn(String username, String password, String recaptcha_token, String ip);
     void signUp (AccountDTO accountDTO);
 
