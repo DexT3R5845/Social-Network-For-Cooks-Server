@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Kitchenware {
     private long id;
-    private String kitchenwareName;
-    private String kitchenwareImg;
-    private String kitchenwareCategory;
+    private String name;
+    private String imgUrl;
+    private String category;
     private boolean active;
 }
