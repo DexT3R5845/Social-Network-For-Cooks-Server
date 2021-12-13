@@ -14,26 +14,26 @@ import java.util.Collection;
 public interface KitchenwareMapper {
     @Mappings({
             @Mapping(target="id", source="kitchenwareDTO.id"),
-            @Mapping(target="kitchenwareName", source="kitchenwareDTO.name"),
-            @Mapping(target = "kitchenwareImg", source = "kitchenwareDTO.imgUrl"),
-            @Mapping(target = "kitchenwareCategory", source = "kitchenwareDTO.category"),
+            @Mapping(target="name", source="kitchenwareDTO.name"),
+            @Mapping(target = "imgUrl", source = "kitchenwareDTO.imgUrl"),
+            @Mapping(target = "category", source = "kitchenwareDTO.category"),
             @Mapping(target = "active", source = "kitchenwareDTO.active")
     })
     Kitchenware kitchenwareDTOtoKitchenware(KitchenwareDTO kitchenwareDTO);
     @Mappings({
             @Mapping(target="id", source="kitchenware.id"),
-            @Mapping(target="name", source="kitchenware.kitchenwareName"),
-            @Mapping(target = "imgUrl", source = "kitchenware.kitchenwareImg"),
-            @Mapping(target = "category", source = "kitchenware.kitchenwareCategory"),
+            @Mapping(target="name", source="kitchenware.name"),
+            @Mapping(target = "imgUrl", source = "kitchenware.imgUrl"),
+            @Mapping(target = "category", source = "kitchenware.category"),
             @Mapping(target = "active", source = "kitchenware.active")
     })
     KitchenwareDTO kitchenwaretoKitchenwareDTO(Kitchenware kitchenware);
 
     @Mappings({
             @Mapping(target="id", source="kitchenwarePage.id"),
-            @Mapping(target="name", source="kitchenwarePage.kitchenwareName"),
-            @Mapping(target = "imgUrl", source = "kitchenwarePage.kitchenwareImg"),
-            @Mapping(target = "category", source = "kitchenwarePage.kitchenwareCategory"),
+            @Mapping(target="name", source="kitchenwarePage.name"),
+            @Mapping(target = "imgUrl", source = "kitchenwarePage.imgUrl"),
+            @Mapping(target = "category", source = "kitchenwarePage.category"),
             @Mapping(target = "active", source = "kitchenwarePage.active")
     })
     Collection<KitchenwareDTO> kitchenwarePageToDtoCollection (Collection<Kitchenware> kitchenwarePage);

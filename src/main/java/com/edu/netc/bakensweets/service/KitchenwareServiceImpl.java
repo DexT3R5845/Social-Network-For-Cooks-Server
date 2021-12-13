@@ -46,7 +46,7 @@ public class KitchenwareServiceImpl implements KitchenwareService {
         try {
             Kitchenware kitchenware = kitchenwareMapper.kitchenwareDTOtoKitchenware(kitchenwareDTO);
             long id = kitchenwareRepository.create(kitchenware);
-            kitchenwareDTO.setId(id);
+            kitchenwareDTO.setId(String.valueOf(id));
             kitchenwareDTO.setActive(true);
             return kitchenwareDTO;
 
@@ -60,7 +60,7 @@ public class KitchenwareServiceImpl implements KitchenwareService {
     @Transactional
     public KitchenwareDTO updateKitchenware(KitchenwareDTO kitchenwareDTO, long id) {
         try {
-            kitchenwareDTO.setId(id);
+            kitchenwareDTO.setId(String.valueOf(id));
             Kitchenware kitchenware = kitchenwareMapper.kitchenwareDTOtoKitchenware(kitchenwareDTO);
             boolean updated = kitchenwareRepository.update(kitchenware);
             if (!updated) {
