@@ -64,10 +64,10 @@ public interface DishMapper {
 
     @Mappings({
             @Mapping(target="id", source="kitchenwaresDTO.id"),
-            @Mapping(target="kitchwarName", source="kitchenwaresDTO.name"),
-            @Mapping(target = "kitchwarImg", source = "kitchenwaresDTO.imgUrl"),
+            @Mapping(target="name", source="kitchenwaresDTO.name"),
+            @Mapping(target = "imgUrl", source = "kitchenwaresDTO.imgUrl"),
             @Mapping(target = "active", source = "kitchenwaresDTO.active"),
-            @Mapping(target = "kitchwarCategory", source = "kitchenwaresDTO.category"),
+            @Mapping(target = "category", source = "kitchenwaresDTO.category"),
             @Mapping(target = "amount", source = "kitchenwaresDTO.amount")
     })
     List<DishKitchenware> dishKitchenwaresDtoToDishKitchenwares (Collection<DishKitchenwareDTO> kitchenwaresDTO);
@@ -83,22 +83,22 @@ public interface DishMapper {
     Collection<DishIngredientDTO> dishIngredientsToDishIngredientsDto(Collection<DishIngredient> ingredients);
 
 
-    @Mappings({  //TODO DELETE DUBLICATE AFTER RENAMING kitchenware
-            @Mapping(target="id", source="dishKitchenware.id"),
-            @Mapping(target = "imgUrl", source = "dishKitchenware.kitchwarImg"),
-            @Mapping(target = "active", source = "dishKitchenware.active"),
-            @Mapping(target="name", source="dishKitchenware.kitchwarName"),
-            @Mapping(target = "category", source = "dishKitchenware.kitchwarCategory"),
-            @Mapping(target = "amount", source = "dishKitchenware.amount")
-    })
-    DishKitchenwareDTO dishKitchenwareToDishKitchenwareDTO(DishKitchenware dishKitchenware);
+//    @Mappings({  //TODO DELETE DUBLICATE AFTER RENAMING kitchenware
+//            @Mapping(target="id", source="dishKitchenware.id"),
+//            @Mapping(target = "imgUrl", source = "dishKitchenware.kitchwarImg"),
+//            @Mapping(target = "active", source = "dishKitchenware.active"),
+//            @Mapping(target="name", source="dishKitchenware.kitchwarName"),
+//            @Mapping(target = "category", source = "dishKitchenware.kitchwarCategory"),
+//            @Mapping(target = "amount", source = "dishKitchenware.amount")
+//    })
+//    DishKitchenwareDTO dishKitchenwareToDishKitchenwareDTO(DishKitchenware dishKitchenware);
 
     @Mappings({
             @Mapping(target="id", source="kitchenwareList.id"),
-            @Mapping(target = "imgUrl", source = "kitchenwareList.kitchwarImg"),
+            @Mapping(target = "imgUrl", source = "kitchenwareList.imgUrl"),
             @Mapping(target = "active", source = "kitchenwareList.active"),
-            @Mapping(target="name", source="kitchenwareList.kitchwarName"),
-            @Mapping(target = "category", source = "kitchenwareList.kitchwarCategory"),
+            @Mapping(target="name", source="kitchenwareList.name"),
+            @Mapping(target = "category", source = "kitchenwareList.category"),
             @Mapping(target = "amount", source = "kitchenwareList.amount")
     })
     Collection<DishKitchenwareDTO> dishKitchenwaresToDishKitchenwaresDto (Collection<DishKitchenware> kitchenwareList);

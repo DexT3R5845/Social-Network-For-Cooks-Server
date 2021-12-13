@@ -33,11 +33,9 @@ public class DishServiceImpl implements DishService {
     @Override
     @Transactional
     public void createDish (DishDTO dishDto) {
-        Long id = Utils.generateUniqueId();
         Dish dish = dishMapper.dishDtoToDish(dishDto);
-        dish.setId(id);
         try {
-            dishRepository.create(dish);
+            long id = dishRepository.create(dish);
             dishRepository.createDishIngredient(dishMapper.dishIngredientsDtoToDishIngredients(dishDto.getIngredients()), id);
             dishRepository.createDishKitchenware(dishMapper.dishKitchenwaresDtoToDishKitchenwares(dishDto.getKitchenwares()), id);
         } catch (DataAccessException e) {

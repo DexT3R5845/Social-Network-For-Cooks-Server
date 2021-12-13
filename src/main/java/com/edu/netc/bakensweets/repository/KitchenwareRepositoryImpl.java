@@ -46,7 +46,7 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
 
     @Override
     public long create(Kitchenware item) {
-        return jdbcTemplate.queryForObject(sqlCreate, Integer.class, item.getName(), item.getImgUrl(), item.getCategory());
+        return jdbcTemplate.queryForObject(sqlCreate, Long.class, item.getName(), item.getImgUrl(), item.getCategory());
     }
 
     @Override

@@ -12,9 +12,9 @@ import javax.validation.constraints.Pattern;
 public class DishKitchenware {
     @Pattern(regexp = "^[0-9]+$", message = "Id should be numeric")
     private long id;
-    private String kitchwarName;
-    private String kitchwarImg;
-    private String kitchwarCategory;
+    private String name;
+    private String imgUrl;
+    private String category;
     private boolean active;
     private int amount;
 }

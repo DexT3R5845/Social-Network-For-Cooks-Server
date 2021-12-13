@@ -60,9 +60,9 @@ public class DishRepositoryImpl extends BaseJdbcRepository implements DishReposi
     }
 
     @Override
-    public void create (Dish dish) {
-        this.jdbcTemplate.update(
-                createDish, dish.getId(), dish.getDishName(), dish.getDishCategory(),
+    public long create (Dish dish) {
+        return this.jdbcTemplate.queryForObject(
+                createDish, Long.class, dish.getDishName(), dish.getDishCategory(),
                 dish.getImgUrl(), dish.getDescription(), dish.getReceipt(), dish.getDishType()
         );
     }
