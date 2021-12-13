@@ -12,7 +12,7 @@ import javax.validation.constraints.Pattern;
 @AllArgsConstructor
 @NoArgsConstructor
 public class KitchenwareDTO {
-    @Pattern(regexp = "^[0-9]+$", message = "Id should be numeric")
+    @Pattern(regexp = "[0-9]+", message = "id should be numeric")
     private String id;
     @NotNull(message = "name is mandatory")
     @NotBlank(message = "name is mandatory")

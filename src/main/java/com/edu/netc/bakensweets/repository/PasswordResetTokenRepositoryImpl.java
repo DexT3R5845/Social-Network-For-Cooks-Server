@@ -27,11 +27,12 @@ public class PasswordResetTokenRepositoryImpl extends BaseJdbcRepository impleme
     }
 
     @Override
-    public void create(PasswordResetToken passResetToken) {
+    public long create(PasswordResetToken passResetToken) {
         jdbcTemplate.update(sqlQueryCreate, passResetToken.getResetToken(),
                 passResetToken.getExpiryDate(),
                 passResetToken.getAccountId(),
                 passResetToken.isActive());
+        return 0;
     }
 
     @Override

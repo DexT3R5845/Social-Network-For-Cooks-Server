@@ -17,4 +17,3 @@ public class Account {
     private AccountRole accountRole;
     private boolean status;
 }
-
