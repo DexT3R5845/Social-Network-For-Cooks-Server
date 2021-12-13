@@ -47,6 +47,11 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
+    public Collection<String> getDishCategories() {
+        return dishRepository.getDishCategories();
+    }
+
+    @Override
     public DishDTO getDishById (long id) {
         try {
             DishDTO dish = dishMapper.dishToDishDto(dishRepository.findById(id));

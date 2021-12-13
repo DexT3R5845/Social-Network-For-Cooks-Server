@@ -18,5 +18,6 @@ public interface DishRepository extends BaseCrudRepository<Dish, Long> {
     Collection<Dish> getDishesByStock(long id, int limit, int offset);
     int countFilteredDishes(String name, List<String> categories, List<String> ingredients);
     Collection<Dish> findAllDishes(String name, List<String> categories, List<String> ingredients, boolean order, int limit, int offset);
+    Collection<String> getDishCategories();
 }
 

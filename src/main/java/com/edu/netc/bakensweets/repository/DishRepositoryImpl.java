@@ -25,6 +25,9 @@ public class DishRepositoryImpl extends BaseJdbcRepository implements DishReposi
     @Value("${sql.dish.createDishKitchenware}")
     private String createDishKitchenware;
 
+    @Value("${sql.dish.getAllCategories}")
+    private String getAllCategories;
+
     @Value("${sql.dish.getDishById}")
     private String getDishById;
     @Value("${sql.dish.getIngredientsByDishId}")
@@ -96,6 +99,11 @@ public class DishRepositoryImpl extends BaseJdbcRepository implements DishReposi
                 return kitchenwares.size();
             }
         });
+    }
+
+    @Override
+    public Collection<String> getDishCategories() {
+        return this.jdbcTemplate.queryForList(getAllCategories, String.class);
     }
 
     @Override

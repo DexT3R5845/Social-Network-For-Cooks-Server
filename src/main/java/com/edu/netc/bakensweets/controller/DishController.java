@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -18,6 +19,12 @@ public class DishController {
 
     public DishController (DishService dishService) {
         this.dishService = dishService;
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_MODERATOR', 'ROLE_USER', 'ROLE_ADMIN')")
+    @GetMapping(value = "/categories")
+    public ResponseEntity<Collection<String>> getAllCategories() {
+        return ResponseEntity.ok(dishService.getDishCategories());
     }
 
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
@@ -38,13 +45,13 @@ public class DishController {
         dishService.updateDish(id, dish);
     }
 
-    @PreAuthorize("hasRole('ROLE_MODERATOR')")
+    @PreAuthorize("hasAnyRole('ROLE_MODERATOR', 'ROLE_USER', 'ROLE_ADMIN')")
     @DeleteMapping(value = "/{id}")
     public void deleteDish(@PathVariable long id) {
         dishService.deleteDish(id);
     }
 
-    @PreAuthorize("hasRole('ROLE_MODERATOR')")
+    @PreAuthorize("hasAnyRole('ROLE_MODERATOR', 'ROLE_USER', 'ROLE_ADMIN')")
     @GetMapping(value = "")
     public ResponseEntity<PaginationDTO<DishDTO>> getFilteredDishes(
             @RequestParam(value = "pageSize") @Min(value = 1, message = "Page size must be higher than 0") int pageSize,
@@ -56,7 +63,7 @@ public class DishController {
         return ResponseEntity.ok(dishService.getFilteredDishes(pageSize, currentPage, name, categories, ingredients, order));
     }
 
-    @PreAuthorize("hasRole('ROLE_MODERATOR')")
+    @PreAuthorize("hasAnyRole('ROLE_MODERATOR', 'ROLE_USER', 'ROLE_ADMIN')")
     @GetMapping(value = "/stock/{id}")
     public ResponseEntity<PaginationDTO<DishDTO>> getDishesByStock(
             @PathVariable long id,
