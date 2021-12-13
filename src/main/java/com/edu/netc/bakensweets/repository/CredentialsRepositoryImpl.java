@@ -26,8 +26,9 @@ public class CredentialsRepositoryImpl extends BaseJdbcRepository implements Cre
     }
 
     @Override
-    public void create(Credentials credentials) {
+    public long create(Credentials credentials) {
         jdbcTemplate.update(sqlQueryCreate, credentials.getId(), credentials.getEmail(), credentials.getPassword());
+        return 0;
     }
 
     @Override

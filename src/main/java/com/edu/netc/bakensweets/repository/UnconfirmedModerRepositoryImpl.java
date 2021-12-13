@@ -26,11 +26,12 @@ public class UnconfirmedModerRepositoryImpl extends BaseJdbcRepository implement
     }
 
     @Override
-    public void create (UnconfirmedModerator moderator) {
+    public long create (UnconfirmedModerator moderator) {
         jdbcTemplate.update(
                 sqlCreateQuery, moderator.getModerToken(), moderator.getExpiryDate(), moderator.getEmail(),
                 moderator.getFirstName(), moderator.getLastName(), moderator.getBirthDate(), moderator.getGender().name()
         );
+        return 0;
     }
 
     @Override

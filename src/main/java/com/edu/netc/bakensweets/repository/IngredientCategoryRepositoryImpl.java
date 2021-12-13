@@ -19,7 +19,7 @@ public class IngredientCategoryRepositoryImpl extends BaseJdbcRepository impleme
     }
 
     @Override
-    public void create(IngredientCategory item) {
+    public long create(IngredientCategory item) {
         throw new UnsupportedOperationException();
     }
 
