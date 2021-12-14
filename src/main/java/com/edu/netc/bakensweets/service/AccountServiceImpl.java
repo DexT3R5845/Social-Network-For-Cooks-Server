@@ -176,7 +176,7 @@ public class AccountServiceImpl implements AccountService {
         Collection<Account> accounts = accountRepository.findAccountsBySearch(
                 search, gender, role, status, limit,  currentPage * limit, order
         );
-        return new PaginationDTO(accountMapper.accountsToPersonalInfoDtoCollection(accounts),  accCount);
+        return new PaginationDTO<>(accountMapper.accountsToPersonalInfoDtoCollection(accounts),  accCount);
     }
 
 
