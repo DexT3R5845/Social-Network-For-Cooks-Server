@@ -46,20 +46,17 @@ public class StockRepositoryImpl extends BaseJdbcRepository implements StockRepo
 
     @Override
     public long create(Stock stock) {
-        jdbcTemplate.update(sqlCreate, stock.getAccountId(), stock.getIngrId(), stock.getAmount());
-        return 0;
+        return jdbcTemplate.queryForObject(sqlCreate, Long.class, stock.getAccountId(), stock.getIngrId(), stock.getAmount());
     }
 
     @Override
     public boolean update(Stock stock) {
-        jdbcTemplate.update(sqlUpdate, stock.getAccountId(), stock.getIngrId(), stock.getAmount(), stock.getId());
-        return true;
+       return jdbcTemplate.update(sqlUpdate, stock.getAccountId(), stock.getIngrId(), stock.getAmount(), stock.getId()) != 0;
     }
 
     @Override
     public boolean deleteById(Long id) {
-        jdbcTemplate.update(sqlDelete, id);
-        return true;
+        throw new UnsupportedOperationException();
     }
 
     @Override

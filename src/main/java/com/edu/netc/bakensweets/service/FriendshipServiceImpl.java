@@ -86,7 +86,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         }
     }
 
-    @Transactional
+
     @Override
     public PaginationDTO<AccountPersonalInfoDTO> getAllViableFriends(String inviterEmail, String search, String gender, int currentPage,
                                                                      int limit, boolean order) {
@@ -97,7 +97,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         return new PaginationDTO<>(accountMapper.accountsToPersonalInfoDtoCollection(persons), personsSize);
     }
 
-    @Transactional
+
     @Override
     public PaginationDTO<AccountPersonalInfoDTO> getInvites(String inviterEmail, String search, String gender, int currentPage, int limit, boolean order) {
         Account sessionAcc = accountRepository.findByEmail(inviterEmail);
@@ -107,7 +107,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         return new PaginationDTO<>(accountMapper.accountsToPersonalInfoDtoCollection(friends), invitesSize);
     }
 
-    @Transactional
+    
     @Override
     public PaginationDTO<AccountPersonalInfoDTO> getFriends(String inviterEmail, String search, String gender, int currentPage, int limit, boolean order) {
         Account sessionAcc = accountRepository.findByEmail(inviterEmail);

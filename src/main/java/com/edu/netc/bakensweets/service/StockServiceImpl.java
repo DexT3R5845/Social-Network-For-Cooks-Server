@@ -68,7 +68,7 @@ public class StockServiceImpl implements StockService {
     }
 
 
-    @Transactional
+
     @Override
     public PaginationDTO<StockIngredientDTO> getIngredientsFromStock(int size, int currentPage, String search, boolean order,
                                                                      String sortBy, List<String> ingredientCategory, String accountEmail) {
