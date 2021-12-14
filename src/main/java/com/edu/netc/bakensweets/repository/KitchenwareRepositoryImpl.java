@@ -5,14 +5,15 @@ import com.edu.netc.bakensweets.repository.interfaces.KitchenwareRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @Repository
 public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements KitchenwareRepository {
-    public KitchenwareRepositoryImpl(JdbcTemplate jdbcTemplate) {super(jdbcTemplate);}
-
     @Value("${sql.kitchenware.create}")
     private String sqlCreate;
 
@@ -22,11 +23,8 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
     @Value("${sql.kitchenware.filter}")
     private String sqlFilter;
 
-    @Value("${sql.kitchenware.filterAsc}")
-    private String sqlFilterAsc;
-
-    @Value("${sql.kitchenware.filterDesc}")
-    private String sqlFilterDesc;
+    @Value("${sql.kitchenware.getCount}")
+    private String sqlGetCount;
 
     @Value("${sql.kitchenware.update}")
     private String sqlUpdate;
@@ -37,25 +35,23 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
     @Value("${sql.kitchenware.findById}")
     private String sqlFindById;
 
-    private List<Object> filterArgsList;
+    private Map namedParameters;
 
-    private String filterQuestionMarks;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    public KitchenwareRepositoryImpl(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        super(jdbcTemplate);
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    }
 
     @Override
-    public void create(Kitchenware item) {
-        jdbcTemplate.update(sqlCreate, item.getId(), item.getKitchwarName(), item.getKitchwarImg(), item.getKitchwarCategory());
+    public long create(Kitchenware item) {
+        return jdbcTemplate.queryForObject(sqlCreate, Long.class, item.getName(), item.getImgUrl(), item.getCategory());
     }
 
     @Override
     public boolean update(Kitchenware item) {
-        int updated = jdbcTemplate.update(sqlUpdate, item.getKitchwarName(), item.getKitchwarImg(), item.getKitchwarCategory(), item.getId());
-        if (updated == 1) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return jdbcTemplate.update(sqlUpdate, item.getName(), item.getImgUrl(), item.getCategory(), item.getId()) != 0;
     }
 
     @Override
@@ -65,13 +61,7 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
 
     @Override
     public boolean changeStatusById(Long id) {
-        int updated = jdbcTemplate.update(sqlChangeStatus, id);
-        if (updated == 1) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return jdbcTemplate.update(sqlChangeStatus, id) != 0;
     }
 
     @Override
@@ -87,47 +77,31 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
     };
 
     @Override
-    public Collection<Kitchenware> filterKitchenware (String name, List<Object> args, Boolean active, int limit, int offset, boolean order) {
-        String searchQuery = order ? sqlFilterAsc : sqlFilterDesc;
-        createFilterArgsList(name, args, active);
-        filterArgsList.add(limit);
-        filterArgsList.add(offset);
-        System.out.println(filterArgsList);
-        return jdbcTemplate.query(
-                String.format(searchQuery, filterQuestionMarks), new BeanPropertyRowMapper<>(Kitchenware.class),
-                filterArgsList.toArray()
+    public Collection<Kitchenware> filterKitchenware (String name, Collection<String> categories, Boolean active, int limit, int offset, boolean order) {
+        createFilterArgsList(name, categories, active);
+        String request = order ? String.format(sqlFilter, "ASC", "ASC") : String.format(sqlFilter, "DESC", "DESC");
+        namedParameters.put("pageSize", limit);
+        namedParameters.put("offset", offset);
+        return namedParameterJdbcTemplate.query(
+                request, namedParameters, new BeanPropertyRowMapper<>(Kitchenware.class)
         );
     }
 
     @Override
-    public int countFilteredKitchenware (String name, List<Object> args, Boolean active) {
-        createFilterArgsList(name, args, active);
-        String request = String.format(sqlFilter, filterQuestionMarks);
-        Integer count = jdbcTemplate.queryForObject(
-                request, Integer.class, filterArgsList.toArray());
+    public int countFilteredKitchenware (String name, Collection<String> categories, Boolean active) {
+        createFilterArgsList(name, categories, active);
+        Integer count = namedParameterJdbcTemplate.queryForObject(
+                sqlGetCount, namedParameters, Integer.class);
         return count == null ? 0 : count;
     }
 
-    private void createFilterArgsList (String name, List<Object> args, Boolean active) {
-        name = "%" + name + "%";
-        boolean isFilteredByCategories = false;
-        if (args != null) {
-            filterArgsList = new ArrayList<>(args);
-            if (args.size() > 0) {
-                isFilteredByCategories = true;
-            }
-            else {
-                filterArgsList.add("");
-            }
-            filterQuestionMarks = String.join(",", Collections.nCopies(filterArgsList.size(), "?"));
+    private void createFilterArgsList (String name, Collection<String> categories, Boolean active) {
+        if (categories != null && categories.size() == 0) {
+            categories.add(null);
         }
-        else {
-            filterQuestionMarks = "?";
-            filterArgsList = new ArrayList<>();
-            filterArgsList.add("");
-        }
-        filterArgsList.add(!isFilteredByCategories);
-        filterArgsList.add(name);
-        filterArgsList.add(active);
+        namedParameters = new HashMap();
+        namedParameters.put("categories", categories);
+        namedParameters.put("searchText", "%" + name + "%");
+        namedParameters.put("active", active);
     }
 }

@@ -7,10 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Kitchenware {
+public class DishIngredient {
     private long id;
     private String name;
     private String imgUrl;
-    private String category;
+    private String ingredientCategory;
     private boolean active;
+    private int amount;
 }
