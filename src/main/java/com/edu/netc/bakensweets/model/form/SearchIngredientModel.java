@@ -28,20 +28,6 @@ public class SearchIngredientModel {
             put("id", "id");
         }
     };
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    private Boolean checkCategory;
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    private Boolean checkStatus;
-
-    public Boolean getCheckCategory(){
-        return getIngredientCategory() == null;
-    }
-
-    public Boolean getCheckStatus(){
-        return getStatus() == null;
-    }
 
     public Collection<String> getIngredientCategory(){
         if(ingredientCategory != null && !ingredientCategory.isEmpty())

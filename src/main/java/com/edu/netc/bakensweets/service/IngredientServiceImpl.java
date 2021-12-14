@@ -34,7 +34,7 @@ public class IngredientServiceImpl implements IngredientService {
             Ingredient ingredient = ingredientMapper.ingredientDTOtoIngredient(ingredientDto);
             ingredientRepository.create(ingredient);
         } catch (DataIntegrityViolationException ex) {
-            throw new BadRequestParamException("categoryIngredient", String.format("Category '%s' not found", ingredientDto.getIngredientCategory()));
+            throw new BadRequestParamException("ingredientCategory", String.format("Category '%s' not found", ingredientDto.getIngredientCategory()));
         }
     }
 
@@ -67,7 +67,7 @@ public class IngredientServiceImpl implements IngredientService {
             ingredient.setId(id);
             ingredientRepository.update(ingredient);
         } catch (DataIntegrityViolationException ex) {
-            throw new BadRequestParamException("categoryIngredient", String.format("Category '%s' not found", ingredientDto.getIngredientCategory()));
+            throw new BadRequestParamException("ingredientCategory", String.format("Category '%s' not found", ingredientDto.getIngredientCategory()));
         }
     }
 
