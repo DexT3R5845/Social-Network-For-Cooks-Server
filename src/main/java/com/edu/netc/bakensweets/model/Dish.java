@@ -11,4 +11,7 @@ public class Dish {
     private String description;
     private String receipt;
     private String dishType;
+    private int totalLikes;
+    private boolean isLiked;
+    private boolean isFavorite;
 }

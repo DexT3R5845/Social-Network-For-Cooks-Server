@@ -45,6 +45,11 @@ public class DishRepositoryImpl extends BaseJdbcRepository implements DishReposi
     @Value("${sql.dish.updateDish}")
     private String updateDish;
 
+    @Value("${sql.dish.upsertLike}")
+    private String upsertLike;
+    @Value("${sql.dish.upsertFavorite}")
+    private String upsertFavorite;
+
     @Value("${sql.dish.countDishesByStock}")
     private String countDishesByStock;
     @Value("${sql.dish.getDishesByStock}")
@@ -107,6 +112,16 @@ public class DishRepositoryImpl extends BaseJdbcRepository implements DishReposi
     }
 
     @Override
+    public void changeDishLike (String email, long dishId, boolean isLiked) {
+        this.jdbcTemplate.update(upsertLike, email, dishId, isLiked);
+    }
+
+    @Override
+    public void changeDishFavorite (String email, long dishId, boolean isFavorite) {
+        this.jdbcTemplate.update(upsertFavorite, email, dishId, isFavorite);
+    }
+
+    @Override
     public boolean update (Dish dish) {
         return this.jdbcTemplate.update(updateDish, dish.getDishName(), dish.getDishCategory(), dish.getImgUrl(),
                 dish.getDescription(), dish.getReceipt(), dish.getDishType(), dish.getId()) != 0;
@@ -129,7 +144,12 @@ public class DishRepositoryImpl extends BaseJdbcRepository implements DishReposi
 
     @Override
     public Dish findById (Long id) {
-        return this.jdbcTemplate.queryForObject(getDishById, new BeanPropertyRowMapper<>(Dish.class), id);
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Dish findById (long accountId, Long id) {
+        return this.jdbcTemplate.queryForObject(getDishById, new BeanPropertyRowMapper<>(Dish.class), accountId, accountId, id);
     }
 
     @Override
@@ -147,9 +167,10 @@ public class DishRepositoryImpl extends BaseJdbcRepository implements DishReposi
         return this.jdbcTemplate.queryForObject(countDishesByStock, Integer.class, id);
     }
 
+    @Override
     public Collection<Dish> getDishesByStock(long id, int limit, int offset) {
         return this.jdbcTemplate.query(
-                getDishesByStock, new BeanPropertyRowMapper<>(Dish.class), id, limit, offset
+                getDishesByStock, new BeanPropertyRowMapper<>(Dish.class), id, id, id, limit, offset
         );
     }
 
@@ -164,7 +185,7 @@ public class DishRepositoryImpl extends BaseJdbcRepository implements DishReposi
     }
 
     @Override
-    public Collection<Dish> findAllDishes(String name, List<String> categories, List<String> ingredients, boolean order, int limit, int offset) {
+    public Collection<Dish> findAllDishes(long accountId, String name, List<String> categories, List<String> ingredients, boolean order, int limit, int offset) {
         boolean checkCategories = categories == null || categories.isEmpty();
         boolean checkIngredients = ingredients == null || ingredients.isEmpty();
 
@@ -173,7 +194,7 @@ public class DishRepositoryImpl extends BaseJdbcRepository implements DishReposi
         return this.jdbcTemplate.query(
                 query,
                 new BeanPropertyRowMapper<>(Dish.class),
-                name, name, checkCategories, checkIngredients, limit, offset
+                accountId, accountId, name, name, checkCategories, checkIngredients, limit, offset
         );
     }
 

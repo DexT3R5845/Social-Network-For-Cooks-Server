@@ -4,17 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Pattern;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DishKitchenwareDTO {
-    @Pattern(regexp = "^[0-9]+$", message = "Id should be numeric")
+public class DishIngredientInfoDTO {
     private String id;
     private String name;
     private String imgUrl;
+    private String ingredientCategory;
     private boolean active;
-    private String category;
     private int amount;
 }
