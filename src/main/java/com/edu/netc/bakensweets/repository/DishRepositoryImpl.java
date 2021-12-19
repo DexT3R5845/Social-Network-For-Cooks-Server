@@ -18,6 +18,7 @@ import java.util.List;
 
 @Repository
 public class DishRepositoryImpl extends BaseJdbcRepository implements DishRepository {
+
     @Value("${sql.dish.createDish}")
     private String createDish;
     @Value("${sql.dish.createDishIngredient}")
@@ -50,6 +51,11 @@ public class DishRepositoryImpl extends BaseJdbcRepository implements DishReposi
     @Value("${sql.dish.upsertFavorite}")
     private String upsertFavorite;
 
+    @Value("${sql.dish.countFavoriteDishes}")
+    private String countFavoriteDishes;
+    @Value("${sql.dish.getFavoriteDishes}")
+    private String getFavoriteDishes;
+
     @Value("${sql.dish.countDishesByStock}")
     private String countDishesByStock;
     @Value("${sql.dish.getDishesByStock}")
@@ -59,6 +65,8 @@ public class DishRepositoryImpl extends BaseJdbcRepository implements DishReposi
     private String countAll;
     @Value("${sql.dish.findAll}")
     private String findAll;
+
+
 
     public DishRepositoryImpl (JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
@@ -122,6 +130,16 @@ public class DishRepositoryImpl extends BaseJdbcRepository implements DishReposi
     }
 
     @Override
+    public int countFavoriteDishes(String email) {
+        return this.jdbcTemplate.queryForObject(countFavoriteDishes, Integer.class, email);
+    }
+
+    @Override
+    public Collection<Dish> getFavoriteDishes(String email, int limit, int offset) {
+        return this.jdbcTemplate.query(getFavoriteDishes, new BeanPropertyRowMapper<>(Dish.class), email, limit, offset);
+    }
+
+    @Override
     public boolean update (Dish dish) {
         return this.jdbcTemplate.update(updateDish, dish.getDishName(), dish.getDishCategory(), dish.getImgUrl(),
                 dish.getDescription(), dish.getReceipt(), dish.getDishType(), dish.getId()) != 0;
@@ -148,7 +166,7 @@ public class DishRepositoryImpl extends BaseJdbcRepository implements DishReposi
     }
 
     @Override
-    public Dish findById (long accountId, Long id) {
+    public Dish findById (long accountId, long id) {
         return this.jdbcTemplate.queryForObject(getDishById, new BeanPropertyRowMapper<>(Dish.class), accountId, accountId, id);
     }
 

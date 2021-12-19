@@ -117,9 +117,6 @@ public class DishServiceImpl implements DishService {
         Collection<Dish> dishes = dishRepository.findAllDishes(
                 account.getId(), name, categories, ingredients, order,  pageSize, pageSize * currentPage
         );
-        for (Dish d : dishes) {
-            System.err.println(d);
-        }
         return new PaginationDTO<>(dishMapper.dishToDishDtoCollection(dishes), totalElements);
     }
 
@@ -129,6 +126,13 @@ public class DishServiceImpl implements DishService {
         Credentials account = credentialsRepository.findByEmail(email);
         int totalElements = dishRepository.countDishesByStock(account.getId());
         Collection<Dish> dishes = dishRepository.getDishesByStock(account.getId(),  pageSize, pageSize * currentPage);
+        return new PaginationDTO<>(dishMapper.dishToDishDtoCollection(dishes), totalElements);
+    }
+
+    @Override
+    public PaginationDTO<DishInfoDTO<DishIngredientDTO, DishKitchenwareDTO>> getFavoriteDishes(String email, int pageSize, int currentPage) {
+        int totalElements = dishRepository.countFavoriteDishes(email);
+        Collection<Dish> dishes = dishRepository.getFavoriteDishes(email,  pageSize, pageSize * currentPage);
         return new PaginationDTO<>(dishMapper.dishToDishDtoCollection(dishes), totalElements);
     }
 

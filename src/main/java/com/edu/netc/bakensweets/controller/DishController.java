@@ -92,4 +92,13 @@ public class DishController {
             @RequestParam(value = "isFavorite", defaultValue = "", required = false) boolean isFavorite) {
         dishService.updateFavorite(principal.getName(), dishId, isFavorite);
     }
+
+    @PreAuthorize("hasAnyRole('ROLE_MODERATOR', 'ROLE_USER', 'ROLE_ADMIN')")
+    @GetMapping(value = "/favorite")
+    public ResponseEntity<PaginationDTO<DishInfoDTO<DishIngredientDTO, DishKitchenwareDTO>>> getFavoriteDishes(
+            Principal principal,
+            @RequestParam(value = "pageSize") @Min(value = 1, message = "Page size must be higher than 0") int pageSize,
+            @RequestParam(value = "pageNum", defaultValue = "0", required = false) int currentPage) {
+        return ResponseEntity.ok(dishService.getFavoriteDishes(principal.getName(), pageSize, currentPage));
+    }
 }

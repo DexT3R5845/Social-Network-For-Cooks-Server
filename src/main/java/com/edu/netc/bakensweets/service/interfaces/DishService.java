@@ -13,6 +13,8 @@ public interface DishService {
     Collection<String> getDishCategories();
     PaginationDTO<DishInfoDTO<DishIngredientDTO, DishKitchenwareDTO>> getFilteredDishes(String email, int pageSize, int currentPage, String name, List<String> categories, List<String> ingredients, boolean order);
     PaginationDTO<DishInfoDTO<DishIngredientDTO, DishKitchenwareDTO>> getDishesByStock(String email, int pageSize, int currentPage);
+    PaginationDTO<DishInfoDTO<DishIngredientDTO, DishKitchenwareDTO>> getFavoriteDishes(String email, int pageSize, int currentPage);
     void updateLike(String email, long dishId, boolean isLiked);
     void updateFavorite(String email, long dishId, boolean isFavorite);
+
 }

@@ -21,6 +21,8 @@ public interface DishRepository extends BaseCrudRepository<Dish, Long> {
     Collection<String> getDishCategories();
     void changeDishLike(String email, long dishId, boolean isLiked);
     void changeDishFavorite(String email, long dishId, boolean isFavorite);
-    Dish findById (long accountId, Long id);
+    Dish findById (long accountId, long id);
+    int countFavoriteDishes(String email);
+    Collection<Dish> getFavoriteDishes(String email, int limit, int offset);
 }
 
