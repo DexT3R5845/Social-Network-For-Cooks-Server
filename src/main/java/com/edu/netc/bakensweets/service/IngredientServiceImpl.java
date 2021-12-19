@@ -4,7 +4,7 @@ import com.edu.netc.bakensweets.dto.IngredientDTO;
 import com.edu.netc.bakensweets.dto.PaginationDTO;
 import com.edu.netc.bakensweets.exception.BadRequestParamException;
 import com.edu.netc.bakensweets.exception.CustomException;
-import com.edu.netc.bakensweets.mapperConfig.IngredientMapper;
+import com.edu.netc.bakensweets.mapper.IngredientMapper;
 import com.edu.netc.bakensweets.model.Ingredient;
 import com.edu.netc.bakensweets.model.form.SearchIngredientModel;
 import com.edu.netc.bakensweets.repository.interfaces.IngredientRepository;

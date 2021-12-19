@@ -16,7 +16,6 @@ import java.io.IOException;
 public class JwtTokenFilter extends OncePerRequestFilter {
 
   private final JwtTokenProvider jwtTokenProvider;
-  private HandlerExceptionResolver resolver;
 
   public JwtTokenFilter(JwtTokenProvider jwtTokenProvider) {
     this.jwtTokenProvider = jwtTokenProvider;

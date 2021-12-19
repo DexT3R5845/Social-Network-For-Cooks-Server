@@ -6,10 +6,8 @@ import org.passay.*;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 public class PasswordConstraintValidator implements ConstraintValidator<ValidPassword, String> {
 
@@ -22,15 +20,9 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
     @Override
     public boolean isValid(String password, ConstraintValidatorContext context) {
 
-        Properties props = new Properties();
-        InputStream inputStream = getClass()
-                .getClassLoader().getResourceAsStream("passay.properties");
-        props.load(inputStream);
-        MessageResolver resolver = new PropertiesMessageResolver(props);
+        PasswordValidator validator = new PasswordValidator(Arrays.asList(
 
-        PasswordValidator validator = new PasswordValidator(resolver, Arrays.asList(
-
-                new LengthRule(8,32),
+                new LengthRule(8, 32),
 
                 new CharacterRule(EnglishCharacterData.UpperCase, 1),
 
