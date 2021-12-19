@@ -24,14 +24,12 @@ public class KitchenwareServiceImpl implements KitchenwareService {
     private final KitchenwareMapper kitchenwareMapper;
 
     @Override
-    @Transactional
     public Collection<String> getAllCategories() {
         return kitchenwareRepository.getAllCategories();
     }
 
 
     @Override
-    @Transactional
     public KitchenwareDTO getKitchenwareById(Long id) {
         try {
             return kitchenwareMapper.kitchenwaretoKitchenwareDTO(kitchenwareRepository.findById(id));
@@ -83,7 +81,6 @@ public class KitchenwareServiceImpl implements KitchenwareService {
     }
 
     @Override
-    @Transactional
     public PaginationDTO<KitchenwareDTO> getFilteredKitchenware(String name, Collection<String> args, Boolean active, int limit, boolean order, int currentPage) {
         int count = kitchenwareRepository.countFilteredKitchenware(name, args, active);
         Collection<Kitchenware> kitchenwareCollection = kitchenwareRepository.filterKitchenware(
