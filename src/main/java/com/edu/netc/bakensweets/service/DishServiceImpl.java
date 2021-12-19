@@ -59,8 +59,8 @@ public class DishServiceImpl implements DishService {
             Credentials account = credentialsRepository.findByEmail(email);
             Dish dish = dishRepository.findById(account.getId(), id);
             DishInfoDTO<DishIngredientInfoDTO, DishKitchenwareInfoDTO> dishDto = dishMapper.dishToDishDto(dish);
-            dishDto.setLiked(dish.isLiked());
-            dishDto.setFavorite(dish.isFavorite());
+            dishDto.setIsLiked(dish.getIsLiked());
+            dishDto.setIsFavorite(dish.getIsFavorite());
 
             Collection<DishIngredient> ingredients = dishRepository.findIngredientsByDishId(id);
             dishDto.setIngredients(dishMapper.dishIngredientsToDishIngredientsDto(ingredients));
@@ -117,6 +117,9 @@ public class DishServiceImpl implements DishService {
         Collection<Dish> dishes = dishRepository.findAllDishes(
                 account.getId(), name, categories, ingredients, order,  pageSize, pageSize * currentPage
         );
+        for (Dish d : dishes) {
+            System.err.println(d);
+        }
         return new PaginationDTO<>(dishMapper.dishToDishDtoCollection(dishes), totalElements);
     }
 

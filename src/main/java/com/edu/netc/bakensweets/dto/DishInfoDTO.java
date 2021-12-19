@@ -18,4 +18,20 @@ public class DishInfoDTO<I,K> {
     private boolean isFavorite;
     private Collection<K> kitchenwares;
     private Collection<I> ingredients;
+
+    public boolean getIsLiked () {
+        return isLiked;
+    }
+
+    public void setIsLiked (boolean liked) {
+        isLiked = liked;
+    }
+
+    public boolean getIsFavorite () {
+        return isFavorite;
+    }
+
+    public void setIsFavorite (boolean favorite) {
+        isFavorite = favorite;
+    }
 }
