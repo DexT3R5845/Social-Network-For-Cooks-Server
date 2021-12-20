@@ -66,12 +66,9 @@ public class DishServiceImpl implements DishService {
             dishDto.setIngredients(dishMapper.dishIngredientsToDishIngredientsDto(ingredients));
 
             Collection<DishKitchenware> kitchenwares = dishRepository.findKitchenwaresByDishId(id);
-            System.err.println(kitchenwares);
-
             dishDto.setKitchenwares(dishMapper.dishKitchenwaresToDishKitchenwaresDto(kitchenwares));
-            System.err.println(dishDto.getKitchenwares());
-
             return dishDto;
+
         } catch (EmptyResultDataAccessException ex) {
             throw new CustomException(HttpStatus.NOT_FOUND, "Dish was not found.");
         }
@@ -81,7 +78,7 @@ public class DishServiceImpl implements DishService {
     @Override
     @Transactional
     public void updateDish(long id, DishDTO<DishIngredientDTO, DishKitchenwareDTO> dishDTO) { //TODO THINK ABOUT ANOTHER WAY TO DO THIS (maybe UPSERT or getting flag from client)
-        try { //DELETING ALL OLD KITCHENWARES/INGREDIENTS BEFORE INSERTING NEW LISTS
+        try {
             dishRepository.deleteIngredientsByDishId(id);
             dishRepository.deleteKitchenwaresByDishId(id);
 

@@ -4,7 +4,10 @@ import com.edu.netc.bakensweets.dto.NewModeratorDTO;
 import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
 import com.edu.netc.bakensweets.mapperConfig.ModeratorMapper;
-import com.edu.netc.bakensweets.model.*;
+import com.edu.netc.bakensweets.model.Account;
+import com.edu.netc.bakensweets.model.AccountRole;
+import com.edu.netc.bakensweets.model.Credentials;
+import com.edu.netc.bakensweets.model.UnconfirmedModerator;
 import com.edu.netc.bakensweets.model.payload.AuthRequestResetUpdatePassword;
 import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
@@ -51,13 +54,12 @@ public class ModerCreationServiceImpl implements ModerCreationService {
 
     @Override
     @Transactional
-    public String createToken(NewModeratorDTO moderatorDTO) {
+    public void createToken(NewModeratorDTO moderatorDTO) {
         if (emailIsUnique(moderatorDTO.getEmail()) && hasNoActualExpiryDate(moderatorDTO.getEmail())) {
             UnconfirmedModerator moderator = getModerWithToken(moderatorDTO);
             moderRepository.create(moderator);
             emailSenderService.sendNewModerLinkPassword(moderator.getEmail(), moderator.getModerToken());
         }
-        return "the link has been sent to your email";
     }
 
     @Override

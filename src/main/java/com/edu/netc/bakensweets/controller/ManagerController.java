@@ -9,7 +9,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,14 +32,14 @@ public class ManagerController {
         @ApiResponse(code = 200, message = "the link has been sent to your email"),
         @ApiResponse(code = 403, message = "this email has actual link that is valid until *time*"),
         @ApiResponse(code = 409, message = "email in not unique")})
-    public ResponseEntity<String> addModerator(@Valid @RequestBody NewModeratorDTO moderatorDTO) {
-        return ResponseEntity.ok(moderCreationService.createToken(moderatorDTO));
+    public void addModerator(@Valid @RequestBody NewModeratorDTO moderatorDTO) {
+        moderCreationService.createToken(moderatorDTO);
     }
 
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("")
-    public PaginationDTO getAllBySearch(
+    public PaginationDTO<AccountPersonalInfoDTO> getAllBySearch(
             @RequestParam(value = "size") int size,
             @RequestParam(value = "pageNum", defaultValue = "0", required = false) int currentPage,
             @RequestParam(value = "search", defaultValue = "", required = false) String search,

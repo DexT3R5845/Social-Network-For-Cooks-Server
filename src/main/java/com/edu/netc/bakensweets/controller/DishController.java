@@ -27,7 +27,7 @@ public class DishController {
         return ResponseEntity.ok(dishService.getDishCategories());
     }
 
-    @PreAuthorize("hasRole('ROLE_MODERATOR')")
+    @PreAuthorize("hasAnyRole('ROLE_MODERATOR', 'ROLE_USER', 'ROLE_ADMIN')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<DishInfoDTO<DishIngredientInfoDTO, DishKitchenwareInfoDTO>> getDishById(
             @PathVariable long id,
