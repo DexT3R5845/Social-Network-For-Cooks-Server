@@ -108,7 +108,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional
     public void updateProfile(UpdateAccountDTO accountDTO, String email) {
         Credentials credentials = credentialsRepository.findByEmail(email);
         Account accountUpdate = accountMapper.updateAccountDTOtoAccount(accountDTO);
@@ -117,7 +116,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional
     public void changePassword(String oldPassword, String newPassword, String email) {
         Credentials credentials = credentialsRepository.findByEmail(email);
         String requiredPassword = credentials.getPassword();
@@ -129,7 +127,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional
     public void updatePersonalInfo(AccountPersonalInfoDTO accountDto) {
         Account account = accountMapper.accountPersonalInfoDTOtoAccounts(accountDto);
         try {
@@ -140,7 +137,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional
     public void updateModerStatus(long id) {
         try {
             accountRepository.updateStatus(id);
