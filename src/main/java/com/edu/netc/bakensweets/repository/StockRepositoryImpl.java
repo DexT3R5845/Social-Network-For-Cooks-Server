@@ -45,28 +45,6 @@ public class StockRepositoryImpl extends BaseJdbcRepository implements StockRepo
     }
 
     @Override
-    public long create(Stock stock) {
-        jdbcTemplate.update(create, stock.getAccountId(), stock.getIngrId(), stock.getAmount());
-        return 0;
-    }
-
-    @Override
-    public boolean update(Stock stock) {
-       return jdbcTemplate.update(update, stock.getAccountId(), stock.getIngrId(), stock.getAmount(), stock.getId()) != 0;
-    }
-
-    @Override
-    public boolean deleteById(Long id) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Stock findById(Long id) {
-        return jdbcTemplate.queryForObject(findById, new BeanPropertyRowMapper<>(Stock.class), id);
-    }
-
-
-    @Override
     public Collection<StockIngredientDTO> findAllIngredientsInStock(SearchStockIngredientModel searchStockIngredient) {
         String query = findAll.replace("order", searchStockIngredient.getOrder());
         String sqlQuery = query.replace("sortBy", searchStockIngredient.getSortBy());
@@ -87,7 +65,7 @@ public class StockRepositoryImpl extends BaseJdbcRepository implements StockRepo
 
     @Override
     public boolean updateAmountByAccountAndIngredient(long accountId, long ingredientId, int amount) {
-         return jdbcTemplate.update(updateAmountByAccountAndIngredient, amount, accountId, ingredientId) !=0;
+        return jdbcTemplate.update(updateAmountByAccountAndIngredient, amount, accountId, ingredientId) != 0;
     }
 
 
@@ -104,4 +82,25 @@ public class StockRepositoryImpl extends BaseJdbcRepository implements StockRepo
         Integer count = namedParameterJdbcTemplate.queryForObject(countIngredientsToAdd, new BeanPropertySqlParameterSource(searchStockIngredient), Integer.class);
         return count == null ? 0 : count;
     }
+
+    @Override
+    public long create(Stock stock) {
+        return jdbcTemplate.queryForObject(create, Long.class, stock.getAccountId(), stock.getIngrId(), stock.getAmount());
+    }
+
+    @Override
+    public boolean update(Stock stock) {
+        return jdbcTemplate.update(update, stock.getAccountId(), stock.getIngrId(), stock.getAmount(), stock.getId()) != 0;
+    }
+
+    @Override
+    public boolean deleteById(Long id) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Stock findById(Long id) {
+        return jdbcTemplate.queryForObject(findById, new BeanPropertyRowMapper<>(Stock.class), id);
+    }
+
 }
