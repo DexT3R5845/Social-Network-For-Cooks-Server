@@ -1,6 +1,5 @@
 package com.edu.netc.bakensweets.repository;
 
-import com.edu.netc.bakensweets.model.IngredientCategory;
 import com.edu.netc.bakensweets.repository.interfaces.IngredientCategoryRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -19,12 +18,12 @@ public class IngredientCategoryRepositoryImpl extends BaseJdbcRepository impleme
     }
 
     @Override
-    public long create(IngredientCategory item) {
+    public long create(String item) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean update(IngredientCategory item) {
+    public boolean update(String item) {
         throw new UnsupportedOperationException();
     }
 
@@ -34,13 +33,13 @@ public class IngredientCategoryRepositoryImpl extends BaseJdbcRepository impleme
     }
 
     @Override
-    public IngredientCategory findById(Long id) {
+    public String findById(Long aLong) {
         throw new UnsupportedOperationException();
     }
 
 
     @Override
-    public Collection<IngredientCategory> findAll() {
-        return jdbcTemplate.query(sqlQueryFindAll, new BeanPropertyRowMapper<>(IngredientCategory.class));
+    public Collection<String> findAll() {
+        return jdbcTemplate.queryForList(sqlQueryFindAll, String.class);
     }
 }

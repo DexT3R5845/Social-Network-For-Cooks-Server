@@ -1,14 +1,11 @@
 package com.edu.netc.bakensweets.security;
 
-import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.model.AccountRole;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,8 +14,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Date;
 
@@ -76,12 +71,8 @@ public class JwtTokenProvider {
   }
 
   public boolean validateToken(String token) {
-    try {
       Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
       return true;
-    } catch (JwtException | IllegalArgumentException e) {
-      throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Expired or invalid JWT token");
-    }
   }
 
 }
