@@ -29,7 +29,7 @@ public class IngredientController {
         this.ingredientCategoryService = ingredientCategoryService;
     }
 
-    @PostMapping("")
+    @PostMapping
     public PaginationDTO<Ingredient> getAllIngredients(@Valid @RequestBody SearchIngredientModel searchIngredientModel) {
         return ingredientService.getAllIngredients(searchIngredientModel);
     }

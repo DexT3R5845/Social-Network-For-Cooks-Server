@@ -26,14 +26,14 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandlerController {
 
   @ExceptionHandler(AccessDeniedException.class)
-  public ResponseEntity<Error> handleException(AccessDeniedException e) {
-    Error error = new Error(HttpStatus.FORBIDDEN, "Access Denied");
+  public ResponseEntity<CustomException> handleException(AccessDeniedException e) {
+    CustomException error = new CustomException(HttpStatus.FORBIDDEN, "Access Denied");
     return new ResponseEntity<>(error, error.getHttpStatus());
   }
 
   @ExceptionHandler(CustomException.class)
-  public ResponseEntity<Error> handleException(CustomException e) {
-    Error error = new Error(e.getHttpStatus(), e.getMessage());
+  public ResponseEntity<CustomException> handleException(CustomException e) {
+    CustomException error = new CustomException(e.getHttpStatus(), e.getMessage());
     return new ResponseEntity<>(error, error.getHttpStatus());
   }
 

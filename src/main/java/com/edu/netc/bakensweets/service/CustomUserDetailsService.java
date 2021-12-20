@@ -34,18 +34,4 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .authorities(account.getAccountRole())
                 .build();
     }
-
-    public UserDetails loadUserById(Long id) throws UsernameNotFoundException {
-        final Credentials credentials = credentialsRepository.findById(id);
-        final Account account = accountRepository.findById(id);
-        if (account == null) {
-            throw new UsernameNotFoundException("Couldn't find a matching user id in the database for " + id);
-        }
-        return User
-                .withUsername(credentials.getEmail())
-                .password(credentials.getPassword())
-                .authorities(account.getAccountRole())
-                .build();
-    }
-
 }

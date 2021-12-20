@@ -47,8 +47,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public String signIn(String username, String password, String recaptcha_token, String ip) {
-        WrongAttemptLogin sessionUserWrongAttempt = wrongAttemptLoginService.findSessionByIpAndTime(ip, LocalDateTime.now());
         boolean needCaptcha = false;
+        WrongAttemptLogin sessionUserWrongAttempt = wrongAttemptLoginService.findSessionByIpAndTime(ip, LocalDateTime.now());
         try {
             if(sessionUserWrongAttempt != null && sessionUserWrongAttempt.getCountWrongAttempts() >= 5) {
                 needCaptcha = true;
@@ -62,10 +62,12 @@ public class AccountServiceImpl implements AccountService {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
             return jwtTokenProvider.createToken(username, accountRepository.findByEmail(username).getAccountRole());
         } catch (AuthenticationException e) {
-            if(sessionUserWrongAttempt == null)
+            if(sessionUserWrongAttempt == null) {
                 wrongAttemptLoginService.createSession(new WrongAttemptLogin(ip, LocalDateTime.now(), 1));
-            else
+            }
+            else {
                 wrongAttemptLoginService.updateSession(sessionUserWrongAttempt);
+            }
             throw new FailedAuthorizationException(HttpStatus.UNAUTHORIZED, "Invalid username/password supplied", needCaptcha);
         }
     }
