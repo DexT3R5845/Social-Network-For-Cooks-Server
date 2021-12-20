@@ -1,17 +1,13 @@
 package com.edu.netc.bakensweets.exception;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Data
+@RequiredArgsConstructor
 public class FailedAuthorizationException extends RuntimeException{
-    private HttpStatus httpStatus;
-    private String message;
-    private boolean need_captcha;
-
-    public FailedAuthorizationException(HttpStatus httpStatus, String message, boolean need_captcha){
-        this.message = message;
-        this.httpStatus = httpStatus;
-        this.need_captcha = need_captcha;
-    }
+    private final HttpStatus httpStatus;
+    private final String message;
+    private final boolean need_captcha;
 }

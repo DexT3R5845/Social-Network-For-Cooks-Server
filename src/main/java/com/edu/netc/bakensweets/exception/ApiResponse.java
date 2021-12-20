@@ -2,8 +2,6 @@ package com.edu.netc.bakensweets.exception;
 
 import lombok.*;
 
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
