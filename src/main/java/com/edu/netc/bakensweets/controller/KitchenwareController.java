@@ -14,7 +14,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.Collection;
 
-@Slf4j
 @RestController
 @Validated
 @RequestMapping("/api/kitchenware")
