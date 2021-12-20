@@ -46,7 +46,8 @@ public class StockRepositoryImpl extends BaseJdbcRepository implements StockRepo
 
     @Override
     public long create(Stock stock) {
-        return jdbcTemplate.queryForObject(create, Long.class, stock.getAccountId(), stock.getIngrId(), stock.getAmount());
+        jdbcTemplate.update(create, stock.getAccountId(), stock.getIngrId(), stock.getAmount());
+        return 0;
     }
 
     @Override
