@@ -142,25 +142,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public PaginationDTO getAllBySearchAccounts(String search, int currentPage, int limit,
-                                          boolean order, String gender) {
-        return getAllBySearch(search, currentPage, limit, AccountRole.ROLE_USER, order, gender, "true");
-    }
-
-
-    @Override
-    public PaginationDTO getAllBySearchModerators(String search, int currentPage, int limit,
+    public PaginationDTO<AccountPersonalInfoDTO> getAllBySearchModerators(String search, int currentPage, int limit,
                                                   boolean order, String gender, String status) {
-        return getAllBySearch(search, currentPage, limit, AccountRole.ROLE_MODERATOR, order, gender, status);
-    }
-
-    public PaginationDTO getAllBySearch (String search, int currentPage, int limit, AccountRole role,
-                                   boolean order, String gender, String status) {
-        int accCount = accountRepository.countAccountsBySearch(search, role, gender, status);
+        int totalElements = accountRepository.countAccountsBySearch(search, AccountRole.ROLE_MODERATOR, gender, status);
         Collection<Account> accounts = accountRepository.findAccountsBySearch(
-                search, gender, role, status, limit,  currentPage * limit, order
+                search, gender, AccountRole.ROLE_MODERATOR, status, limit,  currentPage * limit, order
         );
-        return new PaginationDTO<>(accountMapper.accountsToPersonalInfoDtoCollection(accounts),  accCount);
+        return new PaginationDTO<>(accountMapper.accountsToPersonalInfoDtoCollection(accounts),  totalElements);
     }
 
 
@@ -172,8 +160,8 @@ public class AccountServiceImpl implements AccountService {
         if (account == null || credentials == null) {
             throw new CustomException(HttpStatus.NOT_FOUND, "no accounts found with such id");
         }
-        AccountPersonalInfoDTO responseAcc = accountMapper.accountToAccountPersonalInfoDto(account);
-        responseAcc.setEmail(credentials.getEmail());
-        return responseAcc;
+        AccountPersonalInfoDTO accountDto = accountMapper.accountToAccountPersonalInfoDto(account);
+        accountDto.setEmail(credentials.getEmail());
+        return accountDto;
     }
 }
