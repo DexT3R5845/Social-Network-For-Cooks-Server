@@ -101,7 +101,7 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
         }
         namedParameters = new HashMap();
         namedParameters.put("categories", categories);
-        namedParameters.put("searchText", "%" + name + "%");
+        namedParameters.put("searchText", name);
         namedParameters.put("active", active);
     }
 }
