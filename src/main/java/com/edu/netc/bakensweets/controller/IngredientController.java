@@ -29,16 +29,16 @@ public class IngredientController {
         this.ingredientCategoryService = ingredientCategoryService;
     }
 
-    @PreAuthorize("hasRole('ROLE_MODERATOR')")
-    @PostMapping("")
+    @PostMapping
+    @PreAuthorize("hasAnyRole('ROLE_MODERATOR', 'ROLE_USER', 'ROLE_ADMIN')")
     public PaginationDTO<Ingredient> getAllIngredients(@Valid @RequestBody SearchIngredientModel searchIngredientModel) {
         return ingredientService.getAllIngredients(searchIngredientModel);
     }
 
+    @PutMapping("/{id}")
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Something went wrong")})
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
-    @PutMapping("/{id}")
     public void updateIngredient(@Valid @RequestBody IngredientDTO ingredientDto,
                                  @NotNull(message = "ID is mandatory")
                                  @Min(value = 1, message = "ID must be higher than 0") @PathVariable Long id) {
@@ -72,7 +72,7 @@ public class IngredientController {
         ingredientService.createIngredient(ingredientDTO);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_MODERATOR', 'ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_MODERATOR', 'ROLE_USER', 'ROLE_ADMIN')")
     @GetMapping("/category")
     public Collection<String> getAllCategory(){
         return ingredientCategoryService.getAllCategory();

@@ -20,4 +20,5 @@ public @interface ValidPassword {
     String message() default "Invalid Password";
 
     Class<? extends Payload>[] payload() default {};
+    Class<?> [] groups() default{};
 }

@@ -5,7 +5,7 @@ import com.edu.netc.bakensweets.model.payload.AuthRequestResetUpdatePassword;
 
 public interface PasswordResetTokenService {
     void createToken(String email);
-    PasswordResetToken GenerateToken(Long userId);
+    PasswordResetToken generateToken(Long userId);
     boolean validateResetToken(String token);
     void changePassword(AuthRequestResetUpdatePassword authRequestResetUpdatePassword);
 }

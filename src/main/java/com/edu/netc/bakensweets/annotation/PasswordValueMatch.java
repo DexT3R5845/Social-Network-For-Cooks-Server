@@ -19,6 +19,7 @@ public @interface PasswordValueMatch {
     String message() default "Fields values don't match!";
 
     Class<? extends Payload>[] payload() default { };
+    Class<?> [] groups() default{};
 
     String field();
 
