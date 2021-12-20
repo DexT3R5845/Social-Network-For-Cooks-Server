@@ -37,7 +37,6 @@ public class UnconfirmedModerRepositoryImpl extends BaseJdbcRepository implement
     @Override
     public UnconfirmedModerator getByToken (String token) {
         return jdbcTemplate.queryForObject(sqlGetByToken,  new BeanPropertyRowMapper<>(UnconfirmedModerator.class), token);
-
     }
 
     @Override
