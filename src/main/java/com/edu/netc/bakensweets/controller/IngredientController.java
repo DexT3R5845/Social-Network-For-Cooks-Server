@@ -30,7 +30,7 @@ public class IngredientController {
         this.ingredientCategoryService = ingredientCategoryService;
     }
 
-    @PreAuthorize("hasRole('ROLE_MODERATOR')")
+    @PreAuthorize("hasAnyRole('ROLE_MODERATOR', 'ROLE_USER', 'ROLE_ADMIN')")
     @PostMapping("")
     public PaginationDTO<Ingredient> getAllIngredients(@Valid @RequestBody SearchIngredientModel searchIngredientModel) {
         return ingredientService.getAllIngredients(searchIngredientModel);
