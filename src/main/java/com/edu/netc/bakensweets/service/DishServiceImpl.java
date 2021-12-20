@@ -2,9 +2,9 @@ package com.edu.netc.bakensweets.service;
 
 import com.edu.netc.bakensweets.dto.*;
 import com.edu.netc.bakensweets.exception.CustomException;
-import com.edu.netc.bakensweets.mapperConfig.DishMapper;
-import com.edu.netc.bakensweets.model.Credentials;
+import com.edu.netc.bakensweets.mapper.DishMapper;
 import com.edu.netc.bakensweets.model.Dish;
+import com.edu.netc.bakensweets.model.Credentials;
 import com.edu.netc.bakensweets.model.DishIngredient;
 import com.edu.netc.bakensweets.model.DishKitchenware;
 import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
@@ -77,8 +77,8 @@ public class DishServiceImpl implements DishService {
 
     @Override
     @Transactional
-    public void updateDish(long id, DishDTO<DishIngredientDTO, DishKitchenwareDTO> dishDTO) { //TODO THINK ABOUT ANOTHER WAY TO DO THIS (maybe UPSERT or getting flag from client)
-        try {
+    public void updateDish(long id, DishDTO dishDTO) { //TODO THINK ABOUT ANOTHER WAY TO DO THIS (maybe UPSERT or getting flag from client)
+        try { //DELETING ALL OLD KITCHENWARES/INGREDIENTS BEFORE INSERTING NEW LISTS
             dishRepository.deleteIngredientsByDishId(id);
             dishRepository.deleteKitchenwaresByDishId(id);
 

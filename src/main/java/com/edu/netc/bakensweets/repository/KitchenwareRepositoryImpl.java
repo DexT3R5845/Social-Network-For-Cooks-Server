@@ -15,25 +15,25 @@ import java.util.Map;
 @Repository
 public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements KitchenwareRepository {
     @Value("${sql.kitchenware.create}")
-    private String sqlCreate;
+    private String createRequest;
 
     @Value("${sql.kitchenware.getAllCategories}")
-    private String sqlGetAllCategories;
+    private String getAllCategoriesRequest;
 
     @Value("${sql.kitchenware.filter}")
-    private String sqlFilter;
+    private String filterRequest;
 
     @Value("${sql.kitchenware.getCount}")
-    private String sqlGetCount;
+    private String getCountRequest;
 
     @Value("${sql.kitchenware.update}")
-    private String sqlUpdate;
+    private String updateRequest;
 
     @Value("${sql.kitchenware.changeStatus}")
-    private String sqlChangeStatus;
+    private String changeStatusRequest;
 
     @Value("${sql.kitchenware.findById}")
-    private String sqlFindById;
+    private String findByIdRequest;
 
     private Map namedParameters;
 
@@ -46,12 +46,12 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
 
     @Override
     public long create(Kitchenware item) {
-        return jdbcTemplate.queryForObject(sqlCreate, Long.class, item.getName(), item.getImgUrl(), item.getCategory());
+        return jdbcTemplate.queryForObject(createRequest, Long.class, item.getName(), item.getImgUrl(), item.getCategory());
     }
 
     @Override
     public boolean update(Kitchenware item) {
-        return jdbcTemplate.update(sqlUpdate, item.getName(), item.getImgUrl(), item.getCategory(), item.getId()) != 0;
+        return jdbcTemplate.update(updateRequest, item.getName(), item.getImgUrl(), item.getCategory(), item.getId()) != 0;
     }
 
     @Override
@@ -61,25 +61,25 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
 
     @Override
     public boolean changeStatusById(Long id) {
-        return jdbcTemplate.update(sqlChangeStatus, id) != 0;
+        return jdbcTemplate.update(changeStatusRequest, id) != 0;
     }
 
     @Override
     public Kitchenware findById(Long id) {
         return jdbcTemplate.queryForObject(
-                sqlFindById, new BeanPropertyRowMapper<>(Kitchenware.class), id);
+                findByIdRequest, new BeanPropertyRowMapper<>(Kitchenware.class), id);
     }
 
     @Override
     public Collection<String> getAllCategories() {
         return jdbcTemplate.queryForList(
-                sqlGetAllCategories, String.class);
+                getAllCategoriesRequest, String.class);
     };
 
     @Override
     public Collection<Kitchenware> filterKitchenware (String name, Collection<String> categories, Boolean active, int limit, int offset, boolean order) {
         createFilterArgsList(name, categories, active);
-        String request = order ? String.format(sqlFilter, "ASC", "ASC") : String.format(sqlFilter, "DESC", "DESC");
+        String request = order ? String.format(filterRequest, "ASC", "ASC") : String.format(filterRequest, "DESC", "DESC");
         namedParameters.put("pageSize", limit);
         namedParameters.put("offset", offset);
         return namedParameterJdbcTemplate.query(
@@ -91,7 +91,7 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
     public int countFilteredKitchenware (String name, Collection<String> categories, Boolean active) {
         createFilterArgsList(name, categories, active);
         Integer count = namedParameterJdbcTemplate.queryForObject(
-                sqlGetCount, namedParameters, Integer.class);
+                getCountRequest, namedParameters, Integer.class);
         return count == null ? 0 : count;
     }
 
@@ -101,7 +101,7 @@ public class KitchenwareRepositoryImpl extends BaseJdbcRepository implements Kit
         }
         namedParameters = new HashMap();
         namedParameters.put("categories", categories);
-        namedParameters.put("searchText", "%" + name + "%");
+        namedParameters.put("searchText", name);
         namedParameters.put("active", active);
     }
 }

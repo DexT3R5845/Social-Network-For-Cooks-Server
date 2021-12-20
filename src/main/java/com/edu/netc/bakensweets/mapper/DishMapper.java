@@ -1,4 +1,4 @@
-package com.edu.netc.bakensweets.mapperConfig;
+package com.edu.netc.bakensweets.mapper;
 
 import com.edu.netc.bakensweets.dto.*;
 import com.edu.netc.bakensweets.model.Dish;

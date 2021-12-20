@@ -27,7 +27,7 @@ public class FriendshipController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "The invite has been sent"),
             @ApiResponse(code = 400, message = "Something went wrong")})
-    public void sentInvite(@RequestParam(value = "friendId") @Min(value = 1, message = "ID must be higher than 0") long friendId, Principal principal) {
+    public void sendInvite(@RequestParam(value = "friendId") @Min(value = 1, message = "ID must be higher than 0") long friendId, Principal principal) {
         friendshipService.createInvite(principal.getName(), friendId);
     }
 
@@ -36,7 +36,7 @@ public class FriendshipController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "The invite has been sent"),
             @ApiResponse(code = 400, message = "Something went wrong")})
-    public void unsentInvite(@RequestParam(value = "friendId") @Min(value = 1, message = "ID must be higher than 0") long friendId, Principal principal) {
+    public void unsendInvite(@RequestParam(value = "friendId") @Min(value = 1, message = "ID must be higher than 0") long friendId, Principal principal) {
         friendshipService.deleteFriendship(principal.getName(), friendId);
     }
 
