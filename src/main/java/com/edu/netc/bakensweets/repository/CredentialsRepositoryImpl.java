@@ -11,15 +11,15 @@ import org.springframework.stereotype.Repository;
 public class CredentialsRepositoryImpl extends BaseJdbcRepository implements CredentialsRepository {
 
     @Value("${sql.credentials.create}")
-    private String sqlQueryCreate;
+    private String queryCreate;
     @Value("${sql.credentials.findByEmail}")
-    private String sqlQueryFindByEmail;
+    private String queryFindByEmail;
     @Value("${sql.credentials.findById}")
-    private String sqlQueryFindById;
+    private String queryFindById;
     @Value("${sql.credentials.update}")
-    private String sqlQueryUpdate;
+    private String queryUpdate;
     @Value("${sql.credentials.countEmailUsages}")
-    private String sqlCountEmailUsages;
+    private String queryCountEmailUsages;
 
     public CredentialsRepositoryImpl(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
@@ -27,13 +27,13 @@ public class CredentialsRepositoryImpl extends BaseJdbcRepository implements Cre
 
     @Override
     public long create(Credentials credentials) {
-        jdbcTemplate.update(sqlQueryCreate, credentials.getId(), credentials.getEmail(), credentials.getPassword());
+        jdbcTemplate.update(queryCreate, credentials.getId(), credentials.getEmail(), credentials.getPassword());
         return 0;
     }
 
     @Override
     public boolean update(Credentials credentials) {
-        jdbcTemplate.update(sqlQueryUpdate, credentials.getPassword(), credentials.getEmail());
+        jdbcTemplate.update(queryUpdate, credentials.getPassword(), credentials.getEmail());
         return true;
     }
 
@@ -44,15 +44,15 @@ public class CredentialsRepositoryImpl extends BaseJdbcRepository implements Cre
 
     @Override
     public Credentials findById(Long id) {
-        return jdbcTemplate.queryForObject(sqlQueryFindById, new BeanPropertyRowMapper<>(Credentials.class), id);
+        return jdbcTemplate.queryForObject(queryFindById, new BeanPropertyRowMapper<>(Credentials.class), id);
     }
 
     @Override
     public Credentials findByEmail(String email) {
-        return jdbcTemplate.queryForObject(sqlQueryFindByEmail, new BeanPropertyRowMapper<>(Credentials.class), email);
+        return jdbcTemplate.queryForObject(queryFindByEmail, new BeanPropertyRowMapper<>(Credentials.class), email);
     }
 
     public Integer getCountEmailUsages (String email) {
-        return jdbcTemplate.queryForObject(sqlCountEmailUsages, Integer.class, email);
+        return jdbcTemplate.queryForObject(queryCountEmailUsages, Integer.class, email);
     }
 }

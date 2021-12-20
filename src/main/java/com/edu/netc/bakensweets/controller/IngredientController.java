@@ -3,7 +3,6 @@ package com.edu.netc.bakensweets.controller;
 import com.edu.netc.bakensweets.dto.IngredientDTO;
 import com.edu.netc.bakensweets.dto.PaginationDTO;
 import com.edu.netc.bakensweets.model.Ingredient;
-import com.edu.netc.bakensweets.model.IngredientCategory;
 import com.edu.netc.bakensweets.model.form.SearchIngredientModel;
 import com.edu.netc.bakensweets.service.interfaces.IngredientCategoryService;
 import com.edu.netc.bakensweets.service.interfaces.IngredientService;
@@ -30,8 +29,7 @@ public class IngredientController {
         this.ingredientCategoryService = ingredientCategoryService;
     }
 
-    @PreAuthorize("hasRole('ROLE_MODERATOR')")
-    @PostMapping("")
+    @PostMapping
     public PaginationDTO<Ingredient> getAllIngredients(@Valid @RequestBody SearchIngredientModel searchIngredientModel) {
         return ingredientService.getAllIngredients(searchIngredientModel);
     }
@@ -75,7 +73,7 @@ public class IngredientController {
 
     @PreAuthorize("hasAnyRole('ROLE_MODERATOR', 'ROLE_USER')")
     @GetMapping("/category")
-    public Collection<IngredientCategory> getAllCategory(){
+    public Collection<String> getAllCategory(){
         return ingredientCategoryService.getAllCategory();
     }
 }

@@ -4,7 +4,7 @@ import com.edu.netc.bakensweets.dto.KitchenwareDTO;
 import com.edu.netc.bakensweets.dto.PaginationDTO;
 import com.edu.netc.bakensweets.exception.BadRequestParamException;
 import com.edu.netc.bakensweets.exception.CustomException;
-import com.edu.netc.bakensweets.mapperConfig.KitchenwareMapper;
+import com.edu.netc.bakensweets.mapper.KitchenwareMapper;
 import com.edu.netc.bakensweets.model.Kitchenware;
 import com.edu.netc.bakensweets.repository.interfaces.KitchenwareRepository;
 import com.edu.netc.bakensweets.service.interfaces.KitchenwareService;
@@ -24,14 +24,12 @@ public class KitchenwareServiceImpl implements KitchenwareService {
     private final KitchenwareMapper kitchenwareMapper;
 
     @Override
-    @Transactional
     public Collection<String> getAllCategories() {
         return kitchenwareRepository.getAllCategories();
     }
 
 
     @Override
-    @Transactional
     public KitchenwareDTO getKitchenwareById(Long id) {
         try {
             return kitchenwareMapper.kitchenwaretoKitchenwareDTO(kitchenwareRepository.findById(id));
@@ -83,7 +81,6 @@ public class KitchenwareServiceImpl implements KitchenwareService {
     }
 
     @Override
-    @Transactional
     public PaginationDTO<KitchenwareDTO> getFilteredKitchenware(String name, Collection<String> args, Boolean active, int limit, boolean order, int currentPage) {
         int count = kitchenwareRepository.countFilteredKitchenware(name, args, active);
         Collection<Kitchenware> kitchenwareCollection = kitchenwareRepository.filterKitchenware(

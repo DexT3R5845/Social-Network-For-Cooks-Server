@@ -40,7 +40,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
         try {
             Credentials credentials = credentialsRepository.findByEmail(email);
             disableAllTokensByAccountId(credentials.getId());
-            PasswordResetToken passwordResetToken = GenerateToken(credentials.getId());
+            PasswordResetToken passwordResetToken = generateToken(credentials.getId());
             emailSenderService.sendResetLinkPassword(email, passwordResetToken.getResetToken());
             passResetTokenRepository.create(passwordResetToken);
         } catch (EmptyResultDataAccessException ex){
@@ -77,7 +77,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
     }
 
     @Override
-    public PasswordResetToken GenerateToken(Long userId) {
+    public PasswordResetToken generateToken(Long userId) {
         return new PasswordResetToken(Utils.stringGenerateUniqueId(),
                 LocalDateTime.now().plusMinutes(expiration),
                 userId,

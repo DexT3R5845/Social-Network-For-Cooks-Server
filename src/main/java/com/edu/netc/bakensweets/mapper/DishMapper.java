@@ -1,8 +1,6 @@
-package com.edu.netc.bakensweets.mapperConfig;
+package com.edu.netc.bakensweets.mapper;
 
-import com.edu.netc.bakensweets.dto.DishDTO;
-import com.edu.netc.bakensweets.dto.DishIngredientDTO;
-import com.edu.netc.bakensweets.dto.DishKitchenwareDTO;
+import com.edu.netc.bakensweets.dto.*;
 import com.edu.netc.bakensweets.model.Dish;
 import com.edu.netc.bakensweets.model.DishIngredient;
 import com.edu.netc.bakensweets.model.DishKitchenware;
@@ -18,7 +16,6 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface DishMapper {
     @Mappings({
-            @Mapping(target="id", source="dto.id"),
             @Mapping(target="dishName", source="dto.dishName"),
             @Mapping(target = "dishCategory", source = "dto.dishCategory"),
             @Mapping(target = "imgUrl", source = "dto.imgUrl"),
@@ -26,7 +23,7 @@ public interface DishMapper {
             @Mapping(target = "receipt", source = "dto.receipt"),
             @Mapping(target = "dishType", source = "dto.dishType")
     })
-    Dish dishDtoToDish(DishDTO dto);
+    Dish dishDtoToDish(DishDTO<DishIngredientDTO, DishKitchenwareDTO> dto);
 
     @Mappings({
             @Mapping(target="id", source="dish.id"),
@@ -35,9 +32,14 @@ public interface DishMapper {
             @Mapping(target = "imgUrl", source = "dish.imgUrl"),
             @Mapping(target = "description", source = "dish.description"),
             @Mapping(target = "receipt", source = "dish.receipt"),
-            @Mapping(target = "dishType", source = "dish.dishType")
+            @Mapping(target = "dishType", source = "dish.dishType"),
+            @Mapping(target = "totalLikes", source = "dish.totalLikes")
+
+//            ,
+//            @Mapping(target = "isLiked", source = "dish.isLiked"),
+//            @Mapping(target = "isFavorite", source = "dish.isFavorite")
     })
-    DishDTO dishToDishDto(Dish dish);
+    DishInfoDTO<DishIngredientInfoDTO, DishKitchenwareInfoDTO> dishToDishDto(Dish dish);
 
     @Mappings({
             @Mapping(target="id", source="dishes.id"),
@@ -46,9 +48,12 @@ public interface DishMapper {
             @Mapping(target = "imgUrl", source = "dishes.imgUrl"),
             @Mapping(target = "description", source = "dishes.description"),
             @Mapping(target = "receipt", source = "dishes.receipt"),
-            @Mapping(target = "dishType", source = "dishes.dishType")
+            @Mapping(target = "dishType", source = "dishes.dishType"),
+            @Mapping(target = "totalLikes", source = "dishes.totalLikes"),
+            @Mapping(target = "isLiked", source = "dishes.isLiked"),
+            @Mapping(target = "isFavorite", source = "dishes.isFavorite")
     })
-    Collection<DishDTO> dishToDishDtoCollection(Collection<Dish> dishes);
+    Collection<DishInfoDTO<DishIngredientDTO, DishKitchenwareDTO>> dishToDishDtoCollection(Collection<Dish> dishes);
 
 
 
@@ -80,18 +85,7 @@ public interface DishMapper {
             @Mapping(target = "active", source = "ingredients.active"),
             @Mapping(target = "amount", source = "ingredients.amount")
     })
-    Collection<DishIngredientDTO> dishIngredientsToDishIngredientsDto(Collection<DishIngredient> ingredients);
-
-
-//    @Mappings({  //TODO DELETE DUBLICATE AFTER RENAMING kitchenware
-//            @Mapping(target="id", source="dishKitchenware.id"),
-//            @Mapping(target = "imgUrl", source = "dishKitchenware.kitchwarImg"),
-//            @Mapping(target = "active", source = "dishKitchenware.active"),
-//            @Mapping(target="name", source="dishKitchenware.kitchwarName"),
-//            @Mapping(target = "category", source = "dishKitchenware.kitchwarCategory"),
-//            @Mapping(target = "amount", source = "dishKitchenware.amount")
-//    })
-//    DishKitchenwareDTO dishKitchenwareToDishKitchenwareDTO(DishKitchenware dishKitchenware);
+    Collection<DishIngredientInfoDTO> dishIngredientsToDishIngredientsDto(Collection<DishIngredient> ingredients);
 
     @Mappings({
             @Mapping(target="id", source="kitchenwareList.id"),
@@ -101,5 +95,5 @@ public interface DishMapper {
             @Mapping(target = "category", source = "kitchenwareList.category"),
             @Mapping(target = "amount", source = "kitchenwareList.amount")
     })
-    Collection<DishKitchenwareDTO> dishKitchenwaresToDishKitchenwaresDto (Collection<DishKitchenware> kitchenwareList);
+    Collection<DishKitchenwareInfoDTO> dishKitchenwaresToDishKitchenwaresDto (Collection<DishKitchenware> kitchenwareList);
 }

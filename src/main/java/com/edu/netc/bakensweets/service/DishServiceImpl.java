@@ -1,15 +1,15 @@
 package com.edu.netc.bakensweets.service;
 
-import com.edu.netc.bakensweets.dto.DishDTO;
-import com.edu.netc.bakensweets.dto.PaginationDTO;
+import com.edu.netc.bakensweets.dto.*;
 import com.edu.netc.bakensweets.exception.CustomException;
-import com.edu.netc.bakensweets.mapperConfig.DishMapper;
+import com.edu.netc.bakensweets.mapper.DishMapper;
 import com.edu.netc.bakensweets.model.Dish;
+import com.edu.netc.bakensweets.model.Credentials;
 import com.edu.netc.bakensweets.model.DishIngredient;
 import com.edu.netc.bakensweets.model.DishKitchenware;
+import com.edu.netc.bakensweets.repository.interfaces.CredentialsRepository;
 import com.edu.netc.bakensweets.repository.interfaces.DishRepository;
 import com.edu.netc.bakensweets.service.interfaces.DishService;
-import com.edu.netc.bakensweets.utils.Utils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -24,15 +24,17 @@ public class DishServiceImpl implements DishService {
 
     private final DishRepository dishRepository;
     private final DishMapper dishMapper;
+    private final CredentialsRepository credentialsRepository;
 
-    public DishServiceImpl (DishRepository dishRepository, DishMapper dishMapper) {
+    public DishServiceImpl (DishRepository dishRepository, DishMapper dishMapper, CredentialsRepository credentialsRepository) {
         this.dishRepository = dishRepository;
         this.dishMapper = dishMapper;
+        this.credentialsRepository = credentialsRepository;
     }
 
     @Override
     @Transactional
-    public void createDish (DishDTO dishDto) {
+    public void createDish (DishDTO<DishIngredientDTO, DishKitchenwareDTO> dishDto) {
         Dish dish = dishMapper.dishDtoToDish(dishDto);
         try {
             long id = dishRepository.create(dish);
@@ -44,30 +46,34 @@ public class DishServiceImpl implements DishService {
         }
     }
 
+
     @Override
     public Collection<String> getDishCategories() {
         return dishRepository.getDishCategories();
     }
 
+
     @Override
-    public DishDTO getDishById (long id) {
+    public DishInfoDTO<DishIngredientInfoDTO, DishKitchenwareInfoDTO> getDishById (String email, long id) {
         try {
-            DishDTO dish = dishMapper.dishToDishDto(dishRepository.findById(id));
+            Credentials account = credentialsRepository.findByEmail(email);
+            Dish dish = dishRepository.findById(account.getId(), id);
+            DishInfoDTO<DishIngredientInfoDTO, DishKitchenwareInfoDTO> dishDto = dishMapper.dishToDishDto(dish);
+            dishDto.setIsLiked(dish.getIsLiked());
+            dishDto.setIsFavorite(dish.getIsFavorite());
 
             Collection<DishIngredient> ingredients = dishRepository.findIngredientsByDishId(id);
-            dish.setIngredients(dishMapper.dishIngredientsToDishIngredientsDto(ingredients));
+            dishDto.setIngredients(dishMapper.dishIngredientsToDishIngredientsDto(ingredients));
 
             Collection<DishKitchenware> kitchenwares = dishRepository.findKitchenwaresByDishId(id);
-            System.err.println(kitchenwares);
+            dishDto.setKitchenwares(dishMapper.dishKitchenwaresToDishKitchenwaresDto(kitchenwares));
+            return dishDto;
 
-            dish.setKitchenwares(dishMapper.dishKitchenwaresToDishKitchenwaresDto(kitchenwares));
-            System.err.println(dish.getKitchenwares());
-
-            return dish;
         } catch (EmptyResultDataAccessException ex) {
             throw new CustomException(HttpStatus.NOT_FOUND, "Dish was not found.");
         }
     }
+
 
     @Override
     @Transactional
@@ -87,6 +93,7 @@ public class DishServiceImpl implements DishService {
         }
     }
 
+
     @Override
     public void deleteDish(long id) {
         try {
@@ -96,20 +103,53 @@ public class DishServiceImpl implements DishService {
         }
     }
 
+
     @Override
-    public PaginationDTO<DishDTO> getFilteredDishes (int pageSize, int currentPage, String name, List<String> categories, List<String> ingredients, boolean order) {
+    public PaginationDTO<DishInfoDTO<DishIngredientDTO, DishKitchenwareDTO>> getFilteredDishes (
+            String email, int pageSize, int currentPage, String name, List<String> categories, List<String> ingredients, boolean order) {
+
         name = "%" + name + "%";
+        Credentials account = credentialsRepository.findByEmail(email);
         int totalElements = dishRepository.countFilteredDishes(name, categories, ingredients);
         Collection<Dish> dishes = dishRepository.findAllDishes(
-                name, categories, ingredients, order,  pageSize, pageSize * currentPage
+                account.getId(), name, categories, ingredients, order,  pageSize, pageSize * currentPage
         );
         return new PaginationDTO<>(dishMapper.dishToDishDtoCollection(dishes), totalElements);
     }
 
+
     @Override
-    public PaginationDTO<DishDTO> getDishesByStock(long id, int pageSize, int currentPage) {
-        int totalElements = dishRepository.countDishesByStock(id);
-        Collection<Dish> dishes = dishRepository.getDishesByStock(id,  pageSize, pageSize * currentPage);
+    public PaginationDTO<DishInfoDTO<DishIngredientDTO, DishKitchenwareDTO>> getDishesByStock(String email, int pageSize, int currentPage) {
+        Credentials account = credentialsRepository.findByEmail(email);
+        int totalElements = dishRepository.countDishesByStock(account.getId());
+        Collection<Dish> dishes = dishRepository.getDishesByStock(account.getId(),  pageSize, pageSize * currentPage);
         return new PaginationDTO<>(dishMapper.dishToDishDtoCollection(dishes), totalElements);
+    }
+
+    @Override
+    public PaginationDTO<DishInfoDTO<DishIngredientDTO, DishKitchenwareDTO>> getFavoriteDishes(String email, int pageSize, int currentPage) {
+        int totalElements = dishRepository.countFavoriteDishes(email);
+        Collection<Dish> dishes = dishRepository.getFavoriteDishes(email,  pageSize, pageSize * currentPage);
+        return new PaginationDTO<>(dishMapper.dishToDishDtoCollection(dishes), totalElements);
+    }
+
+
+    @Override
+    public void updateLike (String email, long dishId, boolean isLiked) {
+        try {
+            dishRepository.changeDishLike(email, dishId, isLiked);
+        } catch (DataAccessException e) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Database error");
+        }
+    }
+
+
+    @Override
+    public void updateFavorite (String email, long dishId, boolean isFavorite) {
+        try {
+            dishRepository.changeDishFavorite(email, dishId, isFavorite);
+        } catch (DataAccessException e) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Database error");
+        }
     }
 }

@@ -36,9 +36,7 @@ public class SearchIngredientModel {
     }
 
     public String getSearchText(){
-        if(searchText == null || searchText.isEmpty())
-            searchText = "";
-        return "%" + searchText + "%";
+        return (searchText == null || searchText.isEmpty()) ? "" : searchText;
     }
 
     public String getSortBy(){
