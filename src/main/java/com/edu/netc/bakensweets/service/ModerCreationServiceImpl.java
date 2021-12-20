@@ -2,8 +2,8 @@ package com.edu.netc.bakensweets.service;
 
 import com.edu.netc.bakensweets.dto.NewModeratorDTO;
 import com.edu.netc.bakensweets.exception.CustomException;
-import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
-import com.edu.netc.bakensweets.mapperConfig.ModeratorMapper;
+import com.edu.netc.bakensweets.mapper.AccountMapper;
+import com.edu.netc.bakensweets.mapper.ModeratorMapper;
 import com.edu.netc.bakensweets.model.*;
 import com.edu.netc.bakensweets.model.payload.AuthRequestResetUpdatePassword;
 import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;

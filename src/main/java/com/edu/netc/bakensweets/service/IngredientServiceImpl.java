@@ -4,11 +4,12 @@ import com.edu.netc.bakensweets.dto.IngredientDTO;
 import com.edu.netc.bakensweets.dto.PaginationDTO;
 import com.edu.netc.bakensweets.exception.BadRequestParamException;
 import com.edu.netc.bakensweets.exception.CustomException;
-import com.edu.netc.bakensweets.mapperConfig.IngredientMapper;
+import com.edu.netc.bakensweets.mapper.IngredientMapper;
 import com.edu.netc.bakensweets.model.Ingredient;
 import com.edu.netc.bakensweets.model.form.SearchIngredientModel;
 import com.edu.netc.bakensweets.repository.interfaces.IngredientRepository;
 import com.edu.netc.bakensweets.service.interfaces.IngredientService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -18,14 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 
 @Service
+@RequiredArgsConstructor
 public class IngredientServiceImpl implements IngredientService {
     private final IngredientRepository ingredientRepository;
     private final IngredientMapper ingredientMapper;
-
-    public IngredientServiceImpl(IngredientRepository ingredientRepository, IngredientMapper ingredientMapper) {
-        this.ingredientRepository = ingredientRepository;
-        this.ingredientMapper = ingredientMapper;
-    }
 
     @Transactional
     @Override
