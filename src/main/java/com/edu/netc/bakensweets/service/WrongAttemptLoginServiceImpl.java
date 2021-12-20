@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Service
 public class WrongAttemptLoginServiceImpl implements WrongAttemptLoginService {
 
-    private WrongAttempLoginRepository wrongAttempLoginRepository;
+    private final WrongAttempLoginRepository wrongAttempLoginRepository;
     @Value("${expiryCaptchaForUser}")
     private Long expiryCaptchaForUserInMinutes;
 

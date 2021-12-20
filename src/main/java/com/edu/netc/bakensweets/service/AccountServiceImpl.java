@@ -3,8 +3,8 @@ package com.edu.netc.bakensweets.service;
 import com.edu.netc.bakensweets.dto.*;
 import com.edu.netc.bakensweets.exception.CustomException;
 import com.edu.netc.bakensweets.exception.FailedAuthorizationException;
-import com.edu.netc.bakensweets.mapperConfig.AccountMapper;
-import com.edu.netc.bakensweets.mapperConfig.CredentialsMapper;
+import com.edu.netc.bakensweets.mapper.AccountMapper;
+import com.edu.netc.bakensweets.mapper.CredentialsMapper;
 import com.edu.netc.bakensweets.model.*;
 import com.edu.netc.bakensweets.model.Account;
 import com.edu.netc.bakensweets.repository.interfaces.AccountRepository;
@@ -14,6 +14,7 @@ import com.edu.netc.bakensweets.service.interfaces.AccountService;
 import com.edu.netc.bakensweets.service.interfaces.CaptchaService;
 import com.edu.netc.bakensweets.service.interfaces.WrongAttemptLoginService;
 import com.edu.netc.bakensweets.utils.Utils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -32,6 +33,7 @@ import java.time.LocalDateTime;
 
 
 @Service
+@RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final CredentialsRepository credentialsRepository;
@@ -42,20 +44,6 @@ public class AccountServiceImpl implements AccountService {
     private final AccountMapper accountMapper;
     private final WrongAttemptLoginService wrongAttemptLoginService;
     private final CaptchaService captchaService;
-
-    public AccountServiceImpl(AccountRepository accountRepository, CredentialsRepository credentialsRepository, JwtTokenProvider jwtTokenProvider,
-                              AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, CredentialsMapper credentialsMapper,
-                              AccountMapper accountMapper, WrongAttemptLoginService wrongAttemptLoginService, CaptchaService captchaService) {
-        this.accountRepository = accountRepository;
-        this.credentialsRepository = credentialsRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.authenticationManager = authenticationManager;
-        this.passwordEncoder = passwordEncoder;
-        this.credentialsMapper = credentialsMapper;
-        this.accountMapper = accountMapper;
-        this.wrongAttemptLoginService = wrongAttemptLoginService;
-        this.captchaService = captchaService;
-    }
 
     @Override
     public String signIn(String username, String password, String recaptcha_token, String ip) {
@@ -108,7 +96,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional
     public void updateProfile(UpdateAccountDTO accountDTO, String email) {
         Credentials credentials = credentialsRepository.findByEmail(email);
         Account accountUpdate = accountMapper.updateAccountDTOtoAccount(accountDTO);
@@ -117,7 +104,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional
     public void changePassword(String oldPassword, String newPassword, String email) {
         Credentials credentials = credentialsRepository.findByEmail(email);
         String requiredPassword = credentials.getPassword();
@@ -129,7 +115,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional
     public void updatePersonalInfo(AccountPersonalInfoDTO accountDto) {
         Account account = accountMapper.accountPersonalInfoDTOtoAccounts(accountDto);
         try {
@@ -140,7 +125,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional
     public void updateModerStatus(long id) {
         try {
             accountRepository.updateStatus(id);

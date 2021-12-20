@@ -4,7 +4,7 @@ import com.edu.netc.bakensweets.dto.KitchenwareDTO;
 import com.edu.netc.bakensweets.dto.PaginationDTO;
 import com.edu.netc.bakensweets.exception.BadRequestParamException;
 import com.edu.netc.bakensweets.exception.CustomException;
-import com.edu.netc.bakensweets.mapperConfig.KitchenwareMapper;
+import com.edu.netc.bakensweets.mapper.KitchenwareMapper;
 import com.edu.netc.bakensweets.model.Kitchenware;
 import com.edu.netc.bakensweets.repository.interfaces.KitchenwareRepository;
 import com.edu.netc.bakensweets.service.interfaces.KitchenwareService;
