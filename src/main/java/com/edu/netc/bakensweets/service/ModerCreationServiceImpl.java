@@ -94,22 +94,18 @@ public class ModerCreationServiceImpl implements ModerCreationService {
     }
 
     private UnconfirmedModerator getModerWithToken (NewModeratorDTO moderatorDTO) {
-        System.err.println("before mapping");
         UnconfirmedModerator moderator = moderatorMapper.newModerDTOtoUnconfirmedModer((moderatorDTO));
         moderator.setModerToken(Utils.stringGenerateUniqueId());
         moderator.setExpiryDate(LocalDateTime.now().plusHours(expiration));
-        System.err.println("after mapping");
         return moderator;
     }
 
     private boolean emailIsUnique(String email) {
-        System.err.println("in email checking");
         if (credentialsRepository.getCountEmailUsages(email) == 0) return true;
         else throw new CustomException(HttpStatus.CONFLICT, "email in not unique");
     }
 
     private boolean hasNoActualExpiryDate (String email) {
-        System.err.println("in expire checking");
         LocalDateTime expiryDate = moderRepository.findLatestExpiryDate(email);
         if ( expiryDate != null && expiryDate.isAfter(LocalDateTime.now())) {
             throw new CustomException(HttpStatus.FORBIDDEN, "this email has actual link that is valid until " + expiryDate);
