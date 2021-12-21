@@ -33,7 +33,6 @@ public class ManagerController {
         @ApiResponse(code = 403, message = "this email has actual link that is valid until *time*"),
         @ApiResponse(code = 409, message = "email in not unique")})
     public void addModerator(@Valid @RequestBody NewModeratorDTO moderatorDTO) {
-        System.err.println("in controller " + moderatorDTO.toString());
         moderCreationService.createToken(moderatorDTO);
     }
 

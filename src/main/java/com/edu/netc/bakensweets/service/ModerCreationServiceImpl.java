@@ -16,7 +16,6 @@ import com.edu.netc.bakensweets.service.interfaces.EmailSenderService;
 import com.edu.netc.bakensweets.service.interfaces.ModerCreationService;
 import com.edu.netc.bakensweets.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -56,19 +55,10 @@ public class ModerCreationServiceImpl implements ModerCreationService {
     @Override
     @Transactional
     public void createToken(NewModeratorDTO moderatorDTO) {
-        try {
-            System.err.println("before checking");
-            if (emailIsUnique(moderatorDTO.getEmail()) && hasNoActualExpiryDate(moderatorDTO.getEmail())) {
-                System.err.println("after checking");
-                UnconfirmedModerator moderator = getModerWithToken(moderatorDTO);
-                System.err.println("before create");
-                moderRepository.create(moderator);
-                System.err.println("after create");
-                emailSenderService.sendNewModerLinkPassword(moderator.getEmail(), moderator.getModerToken());
-                System.err.println("after send email");
-            }
-        } catch (DataAccessException e) {
-            System.err.println(e.getMessage());
+        if (emailIsUnique(moderatorDTO.getEmail()) && hasNoActualExpiryDate(moderatorDTO.getEmail())) {
+            UnconfirmedModerator moderator = getModerWithToken(moderatorDTO);
+            moderRepository.create(moderator);
+            emailSenderService.sendNewModerLinkPassword(moderator.getEmail(), moderator.getModerToken());
         }
     }
 
@@ -104,22 +94,18 @@ public class ModerCreationServiceImpl implements ModerCreationService {
     }
 
     private UnconfirmedModerator getModerWithToken (NewModeratorDTO moderatorDTO) {
-        System.err.println("before mapping");
         UnconfirmedModerator moderator = moderatorMapper.newModerDTOtoUnconfirmedModer((moderatorDTO));
         moderator.setModerToken(Utils.stringGenerateUniqueId());
         moderator.setExpiryDate(LocalDateTime.now().plusHours(expiration));
-        System.err.println("after mapping");
         return moderator;
     }
 
-    private boolean emailIsUnique(String email) throws DataAccessException {
-        System.err.println("in email checking");
+    private boolean emailIsUnique(String email) {
         if (credentialsRepository.getCountEmailUsages(email) == 0) return true;
         else throw new CustomException(HttpStatus.CONFLICT, "email in not unique");
     }
 
-    private boolean hasNoActualExpiryDate (String email)  throws DataAccessException {
-        System.err.println("in expire checking");
+    private boolean hasNoActualExpiryDate (String email) {
         LocalDateTime expiryDate = moderRepository.findLatestExpiryDate(email);
         if ( expiryDate != null && expiryDate.isAfter(LocalDateTime.now())) {
             throw new CustomException(HttpStatus.FORBIDDEN, "this email has actual link that is valid until " + expiryDate);
